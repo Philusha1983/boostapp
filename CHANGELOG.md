@@ -6,6 +6,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.1.1] — 2026-07-20
+
+### Changed
+- Update checks and the popup Feedback link are now live: `GITHUB_REPO` set to
+  `Philusha1983/boostapp`.
+
 ## [1.1.0] — 2026-07-20
 
 ### Added

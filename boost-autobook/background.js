@@ -66,7 +66,7 @@ async function updateTarget(id, patch) {
 // the GitHub repository; while empty, update checks and the feedback link
 // are silently disabled.
 // ---------------------------------------------------------------------------
-const GITHUB_REPO = ""; // e.g. "philipsl/boostapp"
+const GITHUB_REPO = "Philusha1983/boostapp";
 const UPDATE_CHECK_ALARM = "updateCheck";
 const UPDATE_CHECK_MAX_AGE_MS = 60 * 60 * 1000; // popup refreshes cache older than this
 

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Boost Auto-Book (Training Harmony)",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Watchlist + automatic registration for BoostApp group lessons. Books the instant the 72h registration window opens.",
   "permissions": ["storage", "alarms", "notifications", "cookies", "scripting", "tabs"],
   "host_permissions": [
