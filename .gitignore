@@ -9,6 +9,14 @@ dist/
 .vscode/
 .idea/
 
-# Private project docs — never publish
-*-research.md
+# --- Docs policy -----------------------------------------------------------
+# Exploration/research/planning MD docs are PRIVATE by default and must never
+# be published. Only user-facing docs belong in the repo: how to install/use
+# the extension, Q&A, changelog. To publish a new root-level doc, whitelist
+# it explicitly below (like README/CHANGELOG). See CLAUDE.md.
+/*.md
+!/README.md
+!/CHANGELOG.md
+notes/
 zieArqzr
+CLAUDE.md
