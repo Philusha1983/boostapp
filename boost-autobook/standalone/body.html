@@ -1,0 +1,30 @@
+
+  <header>
+    <h1><span style="font-size:20px;line-height:1;">📊</span><span data-i18n="title">Past Events</span></h1>
+    <div class="actions">
+      <div class="viewtabs" id="viewTabs">
+        <button data-view="dashboard" class="active" data-i18n="viewDashboard">Dashboard</button>
+        <button data-view="story" data-i18n="viewStory">Story</button>
+        <button data-view="compare" data-i18n="viewCompare">Compare</button>
+      </div>
+      <span class="sharegroup">
+        <select id="shareTemplate"></select>
+        <button id="shareImgBtn" data-i18n="shareImg">🖼️ Share image</button>
+      </span>
+      <button id="exportCsvBtn" data-i18n="exportCsv">⬇️ Export CSV</button>
+      <button id="refreshBtn" data-i18n="refresh">↻ Refresh</button>
+      <button id="resyncBtn" data-i18n="resync">Resync all history</button>
+      <select id="langSelect">
+        <option value="en">English</option>
+        <option value="he">עברית</option>
+        <option value="ru">Русский</option>
+        <option value="uk">Українська</option>
+        <option value="ar">العربية</option>
+      </select>
+    </div>
+  </header>
+  <main id="app">
+    <div class="loading" data-i18n="loading">Loading your class history…</div>
+  </main>
+  <canvas id="confettiCanvas" class="hidden"></canvas>
+  

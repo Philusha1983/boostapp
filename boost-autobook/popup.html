@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Boost Auto-Book</title>
+<meta name="theme-color" content="#00e0a0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Boost Auto-Book">
+<link rel="manifest" href="app.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/appicon192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/appicon512.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icons/appicon192.png">
+<!-- viewport meta is injected by popup.js only on mobile, so it doesn't shrink the desktop popup -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font: 'Rubik', 'Noto Sans Arabic', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+    --green:#00e0a0; --green-deep:#00a87a; --ink:#063a2b; --red:#c0392b;
+    /* light theme */
+    --bg:#f5f7f6; --card:#ffffff; --line:#e3e6e0; --text:#1f2a17; --muted:#6b7280;
+    --ghost:#eef0ec; --ghost-hover:#e0e4dc; --hover:#f3faf7; --chip:#f0f3ed;
+    --badge:#eaf1ec; --badge-text:#3a4a32; --badge-active-bg:#d7f5ea;
+    --input-bg:#ffffff; --header-bg:var(--green); --header-text:var(--ink);
+    --ok-bg:#eef7e8; --ok-bd:#cfe8c0; --ok-tx:#2e5e1c;
+    --err-bg:#fdecea; --err-bd:#f5c6c0; --err-tx:#a02519;
+    --warn-bg:#fff6e6; --warn-bd:#f0d9a0; --slot-checked:#e8faf3; --shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  html[data-theme="dark"] {
+    --bg:#10171a; --card:#1a2427; --line:#2b3a3d; --text:#e7eeec; --muted:#9aa6a2;
+    --ghost:#243133; --ghost-hover:#2e3d40; --hover:#1d2a2c; --chip:#243133;
+    --badge:#243133; --badge-text:#bfe9d8; --badge-active-bg:#10362c;
+    --input-bg:#13201d; --header-bg:#0c2b24; --header-text:#7af0cf; --ink:#04241b;
+    --green-deep:#19c99c;
+    --ok-bg:#12301f; --ok-bd:#1f5e3a; --ok-tx:#7fdc9f;
+    --err-bg:#3a1714; --err-bd:#7a2b22; --err-tx:#f3a59b;
+    --warn-bg:#332810; --warn-bd:#6b5a1e; --slot-checked:#10302a; --shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+  * { box-sizing: border-box; font-family: var(--font); }
+  /* Desktop popup: fixed 600px, slightly zoomed. Mobile styling is gated on the
+     <html class="mobile"> flag set by popup.js (reliable UA detection) — NOT a CSS
+     media query, because an extension popup's viewport is unreliable for that. */
+  /* The popup sizes to the active tab's content (short tabs shrink, tall tabs
+     grow), capped at 545px — with zoom 1.1 that renders at ~600px, Chrome's
+     hard popup limit — after which the body scrolls internally. */
+  body { width: 600px; height: auto; max-height: 545px; margin: 0; background: var(--bg); color: var(--text); zoom: 1.1; display: flex; flex-direction: column; overflow: hidden; }
+  header { flex: 0 0 auto; }
+  .body { flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
+  html.mobile body { width: 100vw; height: 100vh; max-height: none; zoom: 1; }
+  html.mobile .row { flex-direction: column; }
+  html.mobile header h1 { font-size: 16px; }
+  html.mobile .body { padding: 10px 12px 22px; }
+  html.mobile .tab { padding: 9px 10px; }
+  @keyframes bsab-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .panel:not(.hidden) { animation: bsab-fade .18s ease; }
+  header { background: var(--header-bg); color: var(--header-text); padding: 10px 14px 11px; }
+  .hdr-top { display:flex; align-items:center; justify-content:space-between; }
+  header h1 { font-size: 15px; margin: 0; font-weight: 700; display:flex; align-items:center; gap:8px; }
+  header .right { display:flex; align-items:center; gap:12px; font-size:12px; }
+  .hdr-status { display:flex; align-items:center; gap:8px; margin-top:9px; font-size:13px; color:var(--header-text); }
+  .avatar { width:24px; height:24px; border-radius:50%; overflow:hidden; flex:0 0 auto; display:flex; align-items:center; justify-content:center; background:rgba(127,127,127,.28); font-size:10px; font-weight:700; color:var(--header-text); }
+  .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+  .avatar:empty { display:none; }
+  .hdr-name { font-weight:600; white-space:nowrap; }
+  .status-dot { width:9px; height:9px; border-radius:50%; flex:0 0 auto; }
+  .status-dot.green { background:#1ec871; } .status-dot.red { background:#ff5b52; } .status-dot.amber { background:#e6b800; }
+  .hdr-state { opacity:.9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .hdr-status #refreshBtn { margin-inline-start:auto; flex:0 0 auto; }
+  header .sw { display:flex; align-items:center; gap:6px; }
+  .sw-state { font-size:12px; font-weight:700; min-width:22px; }
+  .sw-state.on { color:#2ee08a; } .sw-state.off { color:var(--muted); }
+  .icon-btn { background: rgba(127,127,127,.22); color: var(--header-text); border:none; border-radius:7px; padding:4px 9px; font-size:12px; cursor:pointer; }
+  .icon-btn:hover { background: rgba(127,127,127,.38); }
+  .body { padding: 0 14px 14px; }
+
+  /* Signed-out call-to-action (shown when not authenticated) */
+  .signed-out { display:none; flex-direction:column; align-items:center; text-align:center;
+    gap:10px; padding:44px 28px 40px; }
+  .body.signedout .tabs { display:none; }
+  .body.signedout .panel { display:none !important; }
+  .body.signedout .signed-out { display:flex; }
+  .so-icon { font-size:42px; line-height:1; opacity:.92; }
+  .so-title { font-size:17px; font-weight:700; color:var(--text); }
+  .so-text { font-size:13.5px; color:var(--muted); max-width:330px; line-height:1.55; }
+  .so-cta { margin-top:8px; background:var(--green); color:#06281c; font-weight:700;
+    font-size:14px; padding:11px 20px; border-radius:10px; border:none; cursor:pointer;
+    transition:background .15s, transform .05s; }
+  .so-cta:hover { background:var(--green-deep, #16b981); }
+  .so-cta:active { transform:translateY(1px); }
+
+  .tabs { display:flex; gap:2px; border-bottom:1px solid var(--line); margin: 0 0 12px; padding-top: 10px; overflow-x:auto; position:sticky; top:0; background:var(--bg); z-index:4; }
+  .tab { flex:0 0 auto; background:none; border:none; border-bottom:2px solid transparent; padding:8px 9px; font-size:12.5px; color:var(--muted); font-weight:500; cursor:pointer; display:flex; align-items:center; gap:5px; white-space:nowrap; }
+  .tab:hover { background:var(--hover); }
+  .tab:hover:not(.active) { color:var(--text); }
+  .tab.active { color:var(--green-deep); border-bottom-color:var(--green); font-weight:600; }
+  .tab-badge { background:var(--badge); color:var(--badge-text); border-radius:99px; font-size:11px; padding:1px 7px; min-width:18px; text-align:center; }
+  .tab.active .tab-badge { background:var(--badge-active-bg); color:var(--green-deep); }
+  .panel { display:block; }
+  .panel.hidden { display:none; }
+  .panel-hint { font-size:12px; color:var(--muted); margin:0 0 8px; }
+
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 12px 0 6px; }
+  .card { background: var(--card); border:1px solid var(--line); border-radius: 10px; padding: 9px 10px; margin-bottom: 7px; box-shadow: var(--shadow); }
+  label { font-size: 12px; color: var(--muted); display:block; margin-bottom: 2px; }
+  input, select, textarea { width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:9px; font-size:14px; background:var(--input-bg); color:var(--text); }
+  textarea { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px; resize:vertical; }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--green-deep); box-shadow:0 0 0 3px rgba(0,224,160,.18); }
+  .file-btn { display:inline-flex; align-items:center; gap:5px; cursor:pointer; background:var(--ghost); color:var(--text); padding:7px 10px; border-radius:7px; font-size:13px; font-weight:500; }
+  .row { display:flex; gap:8px; }
+  .row > div { flex:1; }
+  button { cursor:pointer; border:none; border-radius:7px; padding:7px 10px; font-size:13px; background:var(--green); color:var(--ink); font-weight:600; }
+  button:hover { background:var(--green-deep); color:#fff; }
+  button.ghost { background:var(--ghost); color:var(--text); font-weight:500; }
+  button.ghost:hover { background:var(--ghost-hover); }
+  button.danger { background:var(--red); color:#fff; }
+  button.danger:hover { filter:brightness(.92); }
+  button.small { padding:4px 8px; font-size:12px; }
+  button:disabled { opacity:.4; cursor:not-allowed; }
+  .refresh-btn { background:var(--ghost); color:var(--text); padding:3px 10px; font-size:12px; border-radius:7px; font-weight:500; }
+
+  .banner { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; border-radius:8px; margin-bottom:10px; font-size:13px; border:1px solid transparent; }
+  .banner-checking { background:var(--ghost); border-color:var(--line); color:var(--muted); }
+  .banner-ok { background:var(--ok-bg); border-color:var(--ok-bd); color:var(--ok-tx); }
+  .banner-err { background:var(--err-bg); border-color:var(--err-bd); color:var(--err-tx); }
+  .warn { display:none; background:var(--warn-bg); border:1px solid var(--warn-bd); color:var(--text); padding:8px; border-radius:8px; margin-bottom:10px; font-size:12px; }
+  .autowarn { display:flex; align-items:center; gap:8px; background:var(--warn-bg); border:1px solid var(--warn-bd); color:var(--text); padding:8px 10px; border-radius:8px; margin-bottom:8px; font-size:12px; }
+  .autowarn span { flex:1 1 auto; }
+  .autowarn-btn { flex:0 0 auto; background:var(--green); color:#06281c; font-weight:700; border:none; border-radius:7px; padding:5px 12px; font-size:12px; cursor:pointer; }
+  .autowarn-btn:hover { background:var(--green-deep, #16b981); }
+
+  .target { border-inline-start:4px solid var(--muted); }
+  .target.open   { border-inline-start-color:var(--green-deep); }
+  .target.waiting{ border-inline-start-color:#caa024; }
+  .target.full   { border-inline-start-color:var(--red); }
+  .target.booked { border-inline-start-color:var(--green-deep); }
+  .t-head { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .t-head-act { flex:0 0 auto; }
+  .t-head-act .muted { font-size:12px; }
+  .t-title { font-weight:600; font-size:14px; }
+  .t-meta { font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+  .pill { font-size:11px; padding:2px 8px; border-radius:99px; color:#fff; white-space:nowrap; }
+  .pill.open{background:var(--green-deep);} .pill.waiting{background:#caa024;} .pill.full{background:var(--red);}
+  .pill.booked{background:var(--green-deep);} .pill.passed,.pill.notfound{background:var(--muted);}
+  .pill.bonus{background:#b47cff;color:#fff;}
+  .sub-summary{border-inline-start:4px solid var(--green-deep);}
+  .sub-summary .t-meta{font-size:13px;color:var(--text);}
+  .t-actions { display:flex; gap:6px; margin-top:7px; flex-wrap:wrap; align-items:center; }
+  .act-sep { flex:0 0 auto; align-self:center; width:1px; height:18px; background:var(--line); margin:0 3px; }
+  .muted { color:var(--muted); font-size:12px; }
+  .empty { text-align:center; color:var(--muted); font-size:13px; padding:14px; }
+
+  /* List / Week view switch */
+  .panel-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .panel-top .panel-hint { margin:0; }
+  .viewtoggle { display:inline-flex; flex:0 0 auto; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:var(--ghost); }
+  .vt-btn { background:transparent; color:var(--muted); border:none; border-radius:0; padding:4px 9px; font-size:14px; line-height:1; font-weight:600; }
+  .vt-btn:hover { background:var(--ghost-hover); color:var(--text); }
+  .vt-btn.active { background:var(--green); color:var(--ink); }
+
+  /* Week grid (7 day-columns, Sun→Sat; flows RTL with document dir) */
+  .weekgrid { display:flex; gap:4px; align-items:stretch; }
+  .weekcol { flex:1 1 0; min-width:0; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:5px 3px; min-height:90px; display:flex; flex-direction:column; gap:4px; transition:flex-grow .28s cubic-bezier(.2,.75,.3,1); }
+  .weekcol.filled { flex-grow:1.7; }
+  .weekcol.empty { flex-grow:.55; padding:5px 1px; }
+  .weekcol.today { border-color:var(--green-deep); box-shadow:0 0 0 1px var(--green-deep) inset; }
+  .weekcol-head { text-align:center; font-size:11px; font-weight:700; color:var(--muted); padding-bottom:3px; border-bottom:1px solid var(--line); }
+  .weekcol.today .weekcol-head { color:var(--green-deep); }
+  .weekcol-empty { text-align:center; color:var(--line); font-size:14px; margin-top:6px; }
+  .weekitem { flex:1 1 auto; display:flex; flex-direction:column; gap:2px; border-radius:6px; padding:5px; background:var(--ghost); border-inline-start:3px solid var(--muted); }
+  .weekitem.dim { opacity:.55; }
+  .weekitem.open, .weekitem.booked { border-inline-start-color:var(--green-deep); }
+  .weekitem.waiting { border-inline-start-color:#caa024; }
+  .weekitem.full, .weekitem.notfound, .weekitem.passed { border-inline-start-color:var(--red); }
+  .wi-time { font-size:12px; font-weight:800; color:var(--text); }
+  .wi-name { font-size:11px; font-weight:600; color:var(--text); line-height:1.25; word-break:break-word; }
+  .wi-sub { font-size:10px; color:var(--muted); line-height:1.3; word-break:break-word; }
+  .weekitem.clickable { cursor:pointer; position:relative; }
+  .weekitem.clickable:hover { background:var(--ghost-hover); }
+  .wi-caret { align-self:flex-end; font-size:10px; color:var(--muted); transition:transform .2s; margin-top:1px; }
+  .weekitem.open .wi-caret { transform:rotate(180deg); }
+  /* Actions pinned to the bottom of the item so they line up across columns */
+  .wi-actbtns { display:flex; flex-direction:column; gap:4px; margin-top:auto; padding-top:8px; }
+  .wi-actbtns button { width:100%; height:26px; padding:0 6px; font-size:11px; line-height:1;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; justify-content:center; }
+  .weekcol .plan-row { flex-wrap:wrap; gap:3px; font-size:10px; }
+  .weekcol .plan-row button { padding:3px 6px; font-size:10px; }
+
+  /* Period view: calendar grid spanning the subscription period (start→end) */
+  .period-stats { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+  .period-stats .chip b { color:var(--text); }
+  .period-stats .chip.warn-chip { background:var(--warn-bg); border-color:var(--warn-bd); }
+  .period-legend { display:flex; flex-wrap:wrap; gap:6px 12px; margin:2px 0 10px; padding:7px 9px; background:var(--ghost); border:1px solid var(--line); border-radius:8px; }
+  .period-legend .pl-item { font-size:11px; color:var(--muted); white-space:nowrap; display:inline-flex; align-items:center; gap:4px; }
+  .period-legend .pl-ic { font-size:12px; }
+  .periodgrid { display:flex; flex-direction:column; gap:4px; }
+  .periodweek { display:flex; gap:4px; }
+  .periodweek-head { display:flex; gap:4px; margin-bottom:2px; position:sticky; top:var(--tabs-h, 44px); z-index:3; background:var(--bg); padding:4px 0 5px; box-shadow:0 1px 0 var(--line); }
+  .periodweek-head span { flex:1 1 0; text-align:center; font-size:10.5px; font-weight:700; color:var(--muted); }
+  .periodcell { position:relative; flex:1 1 0; min-width:0; background:var(--card); border:1px solid var(--line); border-radius:7px; padding:3px; min-height:34px; display:flex; flex-direction:column; gap:3px; }
+  .periodcell.addable { cursor:pointer; }
+  .periodcell.addable:hover { border-color:var(--green-deep); }
+  .pc-add { position:absolute; top:2px; inset-inline-end:3px; font-size:12px; font-weight:800; line-height:1; color:var(--green-deep); opacity:0; transition:opacity .12s; pointer-events:none; }
+  .periodcell.addable:hover .pc-add { opacity:1; }
+  .periodcell.out { background:transparent; border-color:transparent; }
+  .periodcell.past:not(.out) { opacity:.45; }
+  .periodcell.today { border-color:var(--green-deep); box-shadow:0 0 0 1px var(--green-deep) inset; }
+  /* Next-period preview cells (past periodEnd) — dashed border signals "not confirmed yet" */
+  .periodcell.next-period { border-style:dashed; opacity:.8; }
+  .pc-date { font-size:10px; font-weight:700; color:var(--muted); text-align:center; }
+  .periodcell.today .pc-date { color:var(--green-deep); }
+  .pe-entry { position:relative; border-radius:5px; padding:2px 16px 2px 4px; font-size:9.5px; line-height:1.25; border-inline-start:3px solid var(--muted); background:var(--ghost); word-break:break-word; }
+  .pe-entry.booked { border-inline-start-color:var(--green-deep); background:var(--ok-bg); }
+  .pe-entry.external { border-inline-start-color:#38b6ff; }   /* booked directly on BoostApp */
+  .pe-entry.scheduled { border-inline-start-color:var(--green-deep); }
+  .pe-entry.limit { border-inline-start-color:var(--red); background:var(--err-bg); opacity:.85; }
+  .pe-entry.skipped { border-inline-start-color:var(--muted); opacity:.6; text-decoration:line-through; }
+  .pe-entry.preview { border-inline-style:dashed; opacity:.75; }
+  .pe-time { font-weight:800; }
+  /* Hover/focus-revealed skip↔unskip toggle on scheduled/skipped calendar entries */
+  .pe-toggle {
+    position:absolute; top:1px; inset-inline-end:1px; width:13px; height:13px; line-height:11px;
+    padding:0; margin:0; border:none; border-radius:3px; background:var(--card); color:var(--text);
+    font-size:9px; text-align:center; cursor:pointer; opacity:0; transition:opacity .12s;
+  }
+  .pe-entry:hover .pe-toggle, .pe-entry:focus-within .pe-toggle, .pe-toggle:focus { opacity:1; }
+  .pe-toggle:hover { background:var(--green-deep); color:#06281c; }
+  .pe-toggle:disabled { opacity:.5; cursor:default; }
+  .autowarn.preview-note { background:var(--ghost); border-color:var(--line); opacity:.9; }
+  /* Past-day entries, filled from the History backfill */
+  .pe-entry.hist-attended { border-inline-start-color:var(--green-deep); background:var(--ok-bg); }
+  .pe-entry.hist-latecancel { border-inline-start-color:var(--red); background:var(--warn-bg); }
+  .pe-entry.hist-cancelled { border-inline-start-color:var(--muted); opacity:.65; text-decoration:line-through; }
+  .pe-entry.hist-noshow { border-inline-start-color:var(--red); background:var(--err-bg); }
+  .pe-entry.hist-other { opacity:.6; }
+
+  /* Day picker overlay (click a future day → choose a class to schedule) */
+  .daypicker-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; z-index:20; padding:16px; }
+  .daypicker { width:100%; max-width:340px; max-height:80%; overflow:hidden; display:flex; flex-direction:column; background:var(--bg); border:1px solid var(--line); border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,.4); }
+  .dp-head { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:11px 13px; border-bottom:1px solid var(--line); font-weight:700; font-size:14px; }
+  .dp-close { background:transparent; color:var(--muted); border:none; font-size:15px; cursor:pointer; padding:2px 6px; }
+  .dp-close:hover { color:var(--text); }
+  .dp-list { overflow-y:auto; padding:6px; display:flex; flex-direction:column; gap:4px; }
+  .dp-row { display:flex; align-items:center; gap:8px; padding:7px 8px; border:1px solid var(--line); border-radius:8px; background:var(--card); }
+  .dp-time { font-weight:700; font-size:12.5px; flex:0 0 auto; }
+  .dp-name { flex:1 1 auto; font-size:12.5px; min-width:0; }
+  .dp-teacher { color:var(--muted); font-size:11px; }
+  .dp-act { flex:0 0 auto; }
+
+  .switch { position:relative; display:inline-block; width:46px; height:25px; }
+  .switch input{opacity:0;width:0;height:0;}
+  .slider{position:absolute;inset:0;background:rgba(0,0,0,.32);border:1.5px solid rgba(255,255,255,.55);border-radius:25px;transition:.2s;cursor:pointer;}
+  .slider:before{content:"";position:absolute;height:17px;width:17px;left:3px;top:2.5px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.35);}
+  input:checked + .slider{background:#fff;border-color:#fff;}
+  input:checked + .slider:before{transform:translateX(21px);background:var(--green-deep);}
+
+  .expand-row { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+  .expand-row button { background:var(--ghost); color:var(--text); padding:5px 10px; font-size:12px; border-radius:7px; font-weight:500; }
+  /* Auto-height accordion animation via grid-template-rows 0fr→1fr (no fixed cap,
+     no clipping of long lesson content). Content lives in .expand-inner. */
+  .expand-body { display:grid; grid-template-rows:0fr; transition:grid-template-rows .28s ease; }
+  .expand-body.open { grid-template-rows:1fr; }
+  .expand-inner { overflow:hidden; min-height:0; }
+  .expand-body.open .expand-inner { margin-top:8px; border-top:1px solid var(--line); padding-top:8px; }
+  .chips { display:flex; flex-wrap:wrap; gap:5px; }
+  .chip { background:var(--chip); border:1px solid var(--line); border-radius:99px; padding:3px 9px; font-size:12px; }
+  .chip.wait { background:var(--warn-bg); border-color:var(--warn-bd); }
+  .lesson-desc { font-size:13px; line-height:1.6; color:var(--text); }
+  .lesson-desc a { color:var(--green-deep); }
+  .lesson-desc img { max-width:100%; height:auto; }
+  .subhdr { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:6px 0 4px; }
+
+  .day-group { background:var(--card); border:1px solid var(--line); border-radius:10px; margin-bottom:8px; overflow:hidden; box-shadow: var(--shadow); }
+  .day-hdr { display:flex; justify-content:space-between; align-items:center; padding:9px 12px; cursor:pointer; font-weight:600; font-size:14px; user-select:none; }
+  .day-hdr .count { font-size:12px; color:var(--muted); font-weight:400; }
+  .day-slots { display:none; padding:2px 8px 8px; }
+  .day-slots.open { display:block; }
+  .slot-row { display:flex; align-items:center; gap:10px; padding:7px 6px; border-top:1px solid var(--line); cursor:pointer; }
+  .slot-row:hover { background:var(--hover); }
+  .slot-row input { width:17px; height:17px; margin:0; accent-color:var(--green-deep); }
+  .slot-time { font-weight:600; font-size:13px; min-width:46px; }
+  .slot-class { font-size:13px; }
+  .slot-teacher { font-size:12px; color:var(--muted); }
+  .slot-row.checked { background:var(--slot-checked); }
+  .plan-row { display:flex; align-items:center; gap:8px; padding:6px 2px; border-top:1px solid var(--line); font-size:12.5px; }
+  .plan-row:first-child { border-top:none; }
+  .plan-date { font-weight:600; min-width:46px; }
+  .plan-status { color:var(--muted); }
+  .plan-status.booked { color:var(--green-deep); }
+  .plan-status.skipped { color:var(--muted); text-decoration:line-through; }
+  .plan-status.limit { color:var(--red); }
+  .plan-act { margin-inline-start:auto; display:flex; gap:6px; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="hdr-top">
+      <h1><img src="icons/icon48.png" width="22" height="22" alt="" style="border-radius:5px;display:block;">Boost Auto-Book</h1>
+      <span class="right">
+        <span class="sw"><span data-i18n="autobook">Auto-book</span>
+          <label class="switch"><input type="checkbox" id="autoBook"><span class="slider"></span></label>
+          <span id="autoBookState" class="sw-state"></span>
+        </span>
+      </span>
+    </div>
+    <div class="hdr-status">
+      <span class="avatar" id="hdrAvatar"></span>
+      <span class="hdr-name" id="hdrName"></span>
+      <span class="status-dot amber" id="hdrDot"></span>
+      <span class="hdr-state" id="hdrState"></span>
+      <button id="historyBtn" class="icon-btn" data-i18n="openHistory">📊 History</button>
+      <button id="refreshBtn" class="icon-btn">↻ Refresh</button>
+    </div>
+  </header>
+
+  <div class="body">
+    <div id="warn" class="warn"></div>
+
+    <div id="signedOut" class="signed-out">
+      <div class="so-icon">🔒</div>
+      <div class="so-title" data-i18n="soTitle">Not signed in to BoostApp</div>
+      <div class="so-text" data-i18n="soText">Open BoostApp and sign in to load your lessons, weekly slots and subscription.</div>
+      <button id="soBtn" class="so-cta" data-i18n="soCta">Open BoostApp to sign in</button>
+    </div>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="upcoming"><span data-i18n="tab_upcoming">Upcoming</span> <span class="tab-badge" id="badge-upcoming">0</span></button>
+      <button class="tab" data-tab="slots"><span data-i18n="tab_slots">My weekly slots</span> <span class="tab-badge" id="badge-slots">0</span></button>
+      <button class="tab" data-tab="subscription"><span data-i18n="tab_subscription">Subscription</span> <span class="tab-badge" id="badge-sub">–</span></button>
+      <button class="tab" data-tab="settings"><span data-i18n="tab_settings">Settings</span></button>
+    </nav>
+
+    <section class="panel" data-panel="upcoming">
+      <div class="panel-top">
+        <p class="panel-hint" data-i18n="hint_upcoming">Your booked lessons. Expand for participants and lesson content.</p>
+        <div class="viewtoggle" data-view-for="upcoming">
+          <button class="vt-btn active" data-view="list" data-i18n-title="viewList" title="List">☰</button>
+          <button class="vt-btn" data-view="week" data-i18n-title="viewWeek" title="Week">▦</button>
+        </div>
+      </div>
+      <div id="regSection"></div>
+    </section>
+
+    <section class="panel hidden" data-panel="slots">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px;">
+        <div style="display:flex; gap:8px;">
+          <button id="toggleScheduler" class="refresh-btn">Schedule lessons +</button>
+          <button id="checkNow" class="refresh-btn">Check now</button>
+        </div>
+        <div class="viewtoggle" data-view-for="slots">
+          <button class="vt-btn active" data-view="list" data-i18n-title="viewList" title="List">☰</button>
+          <button class="vt-btn" data-view="week" data-i18n-title="viewWeek" title="Week">▦</button>
+          <button class="vt-btn" data-view="period" data-i18n-title="viewPeriod" title="Period">📅</button>
+        </div>
+      </div>
+      <div id="schedulerWrap" class="expand-body">
+        <div class="expand-inner">
+          <p class="panel-hint" data-i18n="hint_schedule">Tick the slots you want — the extension books them every week when registration opens.</p>
+          <div id="scheduleSection"></div>
+        </div>
+      </div>
+      <div id="slotsAutoWarn" class="autowarn" style="display:none;">
+        <span data-i18n="slotsAutoOff">⏸️ Auto-book is off — these slots won't be booked automatically.</span>
+        <button id="slotsAutoOn" class="autowarn-btn" data-i18n="turnOn">Turn on</button>
+      </div>
+      <div id="list"></div>
+    </section>
+
+    <section class="panel hidden" data-panel="subscription">
+      <div id="subSection"></div>
+    </section>
+
+    <section class="panel hidden" data-panel="settings">
+      <div class="card">
+        <div class="row">
+          <div><label data-i18n="lbl_lang">Language</label>
+            <select id="lang">
+              <option value="en">English</option>
+              <option value="he">עברית</option>
+              <option value="ru">Русский</option>
+              <option value="uk">Українська</option>
+              <option value="ar">العربية</option>
+            </select></div>
+          <div><label data-i18n="lbl_theme">Theme</label>
+            <select id="theme">
+              <option value="system" data-i18n="theme_system">System</option>
+              <option value="light" data-i18n="theme_light">Light</option>
+              <option value="dark" data-i18n="theme_dark">Dark</option>
+            </select></div>
+        </div>
+        <div class="row" style="margin-top:8px;">
+          <div><label data-i18n="lbl_company">Company #</label><input id="companyNum"></div>
+          <div><label data-i18n="lbl_token">Studio token (GetUrl)</label><input id="getUrl"></div>
+        </div>
+        <div class="row" style="margin-top:8px;">
+          <div><label data-i18n="lbl_poll">Poll every (minutes)</label><input id="pollMinutes" type="number" min="1" value="1"></div>
+          <div><label data-i18n="lbl_snipe">Snipe lead (minutes)</label><input id="snipeWindowMin" type="number" min="1" value="5"></div>
+        </div>
+        <div class="row" style="margin-top:8px;">
+          <div><label data-i18n="lbl_daily">Daily limit (0 = auto from plan)</label><input id="dailyLimitOverride" type="number" min="0" value="0"></div>
+          <div></div>
+        </div>
+        <button id="saveCfg" style="margin-top:10px;" data-i18n="saveSettings">Save settings</button>
+        <p class="muted" style="margin-top:8px;" data-i18n="settings_note">Daily limit only controls the local warning — the studio's server still enforces your real per-day allowance. You must be signed in to BoostApp in this Chrome profile. The extension cannot register before the studio's 72h window opens — it fires the instant it does.</p>
+      </div>
+
+      <div class="card">
+        <label data-i18n="lbl_backup">Backup / transfer slots</label>
+        <p class="muted" style="margin:2px 0 8px;" data-i18n="backup_hint">Export your slots &amp; settings to move them to another browser, or paste/upload a backup to import.</p>
+        <textarea id="ioBox" rows="4" spellcheck="false"></textarea>
+        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+          <button id="btnExport" data-i18n="export">Export</button>
+          <button id="btnDownload" class="ghost" data-i18n="download">Download file</button>
+          <button id="btnImport" class="ghost" data-i18n="import">Import</button>
+          <label class="file-btn">📁<input id="importFile" type="file" accept="application/json,.json" style="display:none;"></label>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

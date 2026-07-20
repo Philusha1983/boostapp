@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Release artifacts (built by scripts/build.sh, attached to GitHub Releases)
+*.zip
+dist/
+
+# Editors
+.vscode/
+.idea/

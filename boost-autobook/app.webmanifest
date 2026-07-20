@@ -1,0 +1,15 @@
+{
+  "name": "Boost Auto-Book",
+  "short_name": "Boost",
+  "start_url": "popup.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1416",
+  "theme_color": "#00e0a0",
+  "icons": [
+    { "src": "icons/appicon192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/appicon512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/appicon192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/appicon512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
