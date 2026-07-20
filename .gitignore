@@ -8,3 +8,7 @@ dist/
 # Editors
 .vscode/
 .idea/
+
+# Private project docs — never publish
+*-research.md
+zieArqzr
