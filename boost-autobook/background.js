@@ -58,6 +58,58 @@ async function updateTarget(id, patch) {
 }
 
 // ---------------------------------------------------------------------------
+// Versioning: update check + storage schema
+//
+// Distribution is by zip (loaded unpacked), which never auto-updates — so the
+// extension itself checks GitHub Releases once a day and the popup shows an
+// "update available" banner. Set GITHUB_REPO ("owner/repo") after creating
+// the GitHub repository; while empty, update checks and the feedback link
+// are silently disabled.
+// ---------------------------------------------------------------------------
+const GITHUB_REPO = ""; // e.g. "philipsl/boostapp"
+const UPDATE_CHECK_ALARM = "updateCheck";
+const UPDATE_CHECK_MAX_AGE_MS = 60 * 60 * 1000; // popup refreshes cache older than this
+
+// Numeric dotted-version compare: 1 / 0 / -1.
+function cmpVersions(a, b) {
+  const pa = String(a).split(".").map(Number), pb = String(b).split(".").map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const d = (pa[i] || 0) - (pb[i] || 0);
+    if (d) return d > 0 ? 1 : -1;
+  }
+  return 0;
+}
+
+// GitHub's API is CORS-open, so no extra host permission is needed.
+async function checkForUpdate() {
+  if (!GITHUB_REPO) return null;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`, { headers: { Accept: "application/vnd.github+json" } });
+    if (!res.ok) return null;
+    const rel = await res.json();
+    const latest = String(rel.tag_name || "").replace(/^v/, "");
+    if (!latest) return null;
+    const info = { latest, url: rel.html_url, checkedAt: Date.now() };
+    await chrome.storage.local.set({ bsab_update: info });
+    return info;
+  } catch (e) { return null; }
+}
+
+// Storage schema version. User data (targets, history cache, auth state)
+// survives extension updates, so any future change to a stored format must
+// bump SCHEMA_VERSION and add a migration step here — never reinterpret old
+// data in place.
+const SCHEMA_VERSION = 1;
+async function migrateSchema() {
+  const { bsab_schema } = await chrome.storage.local.get("bsab_schema");
+  const from = bsab_schema || 1;
+  // Future migrations, oldest first:
+  // if (from < 2) { ...transform stored data from v1 to v2... }
+  if (from !== SCHEMA_VERSION) { /* placeholder until the first real migration */ }
+  await chrome.storage.local.set({ bsab_schema: SCHEMA_VERSION });
+}
+
+// ---------------------------------------------------------------------------
 // Sign-in verification
 // ---------------------------------------------------------------------------
 const SITE = "https://app.boostapp.co.il";
@@ -1203,20 +1255,30 @@ function notify(title, message) {
 async function ensurePollAlarm() {
   const cfg = await getConfig();
   chrome.alarms.create("poll", { periodInMinutes: Math.max(1, Number(cfg.pollMinutes) || 1) });
+  if (GITHUB_REPO) chrome.alarms.create(UPDATE_CHECK_ALARM, { periodInMinutes: 24 * 60, delayInMinutes: 1 });
 }
 
 // On load: default to NOT connected until validated (badge shows "!").
 async function initOnLoad() {
+  await migrateSchema();
   await chrome.storage.local.set({ bsab_auth: { loggedIn: false, checkedAt: Date.now(), reason: "Open BoostApp Home to validate connection" } });
   await updateBadgeAndTitle();
   await ensurePollAlarm();
 }
-chrome.runtime.onInstalled.addListener(initOnLoad);
+chrome.runtime.onInstalled.addListener((details) => {
+  initOnLoad();
+  if (details && details.reason === "update") {
+    const v = chrome.runtime.getManifest().version;
+    notify("Boost Auto-Book updated", `Now running v${v}. See the changelog for what's new.`);
+  }
+});
 chrome.runtime.onStartup.addListener(initOnLoad);
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === "poll") {
     await pollAll();
+  } else if (alarm.name === UPDATE_CHECK_ALARM) {
+    await checkForUpdate();
   } else if (alarm.name.startsWith("snipe:")) {
     await snipe(alarm.name.slice("snipe:".length));
   }
@@ -1339,6 +1401,21 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           await syncHome();
           const store = await chrome.storage.local.get(["bsab_subscription", "bsab_registrations", "bsab_client", "bsab_auth"]);
           sendResponse(store);
+          break;
+        }
+        case "getUpdateInfo": {
+          const current = chrome.runtime.getManifest().version;
+          let { bsab_update } = await chrome.storage.local.get("bsab_update");
+          if (GITHUB_REPO && (!bsab_update || (Date.now() - (bsab_update.checkedAt || 0)) > UPDATE_CHECK_MAX_AGE_MS)) {
+            bsab_update = (await checkForUpdate()) || bsab_update || null;
+          }
+          sendResponse({
+            repo: GITHUB_REPO || null,
+            current,
+            latest: bsab_update ? bsab_update.latest : null,
+            url: bsab_update ? bsab_update.url : null,
+            updateAvailable: !!(bsab_update && bsab_update.latest && cmpVersions(bsab_update.latest, current) > 0)
+          });
           break;
         }
         case "verifyAuth": {

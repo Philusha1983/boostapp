@@ -1663,3 +1663,37 @@ showTab(startTab);
   send({ cmd: "verifyAuth" }).then(refresh);
   send({ cmd: "reenrich" }).then(refresh);   // recompute slot chips so they're never stale
 })();
+
+// ---------------------------------------------------------------------------
+// Version footer, update banner, feedback link
+// Zip installs never auto-update, so the background checks GitHub Releases
+// daily and we surface a banner here when a newer version exists.
+// ---------------------------------------------------------------------------
+(async () => {
+  const version = chrome.runtime.getManifest().version;
+  if ($("verLabel")) $("verLabel").textContent = "v" + version;
+  let u = null;
+  try { u = await send({ cmd: "getUpdateInfo" }); } catch (e) {}
+  const fb = $("feedbackLink"), sep = $("feedbackSep");
+  if (u && u.repo) {
+    if (fb) {
+      const body = `**Extension version:** v${version}\n**Browser:** ${navigator.userAgent}\n\n**What happened?**\n\n**Steps to reproduce**\n1. `;
+      fb.href = `https://github.com/${u.repo}/issues/new?title=${encodeURIComponent("[feedback] ")}&body=${encodeURIComponent(body)}`;
+    }
+    if (u.updateAvailable && $("updateBanner")) {
+      const b = $("updateBanner");
+      b.innerHTML = "";
+      const a = document.createElement("a");
+      a.href = u.url || `https://github.com/${u.repo}/releases/latest`;
+      a.target = "_blank"; a.rel = "noopener";
+      a.style.cssText = "color:#fff; font-weight:600;";
+      a.textContent = `⬆ Update available: v${u.latest} (you have v${version}) — download`;
+      b.appendChild(a);
+      b.style.display = "block";
+    }
+  } else {
+    // No repo configured yet — hide the feedback link rather than 404.
+    if (fb) fb.style.display = "none";
+    if (sep) sep.style.display = "none";
+  }
+})();
