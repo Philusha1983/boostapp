@@ -6,6 +6,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.3.1] — 2026-07-21
+
+### Fixed
+- Timezone correctness for travelling laptops: studio date/time strings were
+  parsed in the device's local timezone, so away from Israel the 72h open
+  moment shifted by the timezone difference (west = snipe fired hours late,
+  east = hours early). All timing math (open moment, lesson start, booked-date
+  lookups, calendar↔registration matching) now interprets studio times
+  explicitly in Asia/Jerusalem (DST-aware via Intl), in both the background
+  worker and the Home-page content script. In Israel nothing changes.
+
 ## [1.3.0] — 2026-07-21
 
 ### Added

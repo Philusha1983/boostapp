@@ -13,6 +13,25 @@
   const ACT_API = "/controllerAction/ClientActivity.php";
   const TEXT = (el) => (el ? el.innerText.replace(/\s+/g, " ").trim() : "");
 
+  // Israel wall-clock → epoch ms, independent of the device timezone.
+  // (The page renders the studio's local times; a travelling laptop must not
+  // reinterpret them in its own zone. Mirror of studioTimeMs in background.js.)
+  const STUDIO_TZ = "Asia/Jerusalem";
+  function tzOffsetMs(tz, date) {
+    const p = {};
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+    }).formatToParts(date).forEach(x => { p[x.type] = x.value; });
+    return Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour % 24, +p.minute, +p.second) - date.getTime();
+  }
+  function ilTimeMs(y, mm, dd, HH, MM) {
+    const naive = Date.UTC(y, mm - 1, dd, HH, MM, 0);
+    const off = tzOffsetMs(STUDIO_TZ, new Date(naive));
+    const off2 = tzOffsetMs(STUDIO_TZ, new Date(naive - off));
+    return naive - off2;
+  }
+
   function readClient() {
     const h = document.getElementById("clientHeaderId");
     if (!h || !h.dataset.id) return null;
@@ -66,10 +85,13 @@
       if (m) {
         const dd = +m[1], mm = +m[2], HH = +m[3], MM = +m[4];
         time = String(HH).padStart(2, "0") + ":" + String(MM).padStart(2, "0");
-        const now = new Date();
-        let dt = new Date(now.getFullYear(), mm - 1, dd, HH, MM);
-        if (dt.getTime() < now.getTime() - 60 * 864e5) dt = new Date(now.getFullYear() + 1, mm - 1, dd, HH, MM); // year rollover
-        startAt = dt.getTime();
+        // The page shows the STUDIO's wall clock (Israel) — convert via the
+        // studio timezone, not the device's, so timestamps stay correct when
+        // the laptop travels. (Same logic as studioTimeMs in background.js.)
+        const year = new Date().getFullYear();
+        let ts = ilTimeMs(year, mm, dd, HH, MM);
+        if (ts < Date.now() - 60 * 864e5) ts = ilTimeMs(year + 1, mm, dd, HH, MM); // year rollover
+        startAt = ts;
       }
       return {
         className: TEXT(el.querySelector(".item--title")) || null,

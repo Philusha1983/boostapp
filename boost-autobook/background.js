@@ -15,6 +15,48 @@
 
 const API_URL = "https://app.boostapp.co.il/controllerAction/OrderClasses.php";
 
+// ---------------------------------------------------------------------------
+// Studio timezone
+// BoostApp sends wall-clock date/time strings in the STUDIO's local time
+// (Israel). All timing math must interpret them in that zone — not the
+// device's — or a laptop that travels across timezones computes the 72h open
+// moment hours off (west = fires late, spots gone; east = fires early, the
+// tight retry exhausts before the window actually opens). Israel's DST is
+// handled by Intl.
+// ---------------------------------------------------------------------------
+const STUDIO_TZ = "Asia/Jerusalem";
+
+// Offset (ms) of `tz` from UTC at the instant `date` (DST-aware).
+function tzOffsetMs(tz, date) {
+  const p = {};
+  new Intl.DateTimeFormat("en-US", {
+    timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+  }).formatToParts(date).forEach(x => { p[x.type] = x.value; });
+  const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour % 24, +p.minute, +p.second);
+  return asUTC - date.getTime();
+}
+
+// Epoch ms of "YYYY-MM-DD" + "HH:MM[:SS]" wall-clock time in the studio zone.
+function studioTimeMs(dateStr, timeStr) {
+  const [y, mo, d] = dateStr.split("-").map(Number);
+  const [h, mi, s] = String(timeStr || "00:00:00").split(":").map(n => Number(n) || 0);
+  const naive = Date.UTC(y, mo - 1, d, h, mi, s || 0);   // pretend the wall clock is UTC…
+  let off = tzOffsetMs(STUDIO_TZ, new Date(naive));      // …then subtract the zone offset,
+  const off2 = tzOffsetMs(STUDIO_TZ, new Date(naive - off)); // re-checked once for DST edges
+  return naive - off2;
+}
+
+// Studio-zone wall-clock parts of an epoch instant → { date:"YYYY-MM-DD", time:"HH:MM" }.
+function studioParts(ms) {
+  const p = {};
+  new Intl.DateTimeFormat("en-US", {
+    timeZone: STUDIO_TZ, year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", hour12: false
+  }).formatToParts(new Date(ms)).forEach(x => { p[x.type] = x.value; });
+  return { date: `${p.year}-${p.month}-${p.day}`, time: `${String(+p.hour % 24).padStart(2, "0")}:${p.minute}` };
+}
+
 const DEFAULT_CONFIG = {
   companyNum: "256826",          // Training Harmony studio
   getUrl: "6284d298e4b18",       // studio public token (from the lessons URL)
@@ -378,10 +420,10 @@ function matchClass(classes, target) {
 }
 
 // Registration-open timestamp (ms). openOrderTime is in hours (default 72).
+// Computed in the STUDIO's timezone so it stays correct when the device travels.
 function openTimeMs(cls, date) {
   const hours = Number(cls.openOrderTime || 72);
-  const start = new Date(`${date}T${cls.startTime || "00:00:00"}`);
-  return start.getTime() - hours * 3600 * 1000;
+  return studioTimeMs(date, cls.startTime || "00:00:00") - hours * 3600 * 1000;
 }
 
 // ---------------------------------------------------------------------------
@@ -392,7 +434,7 @@ function upcomingBookedDate(target) {
   const now = Date.now();
   let best = null;
   (target.bookedDates || []).forEach(ds => {
-    const ts = new Date(ds + "T" + (target.time || "00:00") + ":00").getTime();
+    const ts = studioTimeMs(ds, (target.time || "00:00") + ":00");
     if (ts > now && (best === null || ts < best.ts)) best = { ds, ts };
   });
   return best;
@@ -439,7 +481,7 @@ async function enrichTarget(cfg, target) {
     info.capacity = cls.maxClient;
     info.classId = cls.id;
     info.openAt = openTimeMs(cls, date);
-    info.startAt = new Date(`${date}T${cls.startTime || "00:00:00"}`).getTime();
+    info.startAt = studioTimeMs(date, cls.startTime || "00:00:00");
   }
 
   let status;
@@ -554,9 +596,8 @@ async function computePlan(cfg) {
 
   const regFor = (ds, time) => regs.find(r => {
     if (!r.startAt) return false;
-    const d = new Date(r.startAt);
-    const rt = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
-    return ymd(d) === ds && rt === time;
+    const p = studioParts(r.startAt);   // compare in the studio's timezone, not the device's
+    return p.date === ds && p.time === time;
   });
 
   const occ = [];
