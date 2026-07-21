@@ -532,6 +532,11 @@ async function computePlan(cfg) {
     if (s.monthly && (monthlyMax == null || s.monthly.max > monthlyMax)) { monthlyMax = s.monthly.max; monthlyRemaining = s.monthly.remaining; periodStart = s.startDate || periodStart; }
     if (s.endDate && (!periodEnd || s.endDate > periodEnd)) periodEnd = s.endDate;
   });
+  // Bonus / single-entry products (items without a monthly quota — the "+N" in
+  // the popup badge) each add one bookable entry to the current period. The
+  // server decides which product a booking actually consumes; for the
+  // projection only the total capacity matters.
+  const bonusEntries = subs.filter(s => !s.monthly && !s.isFrozen).length;
   const dailyMax = await getDailyLimit();
 
   const today = new Date(); today.setHours(0, 0, 0, 0);
@@ -580,7 +585,10 @@ async function computePlan(cfg) {
   });
   occ.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
 
-  let remaining = (monthlyRemaining == null) ? Infinity : monthlyRemaining;
+  let remaining;
+  if (monthlyRemaining != null) remaining = monthlyRemaining + bonusEntries;  // plan balance + bonus entries
+  else if (subs.length) remaining = bonusEntries;                             // only bonus/single-entry products
+  else remaining = Infinity;                                                  // nothing synced yet — don't guess
   let nextRemaining = (monthlyMax == null) ? Infinity : monthlyMax; // best-guess renewal amount, unconfirmed until next period syncs
   const dayCount = {};
   occ.forEach(o => {
@@ -608,11 +616,11 @@ async function computePlan(cfg) {
 
   const byRule = {};
   occ.forEach(o => { (byRule[o.ruleId] = byRule[o.ruleId] || []).push(o); });
-  const leftover = (monthlyRemaining == null) ? 0 : Math.max(0, remaining);
+  const leftover = (remaining === Infinity) ? 0 : Math.max(0, remaining);
   return {
     periodStart: ymd(start), periodEnd: ymd(end),
     nextPeriodStart: ymd(nextStart), nextPeriodEnd: ymd(nextEnd),
-    monthlyMax, monthlyRemaining, dailyMax, leftover, byRule
+    monthlyMax, monthlyRemaining, bonusEntries, dailyMax, leftover, byRule
   };
 }
 

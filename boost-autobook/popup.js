@@ -801,7 +801,8 @@ function renderPeriodGrid(list, plan, rules) {
   stats.appendChild(rangeChip);
   if (plan.monthlyMax != null) {
     const bankChip = document.createElement("span"); bankChip.className = "chip";
-    bankChip.innerHTML = "🎟️ " + t("period_bank", { rem: plan.monthlyRemaining, max: plan.monthlyMax });
+    bankChip.innerHTML = "🎟️ " + t("period_bank", { rem: plan.monthlyRemaining, max: plan.monthlyMax })
+      + (plan.bonusEntries ? " " + t("sub_bonusN", { n: plan.bonusEntries }) + " 🎁" : "");
     stats.appendChild(bankChip);
   }
   if (historyCache !== null) {

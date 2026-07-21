@@ -6,6 +6,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.2.2] — 2026-07-21
+
+### Fixed
+- Period calendar marked future lessons "limit reached" too early: the
+  projection only counted the monthly plan balance and ignored bonus /
+  single-entry products (the "+N" in the subscription badge). Bonus entries
+  now add to the current period's bookable capacity, and the balance chip
+  shows them explicitly (e.g. "1/13 left in plan +1 bonus 🎁").
+
 ## [1.2.1] — 2026-07-21
 
 ### Changed
