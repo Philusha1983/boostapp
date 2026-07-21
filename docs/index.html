@@ -500,6 +500,7 @@ ru: {
 };
 
 let LANG = "en";
+let releaseInfo = null;   // set once the GitHub API answers (declared before applyLang uses it)
 function t(key, params) {
   let s = (I18N[LANG] && I18N[LANG][key] != null) ? I18N[LANG][key] : I18N.en[key];
   if (s == null) return key;
@@ -531,7 +532,6 @@ if (!I18N[initial]) {
 applyLang(initial);
 
 // ── one-click latest release ────────────────────────────────────────────────
-let releaseInfo = null;
 function fmtSize(bytes) {
   if (!bytes) return "";
   return bytes > 1048576 ? (bytes / 1048576).toFixed(1) + " MB" : Math.round(bytes / 1024) + " KB";
