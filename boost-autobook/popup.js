@@ -1662,7 +1662,8 @@ if ($("fitbitCard")) {
     renderFitbit(r && r.status);
   };
   const fbSaveOpts = async () => {
-    const r = await send({ cmd: "fitbitSetOpts", durationMin: Number($("fbDuration").value) || 60, autoSync: $("fbAutoSync").checked, sinceDate: $("fbSince").value || null });
+    // sinceDate always sent as a string: "" clears the boundary (= sync all fetched history)
+    const r = await send({ cmd: "fitbitSetOpts", durationMin: Number($("fbDuration").value) || 60, autoSync: $("fbAutoSync").checked, sinceDate: $("fbSince").value });
     renderFitbit(r && r.status);
   };
   $("fbDuration").onchange = fbSaveOpts;

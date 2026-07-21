@@ -156,8 +156,6 @@ async function fitbitConnect(clientId, clientSecret) {
   });
   if (!tok.refresh_token) throw new Error("Google did not return a refresh token — remove the app's access at myaccount.google.com/permissions and reconnect");
 
-  const today = new Date();
-  const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   const st = await getFitbitState();
   return setFitbitState({
     clientId, clientSecret,
@@ -166,10 +164,24 @@ async function fitbitConnect(clientId, clientSecret) {
     expiresAt: Date.now() + (tok.expires_in || 3600) * 1000,
     connectedAt: Date.now(),
     needsReconnect: false,
-    // Keep an existing sinceDate on reconnect so the weekly Testing-mode
-    // re-auth doesn't silently move the sync boundary past unsynced lessons.
-    sinceDate: st.sinceDate || iso
+    // Default backfill boundary = the oldest attended lesson already fetched
+    // into the history cache, i.e. "sync everything we know about". Kept on
+    // reconnect so the weekly Testing-mode re-auth doesn't move the boundary.
+    // null = no boundary (sync whatever history holds, now or later).
+    sinceDate: st.sinceDate || await fitbitOldestAttendedDate()
   });
+}
+
+// Oldest attended lesson date in the history cache, or null when empty.
+async function fitbitOldestAttendedDate() {
+  try {
+    const store = await getHistoryStore();
+    let min = null;
+    Object.values(store.months || {}).forEach(m => (m.rows || []).forEach(r => {
+      if (r.status === "attended" && r.date && (!min || r.date < min)) min = r.date;
+    }));
+    return min;
+  } catch (e) { return null; }
 }
 
 async function fitbitDisconnect() {
