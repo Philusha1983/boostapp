@@ -26,6 +26,8 @@ echo "Built  : $OUT"
 echo "Version: $VERSION"
 echo
 echo "Release checklist:"
+echo "  0. Add a WHATS_NEW[\"$VERSION\"] entry in boost-autobook/walkthrough.js"
+echo "     (5 languages; optionally a tour step tagged addedIn) — users see it once after updating"
 echo "  1. Update CHANGELOG.md (move Unreleased -> $VERSION)"
 echo "  2. git commit -am 'Release v$VERSION'"
 echo "  3. git tag -a v$VERSION -m 'v$VERSION' && push with tags"

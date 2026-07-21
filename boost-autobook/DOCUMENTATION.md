@@ -217,6 +217,7 @@ history.js ── getHistory ─▶ background ─▶ (in-tab, backward-walked) 
 | `content.js` | Runs on Home/index pages: reads client id, subscription and upcoming events; syncs to background. |
 | `popup.html` | Popup markup + all CSS (design tokens, themes, week grid, animations, RTL). |
 | `popup.js` | Popup logic: i18n dictionary, rendering, list/week views, month planner, Settings, view/animation wiring. |
+| `walkthrough.js` | Onboarding spotlight tour + per-version "What's new" card (5-language). Runs after `popup.js`; keeps the `WHATS_NEW` table and tour steps that MUST be updated each release (see the release checklist in the file header). |
 | `history.html` | Class history dashboard markup + CSS (Dashboard/Story/Compare views, badges, heatmap, charts). |
 | `history.js` | Class history dashboard logic: requests/aggregates history from the background, filters, badges, highlights, share/export, i18n. |
 | `app.webmanifest` | Web app manifest for the home-screen shortcut. |
@@ -273,6 +274,8 @@ immediately.
 | `bsab_schedule` | Persistent 7-day schedule cache (21-day TTL). |
 | `bsab_history` | Class history dashboard cache: `{months: {"YYYY-MM": {rows, fetchedAt}}, backfillComplete, clientId, lastError}`. Keyed to `clientId` so a different signed-in account triggers a wipe + full re-walk instead of mixing/hiding data. `lastError` is `null` (success), `"auth"` (redirected to the landing page — session not carried into the tab), `"network"` (3 consecutive fetch timeouts/errors), or another string surfaced from a tab-execution failure. |
 | `bsab_view_upcoming` / `bsab_view_slots` | Remembered list/week choice per tab (localStorage). |
+| `bsab_tour_done` | Onboarding tour state: version string when completed, or `"pending-signin"` if the first run happened signed out (the full tour re-runs once after sign-in). |
+| `bsab_seen_version` | Last version whose "What's new" card was shown. Any `WHATS_NEW` entries newer than this appear once after an update. |
 
 **Schedule completeness note:** `getClassesData` returns only a rolling, capped
 set, which once caused a weekday (Tuesday) to disappear. The fix unions a forward

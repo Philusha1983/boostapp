@@ -6,6 +6,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-07-21
+
+### Added
+- Onboarding walkthrough: a spotlight tour of the popup runs on first open
+  (short sign-in-focused version when signed out, full tour re-runs once after
+  signing in). Replayable anytime via the 🎓 Tour link in the footer. Available
+  in all five UI languages (en/he/ru/uk/ar, RTL-aware).
+- "What's new" intro: after each update, a one-time card lists that release's
+  highlights (from the bundled `WHATS_NEW` table in `walkthrough.js`), with an
+  optional "Show me" spotlight of the new UI.
+
+### Release process
+- Each release that adds a user-visible feature must add a `WHATS_NEW` entry
+  (and optionally a tour step tagged `addedIn`) in `walkthrough.js` — see the
+  checklist in that file's header.
+
 ## [1.1.1] — 2026-07-20
 
 ### Changed
