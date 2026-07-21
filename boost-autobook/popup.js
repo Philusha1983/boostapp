@@ -1675,11 +1675,10 @@ showTab(startTab);
   let u = null;
   try { u = await send({ cmd: "getUpdateInfo" }); } catch (e) {}
   const fb = $("feedbackLink"), sep = $("feedbackSep");
+  // Feedback goes to the landing-page form (no GitHub account needed) —
+  // the ?v= param is picked up by the form as the extension version.
+  if (fb) fb.href = "https://philusha1983.github.io/boostapp/?v=" + version + "#feedback";
   if (u && u.repo) {
-    if (fb) {
-      const body = `**Extension version:** v${version}\n**Browser:** ${navigator.userAgent}\n\n**What happened?**\n\n**Steps to reproduce**\n1. `;
-      fb.href = `https://github.com/${u.repo}/issues/new?title=${encodeURIComponent("[feedback] ")}&body=${encodeURIComponent(body)}`;
-    }
     if (u.updateAvailable && $("updateBanner")) {
       const b = $("updateBanner");
       b.innerHTML = "";
@@ -1691,9 +1690,7 @@ showTab(startTab);
       b.appendChild(a);
       b.style.display = "block";
     }
-  } else {
-    // No repo configured yet — hide the feedback link rather than 404.
-    if (fb) fb.style.display = "none";
-    if (sep) sep.style.display = "none";
   }
+  // (feedback link no longer depends on the repo config — it points at the
+  // landing-page form, which works without a GitHub account)
 })();

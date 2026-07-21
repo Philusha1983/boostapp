@@ -6,6 +6,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.2.1] — 2026-07-21
+
+### Changed
+- The popup's Feedback link now opens the feedback form on the landing page
+  (works without a GitHub account; passes the extension version along) instead
+  of a prefilled GitHub issue. GitHub Issues remains available for developers.
+- Landing page: added the feedback form (Web3Forms → email, all 5 languages)
+  and a Feedback link in the nav/footer.
+
 ## [1.2.0] — 2026-07-21
 
 ### Added

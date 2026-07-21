@@ -153,6 +153,25 @@
   .callout p { font-size:13.5px; margin-bottom:10px; }
   .callout p:last-child { margin-bottom:0; }
 
+  /* feedback form */
+  .fb-wrap { max-width:620px; margin:0 auto; }
+  .fb-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+  @media (max-width:560px){ .fb-row{ grid-template-columns:1fr; } }
+  #fbForm input, #fbForm textarea { width:100%; padding:12px 14px; border:1px solid var(--line);
+    border-radius:11px; font-size:14px; font-family:var(--font); background:var(--card); color:var(--text); }
+  #fbForm textarea { resize:vertical; min-height:120px; margin-bottom:12px; }
+  #fbForm input:focus, #fbForm textarea:focus { outline:none; border-color:var(--green-deep);
+    box-shadow:0 0 0 3px rgba(0,224,160,.18); }
+  .fb-send { border:none; cursor:pointer; background:var(--green); color:var(--ink); font-family:var(--font);
+    font-weight:800; font-size:15px; padding:13px 34px; border-radius:12px;
+    box-shadow:0 6px 18px rgba(0,224,160,.3); transition:background .15s, transform .1s; }
+  .fb-send:hover { background:var(--green-deep); color:#fff; transform:translateY(-1px); }
+  .fb-send:disabled { opacity:.55; cursor:default; transform:none; }
+  .fb-foot { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  #fbStatus { font-size:13.5px; font-weight:600; }
+  #fbStatus.ok { color:var(--green-deep); }
+  #fbStatus.err { color:#c0392b; }
+
   /* footer */
   footer { border-top:1px solid var(--line); padding:30px 0 38px; text-align:center; font-size:12.5px; color:var(--muted); }
   footer .f-links { display:flex; gap:18px; justify-content:center; margin:10px 0 14px; flex-wrap:wrap; font-weight:500; }
@@ -179,6 +198,7 @@
       <a href="#features" data-i18n="nav_features">Features</a>
       <a href="#install" data-i18n="nav_install">Install</a>
       <a href="#disclaimer" data-i18n="nav_disclaimer">Disclaimer</a>
+      <a href="#feedback" data-i18n="nav_feedback">Feedback</a>
     </div>
     <div class="nav-right">
       <div class="langs" id="langs">
@@ -294,13 +314,33 @@
   </div>
 </section>
 
+<section id="feedback" style="background:var(--card); border-top:1px solid var(--line);">
+  <div class="wrap fb-wrap">
+    <h2 class="sec-title rv" data-i18n="fb_title">Tell me what you think</h2>
+    <p class="sec-sub rv" data-i18n="fb_sub">Found a bug? Missing a feature? Just want to say it works? Write below — no account needed, it lands straight in my inbox.</p>
+    <form id="fbForm" class="rv" novalidate>
+      <div class="fb-row">
+        <input name="name" id="fbName" autocomplete="name" data-i18n-ph="fb_name" placeholder="Your name (optional)">
+        <input name="email" id="fbEmail" type="email" autocomplete="email" data-i18n-ph="fb_email" placeholder="Email — only if you'd like a reply (optional)">
+      </div>
+      <textarea name="message" id="fbMsg" required data-i18n-ph="fb_msg" placeholder="What's on your mind?"></textarea>
+      <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" style="display:none">
+      <div class="fb-foot">
+        <button type="submit" class="fb-send" id="fbSend" data-i18n="fb_send">Send feedback</button>
+        <span id="fbStatus" role="status"></span>
+      </div>
+    </form>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     <div>Boost Auto-Book · <span data-i18n="foot_free">free &amp; open source</span> · <span id="footVer"></span></div>
     <div class="f-links">
       <a href="https://github.com/Philusha1983/boostapp/releases/latest" target="_blank" rel="noopener" data-i18n="foot_latest">Latest release</a>
       <a href="https://github.com/Philusha1983/boostapp/blob/main/CHANGELOG.md" target="_blank" rel="noopener" data-i18n="foot_changelog">Changelog</a>
-      <a href="https://github.com/Philusha1983/boostapp/issues/new" target="_blank" rel="noopener" data-i18n="foot_issue">Report an issue / idea</a>
+      <a href="#feedback" data-i18n="foot_issue">Leave feedback</a>
+      <a href="https://github.com/Philusha1983/boostapp/issues" target="_blank" rel="noopener" data-i18n="foot_ghdev">GitHub issues (developers)</a>
     </div>
     <div data-i18n="foot_unaff">Not affiliated with BoostApp or Training Harmony.</div>
   </div>
@@ -346,8 +386,19 @@ en: {
   priv_title:"Your data stays yours",
   priv_1:"No servers, no analytics, no accounts. Everything the extension knows lives in your browser's local storage on your computer.",
   priv_2:"You can export it, import it on another computer, or delete the extension — and it's all gone. The code is open source, so anyone can verify this.",
-  foot_free:"free & open source", foot_latest:"Latest release", foot_changelog:"Changelog", foot_issue:"Report an issue / idea",
-  foot_unaff:"Not affiliated with BoostApp or Training Harmony."
+  foot_free:"free & open source", foot_latest:"Latest release", foot_changelog:"Changelog", foot_issue:"Leave feedback",
+  foot_ghdev:"GitHub issues (developers)",
+  foot_unaff:"Not affiliated with BoostApp or Training Harmony.",
+  nav_feedback:"Feedback",
+  fb_title:"Tell me what you think",
+  fb_sub:"Found a bug? Missing a feature? Just want to say it works? Write below — no account needed, it lands straight in my inbox.",
+  fb_name:"Your name (optional)",
+  fb_email:"Email — only if you'd like a reply (optional)",
+  fb_msg:"What's on your mind?",
+  fb_send:"Send feedback", fb_sending:"Sending…",
+  fb_ok:"✅ Sent — thank you!",
+  fb_err:"⚠️ Couldn't send right now. Please try again in a minute.",
+  fb_empty:"Please write a message first 🙂"
 },
 he: {
   nav_features:"יכולות", nav_install:"התקנה", nav_disclaimer:"גילוי נאות",
@@ -383,8 +434,19 @@ he: {
   priv_title:"הנתונים שלך נשארים שלך",
   priv_1:"בלי שרתים, בלי אנליטיקס, בלי חשבונות. כל מה שהתוסף יודע נשמר באחסון המקומי של הדפדפן במחשב שלכם.",
   priv_2:"אפשר לייצא, לייבא במחשב אחר, או למחוק את התוסף — והכול נעלם. הקוד פתוח, כך שכל אחד יכול לוודא זאת.",
-  foot_free:"חינמי וקוד פתוח", foot_latest:"גרסה אחרונה", foot_changelog:"יומן שינויים", foot_issue:"דיווח על בעיה / רעיון",
-  foot_unaff:"לא קשור ל‑BoostApp או ל‑Training Harmony."
+  foot_free:"חינמי וקוד פתוח", foot_latest:"גרסה אחרונה", foot_changelog:"יומן שינויים", foot_issue:"השאירו משוב",
+  foot_ghdev:"GitHub issues (למפתחים)",
+  foot_unaff:"לא קשור ל‑BoostApp או ל‑Training Harmony.",
+  nav_feedback:"משוב",
+  fb_title:"ספרו לי מה דעתכם",
+  fb_sub:"מצאתם באג? חסרה יכולת? רוצים פשוט להגיד שזה עובד? כתבו כאן — בלי חשבון, זה מגיע ישר לתיבה שלי.",
+  fb_name:"שם (לא חובה)",
+  fb_email:"אימייל — רק אם תרצו תשובה (לא חובה)",
+  fb_msg:"מה על ליבכם?",
+  fb_send:"שליחת משוב", fb_sending:"שולח…",
+  fb_ok:"✅ נשלח — תודה!",
+  fb_err:"⚠️ לא הצלחנו לשלוח כרגע. נסו שוב בעוד דקה.",
+  fb_empty:"כתבו הודעה קודם 🙂"
 },
 uk: {
   nav_features:"Можливості", nav_install:"Встановлення", nav_disclaimer:"Застереження",
@@ -420,8 +482,19 @@ uk: {
   priv_title:"Ваші дані — ваші",
   priv_1:"Жодних серверів, аналітики чи акаунтів. Усе, що знає розширення, живе в локальному сховищі браузера на вашому комп'ютері.",
   priv_2:"Можна експортувати, імпортувати на іншому комп'ютері або видалити розширення — і все зникне. Код відкритий, тож будь-хто може це перевірити.",
-  foot_free:"безкоштовно, відкритий код", foot_latest:"Остання версія", foot_changelog:"Журнал змін", foot_issue:"Повідомити про проблему / ідею",
-  foot_unaff:"Не пов'язано з BoostApp чи Training Harmony."
+  foot_free:"безкоштовно, відкритий код", foot_latest:"Остання версія", foot_changelog:"Журнал змін", foot_issue:"Залишити відгук",
+  foot_ghdev:"GitHub issues (для розробників)",
+  foot_unaff:"Не пов'язано з BoostApp чи Training Harmony.",
+  nav_feedback:"Відгук",
+  fb_title:"Скажіть, що ви думаєте",
+  fb_sub:"Знайшли ваду? Бракує функції? Просто хочете сказати, що все працює? Напишіть нижче — без жодного акаунта, лист потрапить просто до мене.",
+  fb_name:"Ваше ім'я (необов'язково)",
+  fb_email:"Email — лише якщо хочете відповідь (необов'язково)",
+  fb_msg:"Що у вас на думці?",
+  fb_send:"Надіслати відгук", fb_sending:"Надсилаю…",
+  fb_ok:"✅ Надіслано — дякую!",
+  fb_err:"⚠️ Зараз не вдалося надіслати. Спробуйте за хвилину.",
+  fb_empty:"Спершу напишіть повідомлення 🙂"
 },
 ar: {
   nav_features:"المزايا", nav_install:"التثبيت", nav_disclaimer:"إخلاء مسؤولية",
@@ -457,8 +530,19 @@ ar: {
   priv_title:"بياناتك تبقى لك",
   priv_1:"لا خوادم، لا تحليلات، لا حسابات. كل ما تعرفه الإضافة يعيش في التخزين المحلي لمتصفحك على جهازك.",
   priv_2:"يمكنك تصديرها، أو استيرادها على جهاز آخر، أو حذف الإضافة — فيختفي كل شيء. الكود مفتوح المصدر ليتحقق منه أي شخص.",
-  foot_free:"مجاني ومفتوح المصدر", foot_latest:"أحدث إصدار", foot_changelog:"سجلّ التغييرات", foot_issue:"الإبلاغ عن مشكلة / فكرة",
-  foot_unaff:"لا صلة لنا بـ BoostApp أو Training Harmony."
+  foot_free:"مجاني ومفتوح المصدر", foot_latest:"أحدث إصدار", foot_changelog:"سجلّ التغييرات", foot_issue:"اترك ملاحظاتك",
+  foot_ghdev:"GitHub issues (للمطوّرين)",
+  foot_unaff:"لا صلة لنا بـ BoostApp أو Training Harmony.",
+  nav_feedback:"ملاحظات",
+  fb_title:"أخبرني برأيك",
+  fb_sub:"وجدت خللًا؟ تنقصك ميزة؟ تريد فقط أن تقول إنها تعمل؟ اكتب أدناه — دون أي حساب، وستصل رسالتك مباشرة إلى بريدي.",
+  fb_name:"اسمك (اختياري)",
+  fb_email:"البريد الإلكتروني — فقط إن أردت ردًّا (اختياري)",
+  fb_msg:"ما الذي يدور في ذهنك؟",
+  fb_send:"إرسال الملاحظات", fb_sending:"جارٍ الإرسال…",
+  fb_ok:"✅ أُرسلت — شكرًا!",
+  fb_err:"⚠️ تعذّر الإرسال الآن. حاول مجددًا بعد دقيقة.",
+  fb_empty:"اكتب رسالة أولًا 🙂"
 },
 ru: {
   nav_features:"Возможности", nav_install:"Установка", nav_disclaimer:"Дисклеймер",
@@ -494,8 +578,19 @@ ru: {
   priv_title:"Ваши данные — ваши",
   priv_1:"Никаких серверов, аналитики и аккаунтов. Всё, что знает расширение, живёт в локальном хранилище браузера на вашем компьютере.",
   priv_2:"Можно экспортировать, импортировать на другом компьютере или удалить расширение — и всё исчезнет. Код открыт, так что любой может это проверить.",
-  foot_free:"бесплатно, открытый код", foot_latest:"Последняя версия", foot_changelog:"Журнал изменений", foot_issue:"Сообщить о проблеме / идее",
-  foot_unaff:"Не связано с BoostApp или Training Harmony."
+  foot_free:"бесплатно, открытый код", foot_latest:"Последняя версия", foot_changelog:"Журнал изменений", foot_issue:"Оставить отзыв",
+  foot_ghdev:"GitHub issues (для разработчиков)",
+  foot_unaff:"Не связано с BoostApp или Training Harmony.",
+  nav_feedback:"Отзыв",
+  fb_title:"Расскажите, что вы думаете",
+  fb_sub:"Нашли баг? Не хватает функции? Просто хотите сказать, что всё работает? Напишите ниже — без всякого аккаунта, письмо попадёт прямо ко мне.",
+  fb_name:"Ваше имя (необязательно)",
+  fb_email:"Email — только если хотите ответ (необязательно)",
+  fb_msg:"Что у вас на уме?",
+  fb_send:"Отправить отзыв", fb_sending:"Отправляю…",
+  fb_ok:"✅ Отправлено — спасибо!",
+  fb_err:"⚠️ Сейчас не получилось отправить. Попробуйте через минуту.",
+  fb_empty:"Сначала напишите сообщение 🙂"
 }
 };
 
@@ -513,6 +608,7 @@ function applyLang(lang) {
   document.documentElement.dir = RTL.includes(LANG) ? "rtl" : "ltr";
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.getAttribute("data-i18n")); });
   document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.getAttribute("data-i18n-html")); });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.getAttribute("data-i18n-ph")); });
   document.querySelectorAll("#langs button").forEach(b => b.classList.toggle("on", b.dataset.lang === LANG));
   try { localStorage.setItem("bsab_site_lang", LANG); } catch (e) {}
   if (releaseInfo) renderRelease();   // re-format the version chip in the new language
@@ -562,6 +658,50 @@ fetch("https://api.github.com/repos/" + REPO + "/releases/latest")
     // API unavailable (rate limit etc.) — the button already links to /releases/latest
     document.getElementById("dlMeta").textContent = "";
   });
+
+// ── feedback form (Web3Forms — no account needed for users) ────────────────
+const WEB3FORMS_KEY = "724b4878-3555-4ed7-b9cc-4f4f9fc4147a";
+const fbForm = document.getElementById("fbForm");
+fbForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const status = document.getElementById("fbStatus");
+  const send = document.getElementById("fbSend");
+  const msg = document.getElementById("fbMsg").value.trim();
+  if (!msg) { status.className = "err"; status.textContent = t("fb_empty"); return; }
+  const hp = fbForm.elements.botcheck;
+  if (hp && hp.checked) return;   // honeypot
+  send.disabled = true;
+  status.className = ""; status.textContent = t("fb_sending");
+  const extVer = new URLSearchParams(location.search).get("v") || "";
+  try {
+    const r = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        subject: "Boost Auto-Book feedback" + (extVer ? " (ext v" + extVer + ")" : " (website)"),
+        from_name: document.getElementById("fbName").value.trim() || "Anonymous",
+        email: document.getElementById("fbEmail").value.trim() || undefined,
+        message: msg,
+        extension_version: extVer || "not provided",
+        page_language: LANG,
+        browser: navigator.userAgent
+      })
+    });
+    const data = await r.json();
+    if (!data.success) throw new Error("api");
+    fbForm.reset();
+    status.className = "ok"; status.textContent = t("fb_ok");
+  } catch (err) {
+    status.className = "err"; status.textContent = t("fb_err");
+  }
+  send.disabled = false;
+});
+// Deep link from the extension: ?v=…#feedback → make sure the form is visible
+if (location.hash === "#feedback") {
+  document.querySelectorAll("#feedback .rv").forEach(el => el.classList.add("in"));
+  setTimeout(() => document.getElementById("feedback").scrollIntoView({ behavior: "smooth" }), 60);
+}
 
 // ── reveal on scroll ────────────────────────────────────────────────────────
 const io = new IntersectionObserver((entries) => {
