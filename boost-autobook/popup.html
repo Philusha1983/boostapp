@@ -290,6 +290,48 @@
   .plan-status.skipped { color:var(--muted); text-decoration:line-through; }
   .plan-status.limit { color:var(--red); }
   .plan-act { margin-inline-start:auto; display:flex; gap:6px; }
+
+  /* ── Full-page mode (popup.html?page=1 opened as a browser tab) ──────────
+     Same DOM, same logic — only the layout stretches. Content is centered at
+     ~1150px via responsive inline padding on header/.body so the green header
+     bar still spans the full window width. */
+  html.fullpage body { width:100%; max-width:none; height:100vh; max-height:none; zoom:1; }
+  html.fullpage #fullPageBtn { display:none; }
+  html.mobile #fullPageBtn { display:none; }
+  html.fullpage header { padding:14px max(24px, calc((100vw - 1150px) / 2)) 15px; }
+  html.fullpage .body { padding:0 max(24px, calc((100vw - 1150px) / 2)) 28px; }
+  html.fullpage header h1 { font-size:18px; }
+  html.fullpage header h1 img { width:26px; height:26px; }
+  html.fullpage .hdr-status { font-size:14px; margin-top:11px; }
+  html.fullpage .avatar { width:28px; height:28px; }
+  html.fullpage .icon-btn { font-size:13px; padding:5px 11px; }
+  html.fullpage .tabs { padding-top:12px; }
+  html.fullpage .tab { font-size:14px; padding:10px 13px; }
+  html.fullpage .panel-hint { font-size:13px; }
+  /* Card lists become responsive multi-column grids. Full-width children
+     (week grid, period calendar, notices, empty states) span all columns. */
+  html.fullpage #regSection, html.fullpage #list, html.fullpage #subSection {
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(340px, 1fr));
+    gap:10px; align-items:start;
+  }
+  html.fullpage #regSection > .card, html.fullpage #list > .card, html.fullpage #subSection > .card { margin-bottom:0; }
+  html.fullpage #regSection > :is(.weekgrid, .empty, .autowarn, .muted),
+  html.fullpage #list > :is(.weekgrid, .empty, .autowarn, .muted, .period-stats, .period-legend, .periodweek-head, .periodgrid),
+  html.fullpage #subSection > :is(.empty, .muted, .sub-summary) { grid-column:1 / -1; }
+  /* Bigger week + period calendars — we have the room. */
+  html.fullpage .weekcol { min-height:170px; padding:8px 6px; }
+  html.fullpage .weekcol-head { font-size:12.5px; padding-bottom:6px; }
+  html.fullpage .wi-time { font-size:13.5px; }
+  html.fullpage .wi-name { font-size:12.5px; }
+  html.fullpage .wi-sub { font-size:11px; }
+  html.fullpage .periodcell { min-height:74px; padding:5px; }
+  html.fullpage .pc-date { font-size:11.5px; }
+  html.fullpage .pe-entry { font-size:11px; padding:3px 18px 3px 6px; }
+  html.fullpage .pe-time { font-size:11.5px; }
+  html.fullpage .period-legend .pl-item { font-size:12px; }
+  /* Settings and the scheduler read better with a width cap. */
+  html.fullpage .panel[data-panel="settings"] { max-width:780px; }
+  html.fullpage #schedulerWrap .expand-inner { max-width:900px; }
 </style>
 </head>
 <body>
@@ -310,6 +352,7 @@
       <span class="hdr-state" id="hdrState"></span>
       <button id="historyBtn" class="icon-btn" data-i18n="openHistory">📊 History</button>
       <button id="refreshBtn" class="icon-btn">↻ Refresh</button>
+      <button id="fullPageBtn" class="icon-btn" data-i18n-title="openFullPage" title="Open as full page">⛶</button>
     </div>
   </header>
 

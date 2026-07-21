@@ -6,6 +6,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-07-21
+
+### Added
+- Full-page mode: a ⛶ button in the popup header opens the same dashboard as
+  a full browser tab (`popup.html?page=1`). Identical functionality; the wide
+  layout centers content at ~1150px, turns card lists into responsive
+  multi-column grids, and enlarges the week/period calendars. What's New card
+  + tour step included.
+
 ## [1.2.2] — 2026-07-21
 
 ### Fixed

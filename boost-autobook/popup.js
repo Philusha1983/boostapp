@@ -14,6 +14,14 @@
   }
 })();
 
+// Full-page mode: the same popup document opened as a browser tab via the ⛶
+// header button (popup.html?page=1). All logic is shared; only CSS changes.
+(function detectFullPage() {
+  if (new URLSearchParams(location.search).get("page") === "1") {
+    document.documentElement.classList.add("fullpage");
+  }
+})();
+
 const $ = (id) => document.getElementById(id);
 function send(msg) { return new Promise(res => chrome.runtime.sendMessage(msg, res)); }
 
@@ -49,7 +57,7 @@ const I18N = {
     slotsAutoOff: "⏸️ Auto-book is off — these slots won't be booked automatically.", turnOn: "Turn on",
     disabledHint: "Turn on auto-book to use this",
     refresh: "↻ Refresh", refreshing: "↻ Refreshing…", openHistory: "📊 History",
-    viewList: "List view", viewWeek: "Week view", viewPeriod: "Period view",
+    viewList: "List view", viewWeek: "Week view", viewPeriod: "Period view", openFullPage: "Open as full page",
     period_range: "{start} – {end}", period_bank: "{rem}/{max} left in plan",
     period_last: "Last lesson locked in: {date}", period_last_none: "No lessons locked in yet",
     period_leftover_warn: "⚠️ {n} left unscheduled — book before {date}",
@@ -121,7 +129,7 @@ const I18N = {
     slotsAutoOff: "⏸️ הזמנה אוטומטית כבויה — המשבצות לא יוזמנו אוטומטית.", turnOn: "הפעל",
     disabledHint: "הפעל הזמנה אוטומטית כדי להשתמש",
     refresh: "↻ רענן", refreshing: "↻ מרענן…", openHistory: "📊 היסטוריה",
-    viewList: "תצוגת רשימה", viewWeek: "תצוגת שבוע", viewPeriod: "תצוגת תקופה",
+    viewList: "תצוגת רשימה", viewWeek: "תצוגת שבוע", viewPeriod: "תצוגת תקופה", openFullPage: "פתיחה במסך מלא",
     period_range: "{start} – {end}", period_bank: "{rem}/{max} נותרו במנוי",
     period_last: "השיעור האחרון שנקבע: {date}", period_last_none: "טרם נקבע שיעור",
     period_leftover_warn: "⚠️ נותרו {n} שלא תוזמנו — הזמן/י לפני {date}",
@@ -193,7 +201,7 @@ const I18N = {
     slotsAutoOff: "⏸️ Авто-запись выключена — эти слоты не бронируются автоматически.", turnOn: "Включить",
     disabledHint: "Включите авто-запись, чтобы использовать",
     refresh: "↻ Обновить", refreshing: "↻ Обновление…", openHistory: "📊 История",
-    viewList: "Список", viewWeek: "Неделя", viewPeriod: "Период",
+    viewList: "Список", viewWeek: "Неделя", viewPeriod: "Период", openFullPage: "Открыть на весь экран",
     period_range: "{start} – {end}", period_bank: "{rem}/{max} осталось в абонементе",
     period_last: "Последнее запланированное занятие: {date}", period_last_none: "Пока ничего не запланировано",
     period_leftover_warn: "⚠️ Осталось {n} незапланированных — забронируйте до {date}",
@@ -265,7 +273,7 @@ const I18N = {
     slotsAutoOff: "⏸️ Авто-запис вимкнено — ці слоти не бронюються автоматично.", turnOn: "Увімкнути",
     disabledHint: "Увімкніть авто-запис, щоб використовувати",
     refresh: "↻ Оновити", refreshing: "↻ Оновлення…", openHistory: "📊 Історія",
-    viewList: "Список", viewWeek: "Тиждень", viewPeriod: "Період",
+    viewList: "Список", viewWeek: "Тиждень", viewPeriod: "Період", openFullPage: "Відкрити на весь екран",
     period_range: "{start} – {end}", period_bank: "{rem}/{max} залишилось в абонементі",
     period_last: "Останнє заплановане заняття: {date}", period_last_none: "Поки нічого не заплановано",
     period_leftover_warn: "⚠️ Залишилось {n} незапланованих — забронюйте до {date}",
@@ -337,7 +345,7 @@ const I18N = {
     slotsAutoOff: "⏸️ الحجز التلقائي مُطفأ — لن تُحجز هذه المواعيد تلقائيًا.", turnOn: "تشغيل",
     disabledHint: "شغّل الحجز التلقائي لاستخدام هذا",
     refresh: "↻ تحديث", refreshing: "↻ جارٍ التحديث…", openHistory: "📊 السجل",
-    viewList: "قائمة", viewWeek: "أسبوع", viewPeriod: "عرض الفترة",
+    viewList: "قائمة", viewWeek: "أسبوع", viewPeriod: "عرض الفترة", openFullPage: "فتح في صفحة كاملة",
     period_range: "{start} – {end}", period_bank: "{rem}/{max} متبقٍ في الاشتراك",
     period_last: "آخر حصة محجوزة: {date}", period_last_none: "لم تُحجز أي حصة بعد",
     period_leftover_warn: "⚠️ تبقّى {n} غير مجدولة — احجز قبل {date}",
@@ -1639,6 +1647,9 @@ if ($("soBtn")) $("soBtn").onclick = () => send({ cmd: "openLogin" });
 
 // Opens the full-tab History dashboard (past events analytics).
 if ($("historyBtn")) $("historyBtn").onclick = () => chrome.tabs.create({ url: chrome.runtime.getURL("history.html") });
+
+// Opens this same popup as a full browser tab (wide layout via ?page=1).
+if ($("fullPageBtn")) $("fullPageBtn").onclick = () => chrome.tabs.create({ url: chrome.runtime.getURL("popup.html?page=1") });
 
 // tabs
 function showTab(name) {
