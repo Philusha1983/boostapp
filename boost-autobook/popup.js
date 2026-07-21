@@ -49,7 +49,7 @@ const I18N = {
     tab_upcoming: "Upcoming", tab_schedule: "Weekly schedule", tab_slots: "My weekly slots",
     tab_subscription: "Subscription", tab_settings: "Settings",
     fb_title: "Fitbit sync",
-    fb_hint: "Logs attended lessons to Fitbit as workouts. Fitbit pairs them with your tracker's heart-rate data and syncs them to Health Connect.",
+    fb_hint: "Logs attended lessons to Fitbit as workouts — automatically, a few minutes after each lesson ends. Fitbit pairs them with your tracker's heart-rate data and syncs them to Health Connect. The date below only limits how far back to backfill.",
     fb_client: "Google OAuth Client ID", fb_secret: "Client Secret",
     fb_connect: "Connect Fitbit", fb_disconnect: "Disconnect",
     fb_duration: "Lesson length (minutes)", fb_since: "Sync lessons from (date)",
