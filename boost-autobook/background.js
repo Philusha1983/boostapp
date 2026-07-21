@@ -13,6 +13,9 @@
  * It detects the open moment and fires within seconds.
  * ==========================================================================*/
 
+// Fitbit bridge (OAuth + lesson→activity logging) — shares this global scope.
+importScripts("fitbit.js");
+
 const API_URL = "https://app.boostapp.co.il/controllerAction/OrderClasses.php";
 
 // ---------------------------------------------------------------------------
@@ -1305,6 +1308,27 @@ async function ensurePollAlarm() {
   const cfg = await getConfig();
   chrome.alarms.create("poll", { periodInMinutes: Math.max(1, Number(cfg.pollMinutes) || 1) });
   if (GITHUB_REPO) chrome.alarms.create(UPDATE_CHECK_ALARM, { periodInMinutes: 24 * 60, delayInMinutes: 1 });
+  // Fitbit lesson sync: every 6h is plenty (lessons only need same-day
+  // logging for Fitbit to pair them with the wearable's heart-rate stream).
+  chrome.alarms.create("fitbitSync", { periodInMinutes: 6 * 60, delayInMinutes: 5 });
+}
+
+// Refreshes history (via the auth-gated hidden-tab path — no-ops quietly if
+// signed out) and pushes any new attended lessons to Fitbit. Used by the
+// periodic alarm and fire-and-forget after user-driven history refreshes.
+async function fitbitAutoSync(freshStore) {
+  try {
+    const st = await getFitbitState();
+    if (!fitbitConnected(st) || st.autoSync === false) return;
+    let store = freshStore;
+    if (!store) {
+      const cfg = await getConfig();
+      try { store = await ensureHistoryFetched(cfg); } catch (e) { store = await getHistoryStore(); }
+    }
+    await fitbitSyncLessons(store);
+  } catch (e) {
+    errRunTab("fitbitAutoSync failed:", e);
+  }
 }
 
 // On load: default to NOT connected until validated (badge shows "!").
@@ -1328,6 +1352,8 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     await pollAll();
   } else if (alarm.name === UPDATE_CHECK_ALARM) {
     await checkForUpdate();
+  } else if (alarm.name === "fitbitSync") {
+    await fitbitAutoSync();
   } else if (alarm.name.startsWith("snipe:")) {
     await snipe(alarm.name.slice("snipe:".length));
   }
@@ -1600,6 +1626,44 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             oldestMonth: monthsWithData[0] || null,
             lastError: store.lastError || null
           });
+          // Piggyback: history was just refreshed anyway, so push any new
+          // attended lessons to Fitbit without opening another hidden tab.
+          fitbitAutoSync(store);
+          break;
+        }
+        case "fitbitStatus": {
+          sendResponse(await fitbitStatus());
+          break;
+        }
+        case "fitbitConnect": {
+          try {
+            await fitbitConnect(msg.clientId);
+            sendResponse({ ok: true, status: await fitbitStatus() });
+          } catch (e) {
+            sendResponse({ ok: false, error: String(e && e.message || e), status: await fitbitStatus() });
+          }
+          break;
+        }
+        case "fitbitDisconnect": {
+          await fitbitDisconnect();
+          sendResponse({ ok: true, status: await fitbitStatus() });
+          break;
+        }
+        case "fitbitSetOpts": {
+          const patch = {};
+          if (msg.durationMin != null) patch.durationMin = Math.max(5, Math.min(240, Number(msg.durationMin) || 60));
+          if (msg.autoSync != null) patch.autoSync = !!msg.autoSync;
+          if (msg.sinceDate != null) patch.sinceDate = /^\d{4}-\d{2}-\d{2}$/.test(msg.sinceDate) ? msg.sinceDate : null;
+          await setFitbitState(patch);
+          sendResponse({ ok: true, status: await fitbitStatus() });
+          break;
+        }
+        case "fitbitSyncNow": {
+          const cfg = await getConfig();
+          let store;
+          try { store = await ensureHistoryFetched(cfg); } catch (e) { store = await getHistoryStore(); }
+          const r = await fitbitSyncLessons(store);
+          sendResponse(Object.assign({ status: await fitbitStatus() }, r));
           break;
         }
         case "skipDate": {

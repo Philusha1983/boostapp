@@ -3,9 +3,10 @@
   "name": "Boost Auto-Book (Training Harmony)",
   "version": "1.3.1",
   "description": "Watchlist + automatic registration for BoostApp group lessons. Books the instant the 72h registration window opens.",
-  "permissions": ["storage", "alarms", "notifications", "cookies", "scripting", "tabs"],
+  "permissions": ["storage", "alarms", "notifications", "cookies", "scripting", "tabs", "identity"],
   "host_permissions": [
-    "https://app.boostapp.co.il/*"
+    "https://app.boostapp.co.il/*",
+    "https://api.fitbit.com/*"
   ],
   "background": {
     "service_worker": "background.js"

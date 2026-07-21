@@ -48,6 +48,15 @@ const I18N = {
   en: {
     tab_upcoming: "Upcoming", tab_schedule: "Weekly schedule", tab_slots: "My weekly slots",
     tab_subscription: "Subscription", tab_settings: "Settings",
+    fb_title: "Fitbit sync",
+    fb_hint: "Logs attended lessons to Fitbit as workouts. Fitbit pairs them with your tracker's heart-rate data and syncs them to Health Connect.",
+    fb_client: "Fitbit Client ID", fb_connect: "Connect Fitbit", fb_disconnect: "Disconnect",
+    fb_duration: "Lesson length (minutes)", fb_since: "Sync lessons from (date)",
+    fb_auto: "Sync automatically", fb_sync_now: "Sync now", fb_syncing: "Syncing…",
+    fb_connected: "✅ Connected to Fitbit", fb_not_connected: "Not connected",
+    fb_setup_hint: "Create a free app at dev.fitbit.com/apps (type: Personal), set its Redirect URL to {url}, then paste its Client ID here.",
+    fb_last_sync: "Last sync: {when} — {added} added", fb_synced_total: "{n} lessons synced so far",
+    fb_sync_error: "⚠️ Last sync error: {err}",
     hint_upcoming: "Your booked lessons. Expand for participants and lesson content.",
     hint_upcoming_week: "Your booked lessons, laid out by weekday.",
     hint_schedule: "Tick the slots you want — the extension books them every week when registration opens.",
@@ -1528,6 +1537,7 @@ async function refresh() {
   applyTheme(config.theme || "system");
   const plan = await getPlan();   // month-plan rollup for the chips (storage-only, cheap)
   renderTargets(targets || [], plan);
+  renderFitbit();                 // fire-and-forget — settings card only
 }
 
 $("checkNow").onclick = async () => { $("checkNow").textContent = t("checking"); await send({ cmd: "checkNow" }); $("checkNow").textContent = t("checkNow"); refresh(); };
@@ -1599,6 +1609,64 @@ $("saveCfg").onclick = async () => {
   toast(t("settingsSaved"));
   renderSchedule();
 };
+// ---------------------------------------------------------------------------
+// Fitbit sync card (settings panel)
+// ---------------------------------------------------------------------------
+function fbStatusLine(s) {
+  if (!s.connected) return t("fb_not_connected");
+  const parts = [t("fb_connected")];
+  if (s.syncedCount) parts.push(t("fb_synced_total", { n: s.syncedCount }));
+  if (s.lastSync && s.lastSync.at) {
+    parts.push(t("fb_last_sync", { when: fmtClock(s.lastSync.at), added: s.lastSync.added || 0 }));
+    if (s.lastSync.error) parts.push(t("fb_sync_error", { err: s.lastSync.error }));
+  }
+  return parts.join(" · ");
+}
+async function renderFitbit(status) {
+  if (!$("fitbitCard")) return;
+  const s = status || await send({ cmd: "fitbitStatus" });
+  if (!s) return;
+  $("fbStatus").textContent = fbStatusLine(s);
+  $("fbSetup").style.display = s.connected ? "none" : "";
+  $("fbControls").style.display = s.connected ? "" : "none";
+  if (!s.connected) {
+    if (!$("fbClientId").value) $("fbClientId").value = s.clientId || "";
+    $("fbSetupHint").textContent = t("fb_setup_hint", { url: s.redirectUrl || "" });
+  } else {
+    $("fbDuration").value = s.durationMin || 60;
+    $("fbSince").value = s.sinceDate || "";
+    $("fbAutoSync").checked = s.autoSync !== false;
+  }
+}
+if ($("fitbitCard")) {
+  $("fbConnect").onclick = async () => {
+    const clientId = $("fbClientId").value.trim();
+    if (!clientId) return toast("⚠️ " + t("fb_client"));
+    const r = await send({ cmd: "fitbitConnect", clientId });
+    if (r && r.ok) toast(t("fb_connected")); else toast("⚠️ " + ((r && r.error) || "failed"));
+    renderFitbit(r && r.status);
+  };
+  $("fbDisconnect").onclick = async () => {
+    const r = await send({ cmd: "fitbitDisconnect" });
+    renderFitbit(r && r.status);
+  };
+  $("fbSyncNow").onclick = async () => {
+    $("fbSyncNow").textContent = t("fb_syncing");
+    const r = await send({ cmd: "fitbitSyncNow" });
+    $("fbSyncNow").textContent = t("fb_sync_now");
+    if (r && r.error) toast("⚠️ " + r.error);
+    else toast(t("fb_last_sync", { when: fmtClock(Date.now()), added: (r && r.added) || 0 }));
+    renderFitbit(r && r.status);
+  };
+  const fbSaveOpts = async () => {
+    const r = await send({ cmd: "fitbitSetOpts", durationMin: Number($("fbDuration").value) || 60, autoSync: $("fbAutoSync").checked, sinceDate: $("fbSince").value || null });
+    renderFitbit(r && r.status);
+  };
+  $("fbDuration").onchange = fbSaveOpts;
+  $("fbSince").onchange = fbSaveOpts;
+  $("fbAutoSync").onchange = fbSaveOpts;
+}
+
 // backup / transfer
 $("btnExport").onclick = async () => {
   const r = await send({ cmd: "exportState" });

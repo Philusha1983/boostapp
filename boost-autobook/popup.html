@@ -447,6 +447,33 @@
         <p class="muted" style="margin-top:8px;" data-i18n="settings_note">Daily limit only controls the local warning — the studio's server still enforces your real per-day allowance. You must be signed in to BoostApp in this Chrome profile. The extension cannot register before the studio's 72h window opens — it fires the instant it does.</p>
       </div>
 
+      <div class="card" id="fitbitCard">
+        <label data-i18n="fb_title">Fitbit sync</label>
+        <p class="muted" style="margin:2px 0 8px;" data-i18n="fb_hint">Logs attended lessons to Fitbit as workouts. Fitbit pairs them with your tracker's heart-rate data and syncs them to Health Connect.</p>
+        <div id="fbStatus" class="muted" style="margin-bottom:8px;">—</div>
+        <div id="fbSetup">
+          <div class="row">
+            <div><label data-i18n="fb_client">Fitbit Client ID</label><input id="fbClientId" placeholder="23ABCD" spellcheck="false"></div>
+            <div></div>
+          </div>
+          <p class="muted" style="margin:6px 0 8px;" id="fbSetupHint"></p>
+          <button id="fbConnect" data-i18n="fb_connect">Connect Fitbit</button>
+        </div>
+        <div id="fbControls" style="display:none;">
+          <div class="row">
+            <div><label data-i18n="fb_duration">Lesson length (minutes)</label><input id="fbDuration" type="number" min="5" max="240" value="60"></div>
+            <div><label data-i18n="fb_since">Sync lessons from (date)</label><input id="fbSince" type="date"></div>
+          </div>
+          <label style="display:flex; align-items:center; gap:6px; margin-top:8px; font-weight:normal;">
+            <input id="fbAutoSync" type="checkbox" style="width:auto;"> <span data-i18n="fb_auto">Sync automatically</span>
+          </label>
+          <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+            <button id="fbSyncNow" data-i18n="fb_sync_now">Sync now</button>
+            <button id="fbDisconnect" class="ghost" data-i18n="fb_disconnect">Disconnect</button>
+          </div>
+        </div>
+      </div>
+
       <div class="card">
         <label data-i18n="lbl_backup">Backup / transfer slots</label>
         <p class="muted" style="margin:2px 0 8px;" data-i18n="backup_hint">Export your slots &amp; settings to move them to another browser, or paste/upload a backup to import.</p>
