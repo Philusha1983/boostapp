@@ -1,61 +1,78 @@
 /* ============================================================================
- * Boost Auto-Book — Fitbit bridge
+ * Boost Auto-Book — Fitbit bridge (via the Google Health API)
  * ----------------------------------------------------------------------------
- * Logs attended lessons (from the ClassHistory cache) into Fitbit via the
- * Web API's Create Activity Log endpoint. Fitbit then pairs the wearable's
- * continuously-recorded heart rate with the logged time window (zones,
- * calories, active minutes) and syncs the exercise onward to Health Connect
- * through its own integration — which is the whole point of this bridge.
+ * Logs attended lessons (from the ClassHistory cache) as exercise sessions in
+ * the user's Fitbit data, using the **Google Health API v4**
+ * (health.googleapis.com). Fitbit pairs the wearable's continuously-recorded
+ * heart rate with the logged time window and syncs the exercise onward to
+ * Health Connect through its own integration — which is the whole point.
+ *
+ * WHY GOOGLE HEALTH API (not the legacy Fitbit Web API): dev.fitbit.com
+ * discontinued new app registrations, and the legacy Web API is being
+ * deprecated in September 2026. The replacement is the Google Health API:
+ * a Google Cloud project + Google OAuth, endpoint
+ *   POST /v4/users/me/dataTypes/exercise/dataPoints
+ * with scope googlehealth.activity_and_fitness.writeonly.
  *
  * Loaded into the service worker with importScripts("fitbit.js") — shares the
- * global scope with background.js (getHistoryStore etc. are used at runtime).
+ * global scope with background.js (getHistoryStore, studioTimeMs, tzOffsetMs,
+ * STUDIO_TZ, notify are used at runtime).
  *
- * Auth: OAuth 2.0 Authorization Code + PKCE via chrome.identity
- * .launchWebAuthFlow. The user creates a free "Personal" app on
- * https://dev.fitbit.com/apps and pastes its Client ID into the popup; the
- * app's Redirect URL must be set to chrome.identity.getRedirectURL()
- * (https://<extension-id>.chromiumapp.org/). PKCE means no client secret is
- * ever stored in the extension.
+ * SETUP (one-time, by the user):
+ *   1. console.cloud.google.com → create a project, enable "Google Health API".
+ *   2. Create an OAuth client (type: Web application). Add
+ *      chrome.identity.getRedirectURL() — https://<ext-id>.chromiumapp.org/ —
+ *      as an Authorized redirect URI.
+ *   3. OAuth consent screen: External + Testing, add yourself as a test user,
+ *      add the activity_and_fitness.writeonly scope.
+ *   4. Paste the Client ID and Client Secret into the popup's Fitbit card.
+ *   NOTE: while the consent screen stays in "Testing" mode, Google expires
+ *   refresh tokens after 7 days — the popup will ask to reconnect weekly.
+ *   Publishing the app ("In production") makes refresh tokens long-lived.
  *
- * Times: lesson date/time strings are studio wall-clock (Asia/Jerusalem), and
- * Fitbit interprets Create Activity Log's date/startTime in the *profile's*
- * timezone — correct as long as the Fitbit profile timezone is Israel too.
+ * Times: lesson date/time strings are studio wall-clock (Asia/Jerusalem).
+ * SessionTimeInterval wants RFC-3339 instants plus explicit UTC offsets, so
+ * both are computed with background.js's studio-timezone helpers.
  * ==========================================================================*/
 
-const FITBIT_AUTH_URL = "https://www.fitbit.com/oauth2/authorize";
-const FITBIT_TOKEN_URL = "https://api.fitbit.com/oauth2/token";
-const FITBIT_API = "https://api.fitbit.com";
-const FITBIT_SCOPE = "activity";
-// Stay well under Fitbit's 150 req/hour user quota, leaving headroom for the
-// catalog fetch, token refreshes and a retry or two.
-const FITBIT_MAX_LOGS_PER_RUN = 100;
+const GH_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+const GH_TOKEN_URL = "https://oauth2.googleapis.com/token";
+const GH_REVOKE_URL = "https://oauth2.googleapis.com/revoke";
+const GH_API = "https://health.googleapis.com";
+const GH_SCOPE = "https://www.googleapis.com/auth/googlehealth.activity_and_fitness.writeonly";
+// Modest per-run cap: a full first backfill of years of lessons is throttled
+// across several runs rather than firing hundreds of writes in one burst.
+const GH_MAX_LOGS_PER_RUN = 100;
 
-// Class name → Fitbit activity type. First matching rule wins; the label is
-// looked up in Fitbit's public activity catalog (GET /1/activities.json) so
-// no numeric activity ids are hardcoded. "Workout" is the fallback and exists
-// in every Fitbit catalog.
-const FITBIT_CLASS_RULES = [
-  { re: /pilates|פילאטיס/i, label: "Pilates" },
-  { re: /yoga|יוגה/i, label: "Yoga" },
-  { re: /spin|cycle|ספינינג|אופניים/i, label: "Spinning" },
-  { re: /run|ריצה/i, label: "Treadmill" },
-  { re: /strength|weight|כוח|משקולות|התנגדות/i, label: "Weights" },
-  { re: /stretch|מתיחות/i, label: "Stretching" },
-  { re: /dance|ריקוד|זומבה|zumba/i, label: "Dancing" },
+// Class name → Google Health ExerciseType enum. First matching rule wins.
+// EXERCISE_CLASS is the fallback — it exists exactly for studio group lessons.
+const GH_CLASS_RULES = [
+  { re: /pilates|פילאטיס/i, type: "PILATES" },
+  { re: /yoga|יוגה/i, type: "YOGA" },
+  { re: /spin|cycle|ספינינג|אופניים/i, type: "SPINNING" },
+  { re: /run|ריצה/i, type: "RUNNING" },
+  { re: /strength|weight|כוח|משקולות|התנגדות/i, type: "STRENGTH_TRAINING" },
+  { re: /trx/i, type: "TRX" },
+  { re: /hiit/i, type: "HIIT" },
+  { re: /stretch|מתיחות/i, type: "STRETCHING" },
+  { re: /zumba|זומבה/i, type: "ZUMBA" },
+  { re: /dance|ריקוד/i, type: "DANCING" },
 ];
-const FITBIT_FALLBACK_LABEL = "Workout";
+const GH_FALLBACK_TYPE = "EXERCISE_CLASS";
 
 // ---------------------------------------------------------------------------
-// Storage
+// Storage (keys keep the bsab_fitbit name — it's still the Fitbit bridge)
 // ---------------------------------------------------------------------------
 async function getFitbitState() {
   const { bsab_fitbit } = await chrome.storage.local.get("bsab_fitbit");
   return bsab_fitbit || {
-    clientId: null, accessToken: null, refreshToken: null, expiresAt: 0,
-    userId: null, connectedAt: null,
+    clientId: null, clientSecret: null,
+    accessToken: null, refreshToken: null, expiresAt: 0,
+    connectedAt: null,
     sinceDate: null,      // only lessons on/after this ISO date are synced
     durationMin: 60,      // lesson length (history rows carry start time only)
     autoSync: true,       // sync on the periodic alarm + after history refresh
+    needsReconnect: false,// refresh token expired/revoked — user action needed
     lastSync: null        // { at, added, skipped, error }
   };
 }
@@ -73,10 +90,10 @@ async function setFitbitSynced(map) {
   await chrome.storage.local.set({ bsab_fitbit_synced: map });
 }
 
-function fitbitConnected(st) { return !!(st.refreshToken && st.clientId); }
+function fitbitConnected(st) { return !!(st.refreshToken && st.clientId && st.clientSecret); }
 
 // ---------------------------------------------------------------------------
-// PKCE helpers
+// PKCE helpers (Google supports PKCE in addition to the client secret)
 // ---------------------------------------------------------------------------
 function b64url(bytes) {
   let s = "";
@@ -96,55 +113,61 @@ async function makeCodeChallenge(verifier) {
 // ---------------------------------------------------------------------------
 // OAuth: connect / refresh / disconnect
 // ---------------------------------------------------------------------------
-async function fitbitTokenRequest(params) {
-  const res = await fetch(FITBIT_TOKEN_URL, {
+async function ghTokenRequest(params) {
+  const res = await fetch(GH_TOKEN_URL, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams(params).toString()
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const why = (data.errors && data.errors[0] && data.errors[0].errorType) || res.status;
-    throw new Error("Fitbit token request failed: " + why);
+    throw new Error("Google token request failed: " + (data.error || res.status) + (data.error_description ? " — " + data.error_description : ""));
   }
   return data;
 }
 
-async function fitbitConnect(clientId) {
+async function fitbitConnect(clientId, clientSecret) {
   clientId = String(clientId || "").trim();
-  if (!clientId) throw new Error("Missing Fitbit Client ID");
+  clientSecret = String(clientSecret || "").trim();
+  if (!clientId || !clientSecret) throw new Error("Missing Google OAuth Client ID / Client Secret");
   const redirectUri = chrome.identity.getRedirectURL();
   const verifier = makeCodeVerifier();
   const challenge = await makeCodeChallenge(verifier);
-  const authUrl = FITBIT_AUTH_URL +
+  const authUrl = GH_AUTH_URL +
     "?response_type=code" +
     "&client_id=" + encodeURIComponent(clientId) +
-    "&scope=" + encodeURIComponent(FITBIT_SCOPE) +
-    "&code_challenge=" + challenge +
-    "&code_challenge_method=S256" +
-    "&redirect_uri=" + encodeURIComponent(redirectUri);
+    "&scope=" + encodeURIComponent(GH_SCOPE) +
+    "&redirect_uri=" + encodeURIComponent(redirectUri) +
+    // offline + consent → Google actually issues a refresh token every time
+    "&access_type=offline&prompt=consent" +
+    "&code_challenge=" + challenge + "&code_challenge_method=S256";
 
   const finalUrl = await chrome.identity.launchWebAuthFlow({ url: authUrl, interactive: true });
-  const code = new URL(finalUrl).searchParams.get("code");
-  if (!code) throw new Error("Fitbit authorization was cancelled");
+  const u = new URL(finalUrl);
+  const err = u.searchParams.get("error");
+  if (err) throw new Error("Google authorization failed: " + err);
+  const code = u.searchParams.get("code");
+  if (!code) throw new Error("Google authorization was cancelled");
 
-  const tok = await fitbitTokenRequest({
-    client_id: clientId, grant_type: "authorization_code",
+  const tok = await ghTokenRequest({
+    client_id: clientId, client_secret: clientSecret,
+    grant_type: "authorization_code",
     redirect_uri: redirectUri, code, code_verifier: verifier
   });
+  if (!tok.refresh_token) throw new Error("Google did not return a refresh token — remove the app's access at myaccount.google.com/permissions and reconnect");
 
   const today = new Date();
   const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   const st = await getFitbitState();
   return setFitbitState({
-    clientId,
+    clientId, clientSecret,
     accessToken: tok.access_token,
     refreshToken: tok.refresh_token,
-    expiresAt: Date.now() + (tok.expires_in || 28800) * 1000,
-    userId: tok.user_id || null,
+    expiresAt: Date.now() + (tok.expires_in || 3600) * 1000,
     connectedAt: Date.now(),
-    // Keep an existing sinceDate on reconnect so a token hiccup doesn't
-    // silently move the sync boundary forward past unsynced lessons.
+    needsReconnect: false,
+    // Keep an existing sinceDate on reconnect so the weekly Testing-mode
+    // re-auth doesn't silently move the sync boundary past unsynced lessons.
     sinceDate: st.sinceDate || iso
   });
 }
@@ -153,89 +176,58 @@ async function fitbitDisconnect() {
   // Best effort server-side revoke; local wipe matters more.
   try {
     const st = await getFitbitState();
-    if (st.accessToken) {
-      await fetch(FITBIT_API + "/oauth2/revoke", {
+    const tok = st.refreshToken || st.accessToken;
+    if (tok) {
+      await fetch(GH_REVOKE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ token: st.accessToken, client_id: st.clientId }).toString()
+        body: new URLSearchParams({ token: tok }).toString()
       });
     }
   } catch (e) { /* ignore */ }
-  await setFitbitState({ accessToken: null, refreshToken: null, expiresAt: 0, userId: null, connectedAt: null });
+  await setFitbitState({ accessToken: null, refreshToken: null, expiresAt: 0, connectedAt: null, needsReconnect: false });
 }
 
 // Single-flight refresh: concurrent callers await the same promise instead of
-// racing two refresh requests (Fitbit rotates the refresh token on every use,
-// so a race would invalidate whichever response lands second).
-let _fitbitRefreshing = null;
-async function fitbitAccessToken() {
+// racing two refresh requests.
+let _ghRefreshing = null;
+async function ghAccessToken() {
   const st = await getFitbitState();
-  if (!fitbitConnected(st)) throw new Error("Fitbit not connected");
+  if (!fitbitConnected(st)) throw new Error("Not connected");
   if (st.accessToken && Date.now() < st.expiresAt - 5 * 60 * 1000) return st.accessToken;
-  if (!_fitbitRefreshing) {
-    _fitbitRefreshing = (async () => {
+  if (!_ghRefreshing) {
+    _ghRefreshing = (async () => {
       try {
-        const tok = await fitbitTokenRequest({
-          client_id: st.clientId, grant_type: "refresh_token", refresh_token: st.refreshToken
+        const tok = await ghTokenRequest({
+          client_id: st.clientId, client_secret: st.clientSecret,
+          grant_type: "refresh_token", refresh_token: st.refreshToken
         });
         const next = await setFitbitState({
           accessToken: tok.access_token,
-          refreshToken: tok.refresh_token || st.refreshToken,
-          expiresAt: Date.now() + (tok.expires_in || 28800) * 1000
+          expiresAt: Date.now() + (tok.expires_in || 3600) * 1000
         });
         return next.accessToken;
       } catch (e) {
-        // An invalid refresh token can't recover on its own — flag it so the
-        // popup shows "reconnect" instead of silently failing forever.
+        // invalid_grant = refresh token expired (7-day Testing-mode limit) or
+        // revoked — can't recover without the user reconnecting, so flag it
+        // for the popup instead of silently failing forever.
         if (/invalid_grant/i.test(String(e))) {
-          await setFitbitState({ accessToken: null, refreshToken: null, expiresAt: 0 });
+          await setFitbitState({ accessToken: null, refreshToken: null, expiresAt: 0, needsReconnect: true });
         }
         throw e;
       } finally {
-        _fitbitRefreshing = null;
+        _ghRefreshing = null;
       }
     })();
   }
-  return _fitbitRefreshing;
+  return _ghRefreshing;
 }
 
-async function fitbitApi(path, opts) {
-  const token = await fitbitAccessToken();
-  const res = await fetch(FITBIT_API + path, Object.assign({}, opts, {
+async function ghApi(path, opts) {
+  const token = await ghAccessToken();
+  return fetch(GH_API + path, Object.assign({}, opts, {
     headers: Object.assign({ Authorization: "Bearer " + token }, (opts && opts.headers) || {})
   }));
-  return res;
-}
-
-// ---------------------------------------------------------------------------
-// Activity type resolution (no hardcoded numeric ids)
-// ---------------------------------------------------------------------------
-// Fitbit's activity catalog barely changes; cache it for 30 days.
-async function fitbitActivityId(label) {
-  const { bsab_fitbit_catalog } = await chrome.storage.local.get("bsab_fitbit_catalog");
-  let cat = bsab_fitbit_catalog;
-  if (!cat || Date.now() - cat.fetchedAt > 30 * 24 * 3600 * 1000) {
-    const res = await fitbitApi("/1/activities.json");
-    if (!res.ok) throw new Error("Fitbit activity catalog fetch failed: " + res.status);
-    const data = await res.json();
-    const byName = {};
-    (function walk(cats) {
-      (cats || []).forEach(c => {
-        (c.activities || []).forEach(a => { byName[String(a.name).toLowerCase()] = a.id; });
-        walk(c.subCategories);
-      });
-    })(data.categories);
-    cat = { byName, fetchedAt: Date.now() };
-    await chrome.storage.local.set({ bsab_fitbit_catalog: cat });
-  }
-  return cat.byName[String(label).toLowerCase()] || null;
-}
-
-function fitbitLabelForClass(className) {
-  for (const rule of FITBIT_CLASS_RULES) {
-    if (rule.re.test(className || "")) return rule.label;
-  }
-  return FITBIT_FALLBACK_LABEL;
 }
 
 // ---------------------------------------------------------------------------
@@ -243,40 +235,53 @@ function fitbitLabelForClass(className) {
 // ---------------------------------------------------------------------------
 function fitbitLessonKey(rec) { return `${rec.date} ${rec.time} ${rec.className}`; }
 
-// Logs one lesson. startTime must be HH:mm — Fitbit documents that seconds
-// are not supported and give wrong results if included.
+function ghExerciseType(className) {
+  for (const rule of GH_CLASS_RULES) {
+    if (rule.re.test(className || "")) return rule.type;
+  }
+  return GH_FALLBACK_TYPE;
+}
+
+// Client-provided dataPoint id (4-63 chars, [a-z0-9-]) derived from the
+// lesson's date+time — makes the create idempotent server-side: retrying the
+// same lesson yields ALREADY_EXISTS instead of a duplicate session.
+function ghDataPointId(rec) {
+  return ("bsab-" + rec.date + "-" + String(rec.time || "").slice(0, 5).replace(":", "")).toLowerCase();
+}
+
+// Logs one lesson as an exercise session data point.
 async function fitbitLogLesson(rec, durationMin) {
-  const label = fitbitLabelForClass(rec.className);
-  let activityId = null;
-  try { activityId = await fitbitActivityId(label); } catch (e) { /* fall through to name-based log */ }
-  if (!activityId && label !== FITBIT_FALLBACK_LABEL) {
-    try { activityId = await fitbitActivityId(FITBIT_FALLBACK_LABEL); } catch (e) { /* ignore */ }
-  }
-  const time = String(rec.time || "").slice(0, 5);
-  const params = {
-    date: rec.date,
-    startTime: time,
-    durationMillis: String(durationMin * 60 * 1000)
+  const startMs = studioTimeMs(rec.date, rec.time);
+  const endMs = startMs + durationMin * 60 * 1000;
+  const offSec = Math.round(tzOffsetMs(STUDIO_TZ, new Date(startMs)) / 1000);
+  const offSecEnd = Math.round(tzOffsetMs(STUDIO_TZ, new Date(endMs)) / 1000);
+  const body = {
+    name: `users/me/dataTypes/exercise/dataPoints/${ghDataPointId(rec)}`,
+    exercise: {
+      interval: {
+        startTime: new Date(startMs).toISOString(),
+        startUtcOffset: offSec + "s",
+        endTime: new Date(endMs).toISOString(),
+        endUtcOffset: offSecEnd + "s"
+      },
+      exerciseType: ghExerciseType(rec.className),
+      displayName: rec.className || "Studio lesson",
+      // Required by the schema; all members optional — Fitbit fills metrics
+      // (calories, heart rate) from the wearable's own recording of the window.
+      metricsSummary: {},
+      notes: [rec.teacher, rec.studio].filter(Boolean).join(" · ") || undefined
+    }
   };
-  if (activityId) {
-    params.activityId = String(activityId);
-  } else {
-    // Last resort: custom activity by name. Fitbit requires manualCalories
-    // here (a rough ~7 kcal/min estimate); with a proper activityId above,
-    // Fitbit derives calories from the wearable's own heart-rate data, which
-    // is why the catalog path is strongly preferred.
-    params.activityName = rec.className || FITBIT_FALLBACK_LABEL;
-    params.manualCalories = String(Math.max(1, Math.round(durationMin * 7)));
-  }
-  const res = await fitbitApi("/1/user/-/activities.json", {
+  const res = await ghApi("/v4/users/me/dataTypes/exercise/dataPoints", {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams(params).toString()
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
   });
-  if (res.status === 429) throw Object.assign(new Error("Fitbit rate limit hit"), { rateLimited: true });
+  if (res.status === 409) return { alreadyExists: true }; // idempotent retry
+  if (res.status === 429) throw Object.assign(new Error("Google Health API rate limit hit"), { rateLimited: true });
   if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    throw new Error(`Fitbit log failed (${res.status}) for ${fitbitLessonKey(rec)}: ${body.slice(0, 200)}`);
+    const txt = await res.text().catch(() => "");
+    throw new Error(`Exercise create failed (${res.status}) for ${fitbitLessonKey(rec)}: ${txt.slice(0, 200)}`);
   }
   return res.json();
 }
@@ -286,7 +291,7 @@ async function fitbitLogLesson(rec, durationMin) {
 // background.js's { months: { "YYYY-MM": { rows: [...] } } }.
 async function fitbitSyncLessons(historyStore) {
   const st = await getFitbitState();
-  if (!fitbitConnected(st)) return { ok: false, error: "not connected" };
+  if (!fitbitConnected(st)) return { ok: false, error: st.needsReconnect ? "reconnect required" : "not connected" };
 
   const store = historyStore || await getHistoryStore();
   const synced = await getFitbitSynced();
@@ -298,27 +303,26 @@ async function fitbitSyncLessons(historyStore) {
     if (rec.status !== "attended") return;
     if (!rec.date || !rec.time) return;
     if (st.sinceDate && rec.date < st.sinceDate) return;
-    const key = fitbitLessonKey(rec);
-    if (synced[key]) return;
+    if (synced[fitbitLessonKey(rec)]) return;
     // Only lessons that have finished — logging a live/future window would
     // attribute a partial (or empty) heart-rate stream to it.
-    const endMs = studioTimeMs(rec.date, rec.time) + durationMin * 60 * 1000;
-    if (endMs > now) return;
+    if (studioTimeMs(rec.date, rec.time) + durationMin * 60 * 1000 > now) return;
     pending.push(rec);
   }));
   pending.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
 
   let added = 0, skipped = 0;
   let error = null;
-  for (const rec of pending.slice(0, FITBIT_MAX_LOGS_PER_RUN)) {
+  for (const rec of pending.slice(0, GH_MAX_LOGS_PER_RUN)) {
     try {
       await fitbitLogLesson(rec, durationMin);
       synced[fitbitLessonKey(rec)] = Date.now();
       added++;
     } catch (e) {
       error = String(e && e.message || e);
-      if (e && e.rateLimited) break; // quota — the rest will go next run
-      skipped++;                      // per-lesson failure — keep going
+      if (e && e.rateLimited) break;       // quota — the rest will go next run
+      if (/invalid_grant|Not connected/i.test(error)) break; // auth is dead — stop hammering
+      skipped++;                            // per-lesson failure — keep going
     }
   }
 
@@ -329,19 +333,20 @@ async function fitbitSyncLessons(historyStore) {
   await setFitbitSynced(synced);
   await setFitbitState({ lastSync: { at: Date.now(), added, skipped, error } });
   if (added) {
-    try { notify("Fitbit sync", `${added} lesson${added === 1 ? "" : "s"} logged to Fitbit.`); } catch (e) {}
+    try { notify("Fitbit sync", `${added} lesson${added === 1 ? "" : "s"} logged as workouts.`); } catch (e) {}
   }
   return { ok: !error, added, skipped, pending: Math.max(0, pending.length - added - skipped), error };
 }
 
-// Status snapshot for the popup — never exposes tokens.
+// Status snapshot for the popup — never exposes tokens or the client secret.
 async function fitbitStatus() {
   const st = await getFitbitState();
   const synced = await getFitbitSynced();
   return {
     connected: fitbitConnected(st),
+    needsReconnect: !!st.needsReconnect,
     clientId: st.clientId || "",
-    userId: st.userId || null,
+    hasClientSecret: !!st.clientSecret,
     connectedAt: st.connectedAt || null,
     sinceDate: st.sinceDate || null,
     durationMin: st.durationMin || 60,

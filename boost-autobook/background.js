@@ -1637,7 +1637,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         }
         case "fitbitConnect": {
           try {
-            await fitbitConnect(msg.clientId);
+            await fitbitConnect(msg.clientId, msg.clientSecret);
             sendResponse({ ok: true, status: await fitbitStatus() });
           } catch (e) {
             sendResponse({ ok: false, error: String(e && e.message || e), status: await fitbitStatus() });

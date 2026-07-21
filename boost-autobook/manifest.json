@@ -6,7 +6,8 @@
   "permissions": ["storage", "alarms", "notifications", "cookies", "scripting", "tabs", "identity"],
   "host_permissions": [
     "https://app.boostapp.co.il/*",
-    "https://api.fitbit.com/*"
+    "https://health.googleapis.com/*",
+    "https://oauth2.googleapis.com/*"
   ],
   "background": {
     "service_worker": "background.js"

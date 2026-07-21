@@ -50,11 +50,13 @@ const I18N = {
     tab_subscription: "Subscription", tab_settings: "Settings",
     fb_title: "Fitbit sync",
     fb_hint: "Logs attended lessons to Fitbit as workouts. Fitbit pairs them with your tracker's heart-rate data and syncs them to Health Connect.",
-    fb_client: "Fitbit Client ID", fb_connect: "Connect Fitbit", fb_disconnect: "Disconnect",
+    fb_client: "Google OAuth Client ID", fb_secret: "Client Secret",
+    fb_connect: "Connect Fitbit", fb_disconnect: "Disconnect",
     fb_duration: "Lesson length (minutes)", fb_since: "Sync lessons from (date)",
     fb_auto: "Sync automatically", fb_sync_now: "Sync now", fb_syncing: "Syncing…",
-    fb_connected: "✅ Connected to Fitbit", fb_not_connected: "Not connected",
-    fb_setup_hint: "Create a free app at dev.fitbit.com/apps (type: Personal), set its Redirect URL to {url}, then paste its Client ID here.",
+    fb_connected: "✅ Connected (Google Health API)", fb_not_connected: "Not connected",
+    fb_reconnect: "⚠️ Access expired — reconnect below (Google Testing-mode tokens last 7 days)",
+    fb_setup_hint: "In console.cloud.google.com: enable the Google Health API, create an OAuth client (Web application) with redirect URI {url}, add yourself as a test user with the activity_and_fitness.writeonly scope, then paste the Client ID + Secret here.",
     fb_last_sync: "Last sync: {when} — {added} added", fb_synced_total: "{n} lessons synced so far",
     fb_sync_error: "⚠️ Last sync error: {err}",
     hint_upcoming: "Your booked lessons. Expand for participants and lesson content.",
@@ -1613,7 +1615,7 @@ $("saveCfg").onclick = async () => {
 // Fitbit sync card (settings panel)
 // ---------------------------------------------------------------------------
 function fbStatusLine(s) {
-  if (!s.connected) return t("fb_not_connected");
+  if (!s.connected) return s.needsReconnect ? t("fb_reconnect") : t("fb_not_connected");
   const parts = [t("fb_connected")];
   if (s.syncedCount) parts.push(t("fb_synced_total", { n: s.syncedCount }));
   if (s.lastSync && s.lastSync.at) {
@@ -1641,8 +1643,9 @@ async function renderFitbit(status) {
 if ($("fitbitCard")) {
   $("fbConnect").onclick = async () => {
     const clientId = $("fbClientId").value.trim();
-    if (!clientId) return toast("⚠️ " + t("fb_client"));
-    const r = await send({ cmd: "fitbitConnect", clientId });
+    const clientSecret = $("fbClientSecret").value.trim();
+    if (!clientId || !clientSecret) return toast("⚠️ " + t("fb_client") + " + " + t("fb_secret"));
+    const r = await send({ cmd: "fitbitConnect", clientId, clientSecret });
     if (r && r.ok) toast(t("fb_connected")); else toast("⚠️ " + ((r && r.error) || "failed"));
     renderFitbit(r && r.status);
   };
