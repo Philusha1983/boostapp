@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boost Auto-Book — never miss a class again</title>
+<meta name="description" content="Free Chrome extension that books your BoostApp group lessons automatically the instant the 72-hour registration window opens.">
+<meta property="og:title" content="Boost Auto-Book">
+<meta property="og:description" content="Your BoostApp classes, booked the second registration opens. Free & open source Chrome extension.">
+<meta property="og:image" content="assets/logo192.png">
+<link rel="icon" type="image/png" href="assets/logo128.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font:'Rubik','Noto Sans Arabic',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+    --green:#00e0a0; --green-deep:#00a87a; --ink:#063a2b;
+    --bg:#f5f7f6; --card:#ffffff; --line:#e3e6e0; --text:#1f2a17; --muted:#66716c;
+    --ghost:#eef0ec; --hero-bg:radial-gradient(1200px 600px at 75% -10%, rgba(0,224,160,.22), transparent 60%), linear-gradient(180deg,#eafaf4 0%, var(--bg) 70%);
+    --warn-bg:#fff6e6; --warn-bd:#eeda9e; --ok-bg:#e9f9f2; --ok-bd:#bfead9;
+    --shadow:0 8px 30px rgba(6,58,43,.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#0d1513; --card:#16211e; --line:#26332f; --text:#e7eeec; --muted:#93a19b;
+      --ghost:#1d2925; --hero-bg:radial-gradient(1200px 600px at 75% -10%, rgba(0,224,160,.14), transparent 60%), linear-gradient(180deg,#0f1d18 0%, var(--bg) 70%);
+      --warn-bg:#2c2410; --warn-bd:#5d4d1c; --ok-bg:#10281f; --ok-bd:#1f5540;
+      --shadow:0 8px 30px rgba(0,0,0,.45);
+    }
+  }
+  * { box-sizing:border-box; margin:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:var(--font); background:var(--bg); color:var(--text); line-height:1.6; }
+  a { color:var(--green-deep); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  img { display:block; }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 22px; }
+
+  /* ── nav ─────────────────────────────────────────── */
+  nav { position:sticky; top:0; z-index:50; backdrop-filter:blur(12px);
+    background:color-mix(in srgb, var(--bg) 82%, transparent); border-bottom:1px solid var(--line); }
+  .nav-in { display:flex; align-items:center; gap:18px; padding:10px 0; }
+  .brand { display:flex; align-items:center; gap:9px; font-weight:800; font-size:15.5px; color:var(--text); }
+  .brand img { width:26px; height:26px; border-radius:6px; }
+  .nav-links { display:flex; gap:16px; font-size:13.5px; font-weight:500; margin-inline-start:8px; }
+  .nav-links a { color:var(--muted); }
+  .nav-links a:hover { color:var(--text); text-decoration:none; }
+  .nav-right { margin-inline-start:auto; display:flex; align-items:center; gap:10px; }
+  .langs { display:flex; gap:3px; background:var(--ghost); border:1px solid var(--line); border-radius:99px; padding:3px; }
+  .langs button { border:none; background:transparent; color:var(--muted); font-family:var(--font);
+    font-size:12px; font-weight:600; padding:4px 9px; border-radius:99px; cursor:pointer; }
+  .langs button.on { background:var(--green); color:var(--ink); }
+  .gh { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600;
+    color:var(--text); border:1px solid var(--line); border-radius:9px; padding:6px 11px; background:var(--card); }
+  .gh:hover { border-color:var(--green-deep); text-decoration:none; }
+  .gh svg { width:16px; height:16px; fill:currentColor; }
+  @media (max-width:760px){ .nav-links{display:none;} }
+
+  /* ── hero ─────────────────────────────────────────── */
+  .hero { background:var(--hero-bg); padding:64px 0 76px; overflow:hidden; }
+  .hero-in { display:flex; gap:48px; align-items:center; }
+  .hero-copy { flex:1.15; min-width:0; }
+  .eyebrow { display:inline-flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600;
+    color:var(--green-deep); background:var(--ok-bg); border:1px solid var(--ok-bd);
+    border-radius:99px; padding:5px 13px; margin-bottom:18px; }
+  h1 { font-size:clamp(30px, 4.6vw, 46px); line-height:1.14; font-weight:800; letter-spacing:-.5px; margin-bottom:16px; }
+  h1 em { font-style:normal; color:var(--green-deep); }
+  .sub { font-size:16.5px; color:var(--muted); max-width:520px; margin-bottom:28px; }
+  .cta-row { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:20px; }
+  .dl { display:inline-flex; flex-direction:column; align-items:center; gap:2px; background:var(--green);
+    color:var(--ink); font-weight:800; font-size:16.5px; padding:14px 30px; border-radius:14px;
+    box-shadow:0 8px 24px rgba(0,224,160,.35); transition:transform .12s, box-shadow .12s, background .15s; }
+  .dl:hover { background:var(--green-deep); color:#fff; text-decoration:none; transform:translateY(-2px);
+    box-shadow:0 12px 30px rgba(0,224,160,.42); }
+  .dl small { font-size:11.5px; font-weight:600; opacity:.75; }
+  .all-rel { font-size:13.5px; font-weight:500; }
+  .badges { display:flex; gap:8px; flex-wrap:wrap; }
+  .badge { font-size:12px; font-weight:600; color:var(--muted); background:var(--card);
+    border:1px solid var(--line); border-radius:99px; padding:5px 12px; }
+
+  /* ── popup replica ────────────────────────────────── */
+  .hero-shot { flex:1; min-width:0; display:flex; justify-content:center; perspective:1200px; }
+  .popup { width:352px; max-width:100%; background:var(--card); border:1px solid var(--line);
+    border-radius:16px; overflow:hidden; box-shadow:var(--shadow), 0 30px 80px rgba(6,58,43,.18);
+    transform:rotateY(-6deg) rotateX(2deg); font-size:13px; animation:float 7s ease-in-out infinite; }
+  @keyframes float { 0%,100%{ transform:rotateY(-6deg) rotateX(2deg) translateY(0);} 50%{ transform:rotateY(-6deg) rotateX(2deg) translateY(-9px);} }
+  @media (prefers-reduced-motion: reduce){ .popup{ animation:none; } }
+  [dir="rtl"] .popup { transform:rotateY(6deg) rotateX(2deg); }
+  [dir="rtl"] .popup { animation:floatr 7s ease-in-out infinite; }
+  @keyframes floatr { 0%,100%{ transform:rotateY(6deg) rotateX(2deg) translateY(0);} 50%{ transform:rotateY(6deg) rotateX(2deg) translateY(-9px);} }
+  .p-head { background:var(--green); color:var(--ink); padding:11px 14px; }
+  .p-head-top { display:flex; align-items:center; justify-content:space-between; }
+  .p-title { display:flex; align-items:center; gap:7px; font-weight:700; font-size:13.5px; }
+  .p-title img { width:19px; height:19px; border-radius:4px; }
+  .p-sw { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:600; }
+  .p-toggle { width:34px; height:19px; background:#fff; border-radius:99px; position:relative; }
+  .p-toggle::after { content:""; position:absolute; width:13px; height:13px; border-radius:50%;
+    background:var(--green-deep); top:3px; inset-inline-end:3px; }
+  .p-status { display:flex; align-items:center; gap:7px; margin-top:9px; font-size:11.5px; }
+  .p-ava { width:20px; height:20px; border-radius:50%; background:rgba(6,58,43,.25); display:flex;
+    align-items:center; justify-content:center; font-size:9px; font-weight:800; }
+  .p-dot { width:8px; height:8px; border-radius:50%; background:#0c9e5e; }
+  .p-chip { margin-inline-start:auto; background:rgba(6,58,43,.14); border-radius:6px; padding:2px 7px; font-size:10.5px; font-weight:600; }
+  .p-tabs { display:flex; gap:2px; border-bottom:1px solid var(--line); padding:6px 10px 0; font-size:11px; color:var(--muted); }
+  .p-tab { padding:6px 7px; border-bottom:2px solid transparent; white-space:nowrap; display:flex; gap:4px; align-items:center; }
+  .p-tab.on { color:var(--green-deep); border-color:var(--green); font-weight:700; }
+  .p-tab b { background:var(--ghost); border-radius:99px; font-size:9.5px; padding:0 5px; font-weight:700; }
+  .p-tab.on b { background:var(--ok-bg); color:var(--green-deep); }
+  .p-body { padding:10px 12px 13px; display:flex; flex-direction:column; gap:7px; }
+  .p-card { border:1px solid var(--line); border-radius:10px; padding:8px 10px; border-inline-start:4px solid var(--green-deep); }
+  .p-card.amber { border-inline-start-color:#caa024; }
+  .p-row1 { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .p-cls { font-weight:700; font-size:12.5px; }
+  .p-pill { font-size:9.5px; font-weight:700; color:#fff; background:var(--green-deep); border-radius:99px; padding:2px 8px; white-space:nowrap; }
+  .p-pill.amber { background:#caa024; }
+  .p-meta { font-size:10.5px; color:var(--muted); margin-top:2px; }
+  .p-sub { display:flex; align-items:center; justify-content:space-between; background:var(--ghost);
+    border-radius:10px; padding:7px 10px; font-size:11px; font-weight:600; }
+  .p-sub b { color:var(--green-deep); font-size:12px; }
+
+  /* ── sections ─────────────────────────────────────── */
+  section { padding:70px 0; }
+  .sec-title { font-size:clamp(24px,3.2vw,32px); font-weight:800; letter-spacing:-.4px; margin-bottom:10px; text-align:center; }
+  .sec-sub { text-align:center; color:var(--muted); max-width:560px; margin:0 auto 42px; font-size:15px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .feat { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px 20px;
+    box-shadow:var(--shadow); transition:transform .15s, border-color .15s; }
+  .feat:hover { transform:translateY(-3px); border-color:var(--green-deep); }
+  .feat .ico { font-size:26px; margin-bottom:10px; }
+  .feat h3 { font-size:15.5px; font-weight:700; margin-bottom:6px; }
+  .feat p { font-size:13.5px; color:var(--muted); }
+
+  /* install steps */
+  .steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; counter-reset:step; }
+  .step { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px 18px; position:relative; }
+  .step::before { counter-increment:step; content:counter(step); position:absolute; top:-13px; inset-inline-start:16px;
+    width:26px; height:26px; border-radius:50%; background:var(--green); color:var(--ink); font-weight:800;
+    font-size:13px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,224,160,.4); }
+  .step h4 { font-size:14px; font-weight:700; margin:4px 0 5px; }
+  .step p { font-size:13px; color:var(--muted); }
+  .step code { background:var(--ghost); border:1px solid var(--line); border-radius:6px; padding:1px 6px; font-size:12px; direction:ltr; unicode-bidi:embed; }
+  .tip { margin-top:22px; background:var(--ok-bg); border:1px solid var(--ok-bd); border-radius:12px;
+    padding:13px 16px; font-size:13.5px; text-align:center; }
+
+  /* disclaimer + privacy */
+  .two-col { display:grid; grid-template-columns:1.4fr 1fr; gap:16px; }
+  @media (max-width:820px){ .two-col{ grid-template-columns:1fr; } }
+  .callout { border-radius:16px; padding:24px 24px 20px; border:1px solid; }
+  .callout.warn { background:var(--warn-bg); border-color:var(--warn-bd); }
+  .callout.ok { background:var(--ok-bg); border-color:var(--ok-bd); }
+  .callout h3 { font-size:17px; font-weight:800; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .callout p { font-size:13.5px; margin-bottom:10px; }
+  .callout p:last-child { margin-bottom:0; }
+
+  /* footer */
+  footer { border-top:1px solid var(--line); padding:30px 0 38px; text-align:center; font-size:12.5px; color:var(--muted); }
+  footer .f-links { display:flex; gap:18px; justify-content:center; margin:10px 0 14px; flex-wrap:wrap; font-weight:500; }
+
+  /* reveal on scroll */
+  .rv { opacity:0; transform:translateY(18px); transition:opacity .5s ease, transform .5s ease; }
+  .rv.in { opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce){ .rv{ opacity:1; transform:none; transition:none; } }
+
+  @media (max-width:900px){
+    .hero-in { flex-direction:column; gap:44px; }
+    .hero-copy { text-align:center; }
+    .sub { margin-inline:auto; }
+    .cta-row, .badges { justify-content:center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <span class="brand"><img src="assets/logo128.png" alt="">Boost Auto-Book</span>
+    <div class="nav-links">
+      <a href="#features" data-i18n="nav_features">Features</a>
+      <a href="#install" data-i18n="nav_install">Install</a>
+      <a href="#disclaimer" data-i18n="nav_disclaimer">Disclaimer</a>
+    </div>
+    <div class="nav-right">
+      <div class="langs" id="langs">
+        <button data-lang="en">EN</button><button data-lang="he">עב</button><button data-lang="uk">УК</button><button data-lang="ar">ع</button><button data-lang="ru">РУ</button>
+      </div>
+      <a class="gh" href="https://github.com/Philusha1983/boostapp" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-in">
+    <div class="hero-copy">
+      <span class="eyebrow">✦ <span data-i18n="eyebrow">Unofficial companion for BoostApp studios</span></span>
+      <h1 data-i18n-html="h1">Your classes, booked <em>the second</em> registration opens</h1>
+      <p class="sub" data-i18n="sub">Boost Auto-Book is a free Chrome extension that watches your favorite BoostApp group lessons and registers you automatically the instant the 72-hour window opens — no more midnight refreshing.</p>
+      <div class="cta-row">
+        <a class="dl" id="dlBtn" href="https://github.com/Philusha1983/boostapp/releases/latest">
+          <span data-i18n="btn_download">⬇ Download for Chrome</span>
+          <small id="dlMeta" data-i18n="btn_loading">checking latest version…</small>
+        </a>
+        <a class="all-rel" href="https://github.com/Philusha1983/boostapp/releases" target="_blank" rel="noopener" data-i18n="all_releases">All versions &amp; release notes</a>
+      </div>
+      <div class="badges">
+        <span class="badge" data-i18n="badge_free">🆓 Free &amp; open source</span>
+        <span class="badge" data-i18n="badge_langs">🌍 5 languages · RTL</span>
+        <span class="badge" data-i18n="badge_theme">🌗 Light &amp; dark</span>
+        <span class="badge" data-i18n="badge_local">🔒 Data stays on your device</span>
+      </div>
+    </div>
+
+    <div class="hero-shot">
+      <div class="popup" aria-hidden="true">
+        <div class="p-head">
+          <div class="p-head-top">
+            <span class="p-title"><img src="assets/logo128.png" alt="">Boost Auto-Book</span>
+            <span class="p-sw"><span data-i18n="r_autobook">Auto-book</span> <span class="p-toggle"></span></span>
+          </div>
+          <div class="p-status">
+            <span class="p-ava">✓</span>
+            <span class="p-dot"></span>
+            <span data-i18n="r_signedin">Signed in · synced just now</span>
+            <span class="p-chip">📊 <span data-i18n="r_history">History</span></span>
+          </div>
+        </div>
+        <div class="p-tabs">
+          <span class="p-tab on"><span data-i18n="r_tab_up">Upcoming</span> <b>3</b></span>
+          <span class="p-tab"><span data-i18n="r_tab_slots">My weekly slots</span> <b>2</b></span>
+          <span class="p-tab" data-i18n="r_tab_sub">Subscription</span>
+          <span class="p-tab" data-i18n="r_tab_set">Settings</span>
+        </div>
+        <div class="p-body">
+          <div class="p-card">
+            <div class="p-row1"><span class="p-cls" data-i18n="r_les1">Pilates — Reformer</span><span class="p-pill" data-i18n="r_pill_booked">Booked ✓</span></div>
+            <div class="p-meta" data-i18n="r_les1m">Monday · 18:00 · Studio 2</div>
+          </div>
+          <div class="p-card amber">
+            <div class="p-row1"><span class="p-cls" data-i18n="r_les2">Yoga Flow</span><span class="p-pill amber" data-i18n="r_pill_sched">Scheduled</span></div>
+            <div class="p-meta" data-i18n="r_les2m">Wednesday · 19:30 · opens in 2d 3h — will book automatically</div>
+          </div>
+          <div class="p-sub"><span data-i18n="r_balance">Subscription balance</span><b>9/12</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <h2 class="sec-title rv" data-i18n="feat_title">What it does</h2>
+    <p class="sec-sub rv" data-i18n="feat_sub">Everything you already do on the BoostApp website — automated, organized, and a little bit magical.</p>
+    <div class="grid">
+      <div class="feat rv"><div class="ico">🎯</div><h3 data-i18n="f1t">Sniping, done right</h3><p data-i18n="f1b">The extension fires the exact moment the studio's 72-hour registration window opens. Set it and forget it.</p></div>
+      <div class="feat rv"><div class="ico">📅</div><h3 data-i18n="f2t">Weekly slots</h3><p data-i18n="f2b">Tick the classes you attend every week — they're booked for you again and again, automatically.</p></div>
+      <div class="feat rv"><div class="ico">🗓️</div><h3 data-i18n="f3t">Three views</h3><p data-i18n="f3b">A list, a week grid, or a full calendar of your subscription period — including a preview of the next one.</p></div>
+      <div class="feat rv"><div class="ico">💳</div><h3 data-i18n="f4t">Subscription at a glance</h3><p data-i18n="f4b">Entries left, daily cap, validity dates — always in sync with your BoostApp account.</p></div>
+      <div class="feat rv"><div class="ico">📊</div><h3 data-i18n="f5t">History dashboard</h3><p data-i18n="f5b">A full-page dashboard of all your past classes with monthly stats, streaks and personal highlights.</p></div>
+      <div class="feat rv"><div class="ico">🌍</div><h3 data-i18n="f6t">Speaks your language</h3><p data-i18n="f6b">English, Hebrew, Russian, Ukrainian and Arabic — with full right-to-left support and a guided tour for new users.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="install" style="background:var(--card); border-block:1px solid var(--line);">
+  <div class="wrap">
+    <h2 class="sec-title rv" data-i18n="inst_title">Installed in 2 minutes</h2>
+    <p class="sec-sub rv" data-i18n="inst_sub">No store, no account — it's a simple folder you load into Chrome once.</p>
+    <div class="steps">
+      <div class="step rv"><h4 data-i18n="s1t">Download &amp; unzip</h4><p data-i18n="s1b">Hit the green button above, then unzip the file into a folder you'll keep (e.g. Documents).</p></div>
+      <div class="step rv"><h4 data-i18n="s2t">Open the extensions page</h4><p data-i18n-html="s2b">In Chrome, copy <code>chrome://extensions</code> into the address bar and press Enter.</p></div>
+      <div class="step rv"><h4 data-i18n="s3t">Turn on Developer mode</h4><p data-i18n="s3b">It's the small switch in the top corner of that page.</p></div>
+      <div class="step rv"><h4 data-i18n="s4t">Load unpacked</h4><p data-i18n="s4b">Click "Load unpacked", choose the unzipped folder, and pin the icon to your toolbar. Done!</p></div>
+    </div>
+    <div class="tip rv" data-i18n="inst_tip">💡 Then just open BoostApp and sign in once — the extension takes it from there. A guided tour will show you around, and it checks for new versions daily and shows a banner when an update is out.</div>
+  </div>
+</section>
+
+<section id="disclaimer">
+  <div class="wrap two-col">
+    <div class="callout warn rv">
+      <h3>⚠️ <span data-i18n="disc_title">The honest fine print</span></h3>
+      <p data-i18n="disc_1">Boost Auto-Book is an independent, unofficial project. It is not made by, affiliated with, or endorsed by Boost / BoostApp (Training Harmony) or your studio.</p>
+      <p data-i18n="disc_2">Nothing is hacked and nothing shady happens: the extension only uses the same data the BoostApp website itself shows you once you sign in, and every action it performs — registering, cancelling, viewing your history — is something you could do by hand on the website. It just does it faster, and while you sleep.</p>
+      <p data-i18n="disc_3">Your class history is fetched from your own profile and stored only on your computer. It is never uploaded, shared, or sent anywhere.</p>
+    </div>
+    <div class="callout ok rv">
+      <h3>🔒 <span data-i18n="priv_title">Your data stays yours</span></h3>
+      <p data-i18n="priv_1">No servers, no analytics, no accounts. Everything the extension knows lives in your browser's local storage on your computer.</p>
+      <p data-i18n="priv_2">You can export it, import it on another computer, or delete the extension — and it's all gone. The code is open source, so anyone can verify this.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>Boost Auto-Book · <span data-i18n="foot_free">free &amp; open source</span> · <span id="footVer"></span></div>
+    <div class="f-links">
+      <a href="https://github.com/Philusha1983/boostapp/releases/latest" target="_blank" rel="noopener" data-i18n="foot_latest">Latest release</a>
+      <a href="https://github.com/Philusha1983/boostapp/blob/main/CHANGELOG.md" target="_blank" rel="noopener" data-i18n="foot_changelog">Changelog</a>
+      <a href="https://github.com/Philusha1983/boostapp/issues/new" target="_blank" rel="noopener" data-i18n="foot_issue">Report an issue / idea</a>
+    </div>
+    <div data-i18n="foot_unaff">Not affiliated with BoostApp or Training Harmony.</div>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const REPO = "Philusha1983/boostapp";
+const RTL = ["he", "ar"];
+
+const I18N = {
+en: {
+  nav_features:"Features", nav_install:"Install", nav_disclaimer:"Disclaimer",
+  eyebrow:"Unofficial companion for BoostApp studios",
+  h1:"Your classes, booked <em>the second</em> registration opens",
+  sub:"Boost Auto-Book is a free Chrome extension that watches your favorite BoostApp group lessons and registers you automatically the instant the 72-hour window opens — no more midnight refreshing.",
+  btn_download:"⬇ Download for Chrome", btn_loading:"checking latest version…", btn_meta:"v{v} · {s} · zip",
+  all_releases:"All versions & release notes",
+  badge_free:"🆓 Free & open source", badge_langs:"🌍 5 languages · RTL", badge_theme:"🌗 Light & dark", badge_local:"🔒 Data stays on your device",
+  r_autobook:"Auto-book", r_signedin:"Signed in · synced just now", r_history:"History",
+  r_tab_up:"Upcoming", r_tab_slots:"My weekly slots", r_tab_sub:"Subscription", r_tab_set:"Settings",
+  r_les1:"Pilates — Reformer", r_les1m:"Monday · 18:00 · Studio 2", r_pill_booked:"Booked ✓",
+  r_les2:"Yoga Flow", r_les2m:"Wednesday · 19:30 · opens in 2d 3h — will book automatically", r_pill_sched:"Scheduled",
+  r_balance:"Subscription balance",
+  feat_title:"What it does",
+  feat_sub:"Everything you already do on the BoostApp website — automated, organized, and a little bit magical.",
+  f1t:"Sniping, done right", f1b:"The extension fires the exact moment the studio's 72-hour registration window opens. Set it and forget it.",
+  f2t:"Weekly slots", f2b:"Tick the classes you attend every week — they're booked for you again and again, automatically.",
+  f3t:"Three views", f3b:"A list, a week grid, or a full calendar of your subscription period — including a preview of the next one.",
+  f4t:"Subscription at a glance", f4b:"Entries left, daily cap, validity dates — always in sync with your BoostApp account.",
+  f5t:"History dashboard", f5b:"A full-page dashboard of all your past classes with monthly stats, streaks and personal highlights.",
+  f6t:"Speaks your language", f6b:"English, Hebrew, Russian, Ukrainian and Arabic — with full right-to-left support and a guided tour for new users.",
+  inst_title:"Installed in 2 minutes", inst_sub:"No store, no account — it's a simple folder you load into Chrome once.",
+  s1t:"Download & unzip", s1b:"Hit the green button above, then unzip the file into a folder you'll keep (e.g. Documents).",
+  s2t:"Open the extensions page", s2b:"In Chrome, copy <code>chrome://extensions</code> into the address bar and press Enter.",
+  s3t:"Turn on Developer mode", s3b:"It's the small switch in the top corner of that page.",
+  s4t:"Load unpacked", s4b:"Click “Load unpacked”, choose the unzipped folder, and pin the icon to your toolbar. Done!",
+  inst_tip:"💡 Then just open BoostApp and sign in once — the extension takes it from there. A guided tour will show you around, and it checks for new versions daily and shows a banner when an update is out.",
+  disc_title:"The honest fine print",
+  disc_1:"Boost Auto-Book is an independent, unofficial project. It is not made by, affiliated with, or endorsed by Boost / BoostApp (Training Harmony) or your studio.",
+  disc_2:"Nothing is hacked and nothing shady happens: the extension only uses the same data the BoostApp website itself shows you once you sign in, and every action it performs — registering, cancelling, viewing your history — is something you could do by hand on the website. It just does it faster, and while you sleep.",
+  disc_3:"Your class history is fetched from your own profile and stored only on your computer. It is never uploaded, shared, or sent anywhere.",
+  priv_title:"Your data stays yours",
+  priv_1:"No servers, no analytics, no accounts. Everything the extension knows lives in your browser's local storage on your computer.",
+  priv_2:"You can export it, import it on another computer, or delete the extension — and it's all gone. The code is open source, so anyone can verify this.",
+  foot_free:"free & open source", foot_latest:"Latest release", foot_changelog:"Changelog", foot_issue:"Report an issue / idea",
+  foot_unaff:"Not affiliated with BoostApp or Training Harmony."
+},
+he: {
+  nav_features:"יכולות", nav_install:"התקנה", nav_disclaimer:"גילוי נאות",
+  eyebrow:"תוסף לא־רשמי לסטודיו שעובד עם BoostApp",
+  h1:"השיעורים שלך נתפסים <em>בשנייה</em> שההרשמה נפתחת",
+  sub:"Boost Auto-Book הוא תוסף כרום חינמי שעוקב אחרי השיעורים האהובים עליך ב‑BoostApp ורושם אותך אוטומטית ברגע שחלון 72 השעות נפתח — בלי לרענן בחצות.",
+  btn_download:"⬇ הורדה לכרום", btn_loading:"בודק גרסה אחרונה…", btn_meta:"גרסה {v} · {s} · zip",
+  all_releases:"כל הגרסאות והעדכונים",
+  badge_free:"🆓 חינמי וקוד פתוח", badge_langs:"🌍 5 שפות · RTL", badge_theme:"🌗 בהיר וכהה", badge_local:"🔒 הנתונים נשארים אצלך",
+  r_autobook:"הזמנה אוטומטית", r_signedin:"מחובר · סונכרן הרגע", r_history:"היסטוריה",
+  r_tab_up:"שיעורים קרובים", r_tab_slots:"המשבצות שלי", r_tab_sub:"המנוי", r_tab_set:"הגדרות",
+  r_les1:"פילאטיס — רפורמר", r_les1m:"יום שני · 18:00 · סטודיו 2", r_pill_booked:"הוזמן ✓",
+  r_les2:"יוגה פלואו", r_les2m:"יום רביעי · 19:30 · נפתח בעוד יומיים ו־3 שעות — יוזמן אוטומטית", r_pill_sched:"מתוזמן",
+  r_balance:"יתרת המנוי",
+  feat_title:"מה זה עושה",
+  feat_sub:"כל מה שאתם כבר עושים באתר BoostApp — אוטומטי, מסודר, וקצת קסום.",
+  f1t:"תפיסת מקום מדויקת", f1b:"התוסף נורה בדיוק ברגע שחלון ההרשמה של 72 השעות נפתח. מגדירים ושוכחים.",
+  f2t:"משבצות שבועיות", f2b:"מסמנים את השיעורים הקבועים שלכם — והם מוזמנים עבורכם שוב ושוב, אוטומטית.",
+  f3t:"שלוש תצוגות", f3b:"רשימה, רשת שבועית, או לוח שנה מלא של תקופת המנוי — כולל הצצה לתקופה הבאה.",
+  f4t:"המנוי במבט אחד", f4b:"כניסות שנותרו, מגבלה יומית, תוקף — תמיד מסונכרן עם חשבון ה‑BoostApp שלכם.",
+  f5t:"לוח היסטוריה", f5b:"דשבורד במסך מלא של כל השיעורים שעברתם, עם סטטיסטיקות חודשיות, רצפים והישגים אישיים.",
+  f6t:"מדבר בשפה שלך", f6b:"עברית, אנגלית, רוסית, אוקראינית וערבית — עם תמיכה מלאה בימין־לשמאל וסיור מודרך למשתמשים חדשים.",
+  inst_title:"התקנה בשתי דקות", inst_sub:"בלי חנות, בלי חשבון — תיקייה פשוטה שטוענים לכרום פעם אחת.",
+  s1t:"הורדה וחילוץ", s1b:"לחצו על הכפתור הירוק למעלה, ואז חלצו את הקובץ לתיקייה שתישאר אצלכם (למשל מסמכים).",
+  s2t:"פתחו את דף התוספים", s2b:"בכרום, העתיקו <code>chrome://extensions</code> לשורת הכתובת ולחצו Enter.",
+  s3t:"הפעילו מצב מפתחים", s3b:"זה המתג הקטן בפינת הדף.",
+  s4t:"טעינת תוסף לא ארוז", s4b:"לחצו “Load unpacked”, בחרו את התיקייה שחילצתם, והצמידו את הסמל לסרגל. סיימתם!",
+  inst_tip:"💡 עכשיו רק פתחו את BoostApp והתחברו פעם אחת — התוסף ימשיך משם. סיור מודרך יראה לכם הכול, והוא בודק עדכונים מדי יום ומציג באנר כשיש גרסה חדשה.",
+  disc_title:"גילוי נאות — חשוב לקרוא",
+  disc_1:"Boost Auto-Book הוא פרויקט עצמאי ולא־רשמי. הוא לא נוצר על ידי Boost / BoostApp (Training Harmony) או הסטודיו שלכם, לא קשור אליהם ולא מאושר על ידם.",
+  disc_2:"שום דבר לא נפרץ ושום דבר חשוד לא קורה: התוסף משתמש רק באותם נתונים שאתר BoostApp עצמו מציג לכם אחרי התחברות, וכל פעולה שהוא מבצע — הרשמה, ביטול, צפייה בהיסטוריה — היא פעולה שיכולתם לעשות ידנית באתר. הוא פשוט עושה את זה מהר יותר, וגם כשאתם ישנים.",
+  disc_3:"היסטוריית השיעורים נמשכת מהפרופיל האישי שלכם ונשמרת רק במחשב שלכם. היא לעולם לא מועלית, משותפת או נשלחת לשום מקום.",
+  priv_title:"הנתונים שלך נשארים שלך",
+  priv_1:"בלי שרתים, בלי אנליטיקס, בלי חשבונות. כל מה שהתוסף יודע נשמר באחסון המקומי של הדפדפן במחשב שלכם.",
+  priv_2:"אפשר לייצא, לייבא במחשב אחר, או למחוק את התוסף — והכול נעלם. הקוד פתוח, כך שכל אחד יכול לוודא זאת.",
+  foot_free:"חינמי וקוד פתוח", foot_latest:"גרסה אחרונה", foot_changelog:"יומן שינויים", foot_issue:"דיווח על בעיה / רעיון",
+  foot_unaff:"לא קשור ל‑BoostApp או ל‑Training Harmony."
+},
+uk: {
+  nav_features:"Можливості", nav_install:"Встановлення", nav_disclaimer:"Застереження",
+  eyebrow:"Неофіційний помічник для студій на BoostApp",
+  h1:"Ваші заняття бронюються <em>тієї ж миті</em>, коли відкривається запис",
+  sub:"Boost Auto-Book — безкоштовне розширення Chrome, яке стежить за вашими улюбленими груповими заняттями в BoostApp і реєструє вас автоматично, щойно відкривається 72-годинне вікно. Більше жодних опівнічних оновлень сторінки.",
+  btn_download:"⬇ Завантажити для Chrome", btn_loading:"перевіряю останню версію…", btn_meta:"v{v} · {s} · zip",
+  all_releases:"Усі версії та нотатки",
+  badge_free:"🆓 Безкоштовно, відкритий код", badge_langs:"🌍 5 мов · RTL", badge_theme:"🌗 Світла і темна", badge_local:"🔒 Дані лишаються у вас",
+  r_autobook:"Автозапис", r_signedin:"У системі · синхронізовано щойно", r_history:"Історія",
+  r_tab_up:"Найближчі", r_tab_slots:"Мої слоти", r_tab_sub:"Абонемент", r_tab_set:"Налаштування",
+  r_les1:"Пілатес — Реформер", r_les1m:"Понеділок · 18:00 · Студія 2", r_pill_booked:"Заброньовано ✓",
+  r_les2:"Йога Флоу", r_les2m:"Середа · 19:30 · відкриється за 2 д 3 год — забронюється автоматично", r_pill_sched:"Заплановано",
+  r_balance:"Баланс абонемента",
+  feat_title:"Що воно вміє",
+  feat_sub:"Усе, що ви й так робите на сайті BoostApp, — автоматизовано, упорядковано й трошки магічно.",
+  f1t:"Снайпінг як треба", f1b:"Розширення спрацьовує рівно в мить відкриття 72-годинного вікна реєстрації. Налаштували — і забули.",
+  f2t:"Щотижневі слоти", f2b:"Позначте заняття, на які ходите щотижня, — і вони бронюються для вас знову й знову, автоматично.",
+  f3t:"Три подання", f3b:"Список, тижнева сітка або повний календар періоду абонемента — з переглядом наступного.",
+  f4t:"Абонемент одним поглядом", f4b:"Залишок занять, денний ліміт, термін дії — завжди синхронізовано з вашим акаунтом BoostApp.",
+  f5t:"Панель історії", f5b:"Повноекранна панель усіх минулих занять зі щомісячною статистикою, серіями та особистими досягненнями.",
+  f6t:"Розмовляє вашою мовою", f6b:"Англійська, іврит, російська, українська й арабська — з повною підтримкою RTL і навчальним туром для новачків.",
+  inst_title:"Встановлення за 2 хвилини", inst_sub:"Без магазину, без акаунта — це проста тека, яку один раз завантажуєте в Chrome.",
+  s1t:"Завантажте й розпакуйте", s1b:"Натисніть зелену кнопку вгорі, потім розпакуйте файл у теку, яку збережете (наприклад, Документи).",
+  s2t:"Відкрийте сторінку розширень", s2b:"У Chrome скопіюйте <code>chrome://extensions</code> в адресний рядок і натисніть Enter.",
+  s3t:"Увімкніть режим розробника", s3b:"Це маленький перемикач у куті тієї сторінки.",
+  s4t:"Load unpacked", s4b:"Натисніть “Load unpacked”, оберіть розпаковану теку й закріпіть іконку на панелі. Готово!",
+  inst_tip:"💡 Далі просто відкрийте BoostApp і ввійдіть один раз — розширення зробить решту. Навчальний тур усе покаже, а щоденна перевірка повідомить банером про нову версію.",
+  disc_title:"Чесний дрібний шрифт",
+  disc_1:"Boost Auto-Book — незалежний, неофіційний проєкт. Він не створений Boost / BoostApp (Training Harmony) чи вашою студією, не пов'язаний із ними й не схвалений ними.",
+  disc_2:"Нічого не зламано й нічого підозрілого не відбувається: розширення використовує лише ті дані, які сайт BoostApp сам показує вам після входу, а кожна його дія — реєстрація, скасування, перегляд історії — це те, що ви могли б зробити вручну на сайті. Просто швидше, і навіть коли ви спите.",
+  disc_3:"Історія ваших занять береться з вашого власного профілю і зберігається лише на вашому комп'ютері. Вона ніколи нікуди не надсилається й не передається.",
+  priv_title:"Ваші дані — ваші",
+  priv_1:"Жодних серверів, аналітики чи акаунтів. Усе, що знає розширення, живе в локальному сховищі браузера на вашому комп'ютері.",
+  priv_2:"Можна експортувати, імпортувати на іншому комп'ютері або видалити розширення — і все зникне. Код відкритий, тож будь-хто може це перевірити.",
+  foot_free:"безкоштовно, відкритий код", foot_latest:"Остання версія", foot_changelog:"Журнал змін", foot_issue:"Повідомити про проблему / ідею",
+  foot_unaff:"Не пов'язано з BoostApp чи Training Harmony."
+},
+ar: {
+  nav_features:"المزايا", nav_install:"التثبيت", nav_disclaimer:"إخلاء مسؤولية",
+  eyebrow:"رفيق غير رسمي لاستوديوهات BoostApp",
+  h1:"حصصك تُحجز <em>في اللحظة</em> التي يُفتح فيها التسجيل",
+  sub:"Boost Auto-Book إضافة كروم مجانية تراقب حصصك الجماعية المفضلة في BoostApp وتسجّلك تلقائيًا لحظة فتح نافذة الـ72 ساعة — لا مزيد من تحديث الصفحة في منتصف الليل.",
+  btn_download:"⬇ تنزيل لكروم", btn_loading:"جارٍ فحص أحدث إصدار…", btn_meta:"الإصدار {v} · {s} · zip",
+  all_releases:"كل الإصدارات وملاحظاتها",
+  badge_free:"🆓 مجاني ومفتوح المصدر", badge_langs:"🌍 5 لغات · RTL", badge_theme:"🌗 فاتح وداكن", badge_local:"🔒 بياناتك تبقى على جهازك",
+  r_autobook:"الحجز التلقائي", r_signedin:"مسجّل الدخول · تمت المزامنة للتو", r_history:"السجلّ",
+  r_tab_up:"القادمة", r_tab_slots:"مواعيدي", r_tab_sub:"الاشتراك", r_tab_set:"الإعدادات",
+  r_les1:"بيلاتس — ريفورمر", r_les1m:"الاثنين · 18:00 · استوديو 2", r_pill_booked:"محجوز ✓",
+  r_les2:"يوغا فلو", r_les2m:"الأربعاء · 19:30 · يُفتح بعد يومين و3 ساعات — سيُحجز تلقائيًا", r_pill_sched:"مجدوَل",
+  r_balance:"رصيد الاشتراك",
+  feat_title:"ماذا تفعل الإضافة",
+  feat_sub:"كل ما تفعله أصلًا على موقع BoostApp — لكن آليًا ومنظّمًا وبلمسة سحرية.",
+  f1t:"اقتناص دقيق", f1b:"تنطلق الإضافة في اللحظة الدقيقة لفتح نافذة التسجيل (72 ساعة). اضبطها وانسَ الأمر.",
+  f2t:"مواعيد أسبوعية", f2b:"حدّد الحصص التي تحضرها كل أسبوع — وستُحجز لك مرة بعد مرة، تلقائيًا.",
+  f3t:"ثلاث طرق للعرض", f3b:"قائمة، أو شبكة أسبوعية، أو تقويم كامل لفترة الاشتراك — مع معاينة للفترة القادمة.",
+  f4t:"اشتراكك في لمحة", f4b:"الحصص المتبقية، الحد اليومي، تواريخ الصلاحية — دائمًا بالتزامن مع حسابك في BoostApp.",
+  f5t:"لوحة السجلّ", f5b:"لوحة بملء الصفحة لكل حصصك السابقة مع إحصاءات شهرية وسلاسل مواظبة وإنجازات شخصية.",
+  f6t:"تتحدث لغتك", f6b:"الإنجليزية والعبرية والروسية والأوكرانية والعربية — بدعم كامل للكتابة من اليمين إلى اليسار وجولة إرشادية للمستخدمين الجدد.",
+  inst_title:"التثبيت في دقيقتين", inst_sub:"بلا متجر وبلا حساب — مجرد مجلد بسيط تحمّله في كروم مرة واحدة.",
+  s1t:"نزّل وفكّ الضغط", s1b:"اضغط الزر الأخضر أعلاه، ثم فكّ ضغط الملف في مجلد ستحتفظ به (مثل «المستندات»).",
+  s2t:"افتح صفحة الإضافات", s2b:"في كروم، انسخ <code>chrome://extensions</code> إلى شريط العناوين واضغط Enter.",
+  s3t:"فعّل وضع المطوّر", s3b:"إنه المفتاح الصغير في زاوية تلك الصفحة.",
+  s4t:"Load unpacked", s4b:"اضغط “Load unpacked”، واختر المجلد الذي فككت ضغطه، وثبّت الأيقونة في الشريط. انتهيت!",
+  inst_tip:"💡 بعدها افتح BoostApp وسجّل الدخول مرة واحدة — والإضافة تتولى الباقي. جولة إرشادية ستعرّفك على كل شيء، وتفحص الإضافة التحديثات يوميًا وتعرض شريطًا عند صدور إصدار جديد.",
+  disc_title:"الكلام الصريح",
+  disc_1:"Boost Auto-Book مشروع مستقل وغير رسمي. لم تصنعه Boost / BoostApp (Training Harmony) ولا الاستوديو الخاص بك، ولا يرتبط بهما ولا يحظى بموافقتهما.",
+  disc_2:"لا اختراق ولا شيء مريب: تستخدم الإضافة فقط البيانات نفسها التي يعرضها لك موقع BoostApp بعد تسجيل الدخول، وكل ما تفعله — التسجيل، الإلغاء، عرض السجل — يمكنك فعله يدويًا على الموقع. هي فقط أسرع، وتعمل حتى وأنت نائم.",
+  disc_3:"يُجلب سجلّ حصصك من ملفك الشخصي أنت، ويُخزَّن على جهازك فقط. لا يُرفع ولا يُشارك ولا يُرسل إلى أي مكان أبدًا.",
+  priv_title:"بياناتك تبقى لك",
+  priv_1:"لا خوادم، لا تحليلات، لا حسابات. كل ما تعرفه الإضافة يعيش في التخزين المحلي لمتصفحك على جهازك.",
+  priv_2:"يمكنك تصديرها، أو استيرادها على جهاز آخر، أو حذف الإضافة — فيختفي كل شيء. الكود مفتوح المصدر ليتحقق منه أي شخص.",
+  foot_free:"مجاني ومفتوح المصدر", foot_latest:"أحدث إصدار", foot_changelog:"سجلّ التغييرات", foot_issue:"الإبلاغ عن مشكلة / فكرة",
+  foot_unaff:"لا صلة لنا بـ BoostApp أو Training Harmony."
+},
+ru: {
+  nav_features:"Возможности", nav_install:"Установка", nav_disclaimer:"Дисклеймер",
+  eyebrow:"Неофициальный помощник для студий на BoostApp",
+  h1:"Ваши занятия бронируются <em>в ту же секунду</em>, когда открывается запись",
+  sub:"Boost Auto-Book — бесплатное расширение Chrome, которое следит за вашими любимыми групповыми занятиями в BoostApp и записывает вас автоматически в момент открытия 72-часового окна. Больше никаких полуночных обновлений страницы.",
+  btn_download:"⬇ Скачать для Chrome", btn_loading:"проверяю последнюю версию…", btn_meta:"v{v} · {s} · zip",
+  all_releases:"Все версии и примечания",
+  badge_free:"🆓 Бесплатно, открытый код", badge_langs:"🌍 5 языков · RTL", badge_theme:"🌗 Светлая и тёмная", badge_local:"🔒 Данные остаются у вас",
+  r_autobook:"Автозапись", r_signedin:"В системе · синхронизировано только что", r_history:"История",
+  r_tab_up:"Ближайшие", r_tab_slots:"Мои слоты", r_tab_sub:"Абонемент", r_tab_set:"Настройки",
+  r_les1:"Пилатес — Реформер", r_les1m:"Понедельник · 18:00 · Студия 2", r_pill_booked:"Забронировано ✓",
+  r_les2:"Йога Флоу", r_les2m:"Среда · 19:30 · откроется через 2 д 3 ч — забронируется автоматически", r_pill_sched:"Запланировано",
+  r_balance:"Баланс абонемента",
+  feat_title:"Что умеет расширение",
+  feat_sub:"Всё, что вы и так делаете на сайте BoostApp, — автоматизировано, упорядочено и немного волшебно.",
+  f1t:"Снайпинг как надо", f1b:"Расширение срабатывает ровно в момент открытия 72-часового окна регистрации. Настроили — и забыли.",
+  f2t:"Еженедельные слоты", f2b:"Отметьте занятия, на которые ходите каждую неделю, — и они бронируются для вас снова и снова, автоматически.",
+  f3t:"Три вида", f3b:"Список, недельная сетка или полный календарь периода абонемента — с превью следующего.",
+  f4t:"Абонемент одним взглядом", f4b:"Остаток занятий, дневной лимит, срок действия — всегда синхронизировано с вашим аккаунтом BoostApp.",
+  f5t:"Панель истории", f5b:"Полноэкранная панель всех прошедших занятий с месячной статистикой, сериями и личными достижениями.",
+  f6t:"Говорит на вашем языке", f6b:"Английский, иврит, русский, украинский и арабский — с полной поддержкой RTL и обучающим туром для новичков.",
+  inst_title:"Установка за 2 минуты", inst_sub:"Без магазина и без аккаунта — это простая папка, которую вы один раз загружаете в Chrome.",
+  s1t:"Скачайте и распакуйте", s1b:"Нажмите зелёную кнопку выше, затем распакуйте файл в папку, которую сохраните (например, «Документы»).",
+  s2t:"Откройте страницу расширений", s2b:"В Chrome скопируйте <code>chrome://extensions</code> в адресную строку и нажмите Enter.",
+  s3t:"Включите режим разработчика", s3b:"Это маленький переключатель в углу той страницы.",
+  s4t:"Load unpacked", s4b:"Нажмите “Load unpacked”, выберите распакованную папку и закрепите иконку на панели. Готово!",
+  inst_tip:"💡 Дальше просто откройте BoostApp и войдите один раз — расширение сделает остальное. Обучающий тур всё покажет, а ежедневная проверка сообщит баннером о новой версии.",
+  disc_title:"Честный мелкий шрифт",
+  disc_1:"Boost Auto-Book — независимый, неофициальный проект. Он не создан Boost / BoostApp (Training Harmony) или вашей студией, не связан с ними и не одобрен ими.",
+  disc_2:"Ничего не взломано и ничего подозрительного не происходит: расширение использует только те данные, которые сайт BoostApp сам показывает вам после входа, а каждое его действие — запись, отмена, просмотр истории — это то, что вы могли бы сделать вручную на сайте. Просто быстрее, и даже пока вы спите.",
+  disc_3:"История ваших занятий берётся из вашего собственного профиля и хранится только на вашем компьютере. Она никогда никуда не отправляется и не передаётся.",
+  priv_title:"Ваши данные — ваши",
+  priv_1:"Никаких серверов, аналитики и аккаунтов. Всё, что знает расширение, живёт в локальном хранилище браузера на вашем компьютере.",
+  priv_2:"Можно экспортировать, импортировать на другом компьютере или удалить расширение — и всё исчезнет. Код открыт, так что любой может это проверить.",
+  foot_free:"бесплатно, открытый код", foot_latest:"Последняя версия", foot_changelog:"Журнал изменений", foot_issue:"Сообщить о проблеме / идее",
+  foot_unaff:"Не связано с BoostApp или Training Harmony."
+}
+};
+
+let LANG = "en";
+function t(key, params) {
+  let s = (I18N[LANG] && I18N[LANG][key] != null) ? I18N[LANG][key] : I18N.en[key];
+  if (s == null) return key;
+  if (params) for (const k in params) s = s.split("{" + k + "}").join(params[k]);
+  return s;
+}
+function applyLang(lang) {
+  LANG = I18N[lang] ? lang : "en";
+  document.documentElement.lang = LANG;
+  document.documentElement.dir = RTL.includes(LANG) ? "rtl" : "ltr";
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.getAttribute("data-i18n")); });
+  document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.getAttribute("data-i18n-html")); });
+  document.querySelectorAll("#langs button").forEach(b => b.classList.toggle("on", b.dataset.lang === LANG));
+  try { localStorage.setItem("bsab_site_lang", LANG); } catch (e) {}
+  if (releaseInfo) renderRelease();   // re-format the version chip in the new language
+  else document.getElementById("dlMeta").textContent = t("btn_loading");
+}
+document.querySelectorAll("#langs button").forEach(b => {
+  b.addEventListener("click", () => applyLang(b.dataset.lang));
+});
+
+// initial language: saved choice → browser language → English
+let initial = "en";
+try { initial = localStorage.getItem("bsab_site_lang") || ""; } catch (e) {}
+if (!I18N[initial]) {
+  const nav = (navigator.language || "en").slice(0, 2).toLowerCase();
+  initial = I18N[nav] ? nav : "en";
+}
+applyLang(initial);
+
+// ── one-click latest release ────────────────────────────────────────────────
+let releaseInfo = null;
+function fmtSize(bytes) {
+  if (!bytes) return "";
+  return bytes > 1048576 ? (bytes / 1048576).toFixed(1) + " MB" : Math.round(bytes / 1024) + " KB";
+}
+function renderRelease() {
+  const meta = document.getElementById("dlMeta");
+  const btn = document.getElementById("dlBtn");
+  const foot = document.getElementById("footVer");
+  if (!releaseInfo) return;
+  const v = releaseInfo.tag.replace(/^v/, "");
+  if (releaseInfo.url) btn.href = releaseInfo.url;
+  meta.removeAttribute("data-i18n");
+  meta.textContent = t("btn_meta", { v, s: fmtSize(releaseInfo.size) });
+  if (foot) foot.textContent = "v" + v;
+}
+fetch("https://api.github.com/repos/" + REPO + "/releases/latest")
+  .then(r => r.ok ? r.json() : Promise.reject(r.status))
+  .then(rel => {
+    const asset = (rel.assets || []).find(a => /\.zip$/i.test(a.name));
+    releaseInfo = {
+      tag: rel.tag_name || "",
+      url: asset ? asset.browser_download_url : null,
+      size: asset ? asset.size : 0
+    };
+    renderRelease();
+  })
+  .catch(() => {
+    // API unavailable (rate limit etc.) — the button already links to /releases/latest
+    document.getElementById("dlMeta").textContent = "";
+  });
+
+// ── reveal on scroll ────────────────────────────────────────────────────────
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll(".rv").forEach(el => io.observe(el));
+</script>
+</body>
+</html>
