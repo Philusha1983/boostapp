@@ -289,13 +289,24 @@ async function fitbitLogLesson(rec, durationMin) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
   });
-  if (res.status === 409) return { alreadyExists: true }; // idempotent retry
+  if (res.status === 409) {
+    console.log("[Boost Auto-Book] Fitbit: ALREADY_EXISTS (server already has it):", fitbitLessonKey(rec));
+    return { alreadyExists: true }; // idempotent retry
+  }
   if (res.status === 429) throw Object.assign(new Error("Google Health API rate limit hit"), { rateLimited: true });
   if (!res.ok) {
     const txt = await res.text().catch(() => "");
     throw new Error(`Exercise create failed (${res.status}) for ${fitbitLessonKey(rec)}: ${txt.slice(0, 200)}`);
   }
-  return res.json();
+  // Create returns a long-running Operation — an HTTP 200 can still carry a
+  // failure inside. Log the full payload (visible in the service-worker
+  // console) and surface any embedded error instead of counting it as synced.
+  const op = await res.json().catch(() => ({}));
+  console.log("[Boost Auto-Book] Fitbit create response for", fitbitLessonKey(rec), JSON.stringify(op));
+  if (op && op.error) {
+    throw new Error(`Exercise create operation failed for ${fitbitLessonKey(rec)}: ${JSON.stringify(op.error).slice(0, 200)}`);
+  }
+  return op;
 }
 
 // Syncs every attended lesson that (a) starts on/after sinceDate, (b) has
