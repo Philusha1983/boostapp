@@ -269,6 +269,9 @@ async function fitbitLogLesson(rec, durationMin) {
   const offSecEnd = Math.round(tzOffsetMs(STUDIO_TZ, new Date(endMs)) / 1000);
   const body = {
     name: `users/me/dataTypes/exercise/dataPoints/${ghDataPointId(rec)}`,
+    // MANUAL = "manually entered by the user" — without it the point lands
+    // as recordingMethod UNKNOWN, which the Fitbit app appears not to show.
+    dataSource: { recordingMethod: "MANUAL" },
     exercise: {
       interval: {
         startTime: new Date(startMs).toISOString(),
