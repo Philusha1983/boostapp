@@ -1682,10 +1682,22 @@ $("btnExport").onclick = async () => {
 $("btnDownload").onclick = async () => {
   let json = $("ioBox").value.trim();
   if (!json) { const r = await send({ cmd: "exportState" }); json = JSON.stringify(r.data, null, 2); $("ioBox").value = json; }
+  // Filename carries the signed-in user's name + backup date, so multiple
+  // backups (or several family members' backups) don't overwrite each other:
+  // boost-autobook-backup-<name>-YYYY-MM-DD.json
+  let who = "";
+  try {
+    const st = await send({ cmd: "getState" });
+    const name = st && st.client && st.client.name ? st.client.name.trim() : "";
+    // keep letters (any script), digits, spaces and dashes; collapse spaces to dashes
+    who = name.replace(/[^\p{L}\p{N} -]/gu, "").trim().replace(/\s+/g, "-");
+  } catch (e) {}
+  const d = new Date();
+  const date = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   const blob = new Blob([json], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "boost-autobook-backup.json";
+  a.download = "boost-autobook-backup" + (who ? "-" + who : "") + "-" + date + ".json";
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 };
