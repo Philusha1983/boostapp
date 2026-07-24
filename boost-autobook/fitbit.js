@@ -39,7 +39,14 @@ const GH_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const GH_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GH_REVOKE_URL = "https://oauth2.googleapis.com/revoke";
 const GH_API = "https://health.googleapis.com";
-const GH_SCOPE = "https://www.googleapis.com/auth/googlehealth.activity_and_fitness.writeonly";
+// writeonly: create the exercise sessions. The two readonly scopes: read the
+// wearable's rollups (heart rate, calories, steps, AZM) for the lesson window
+// so the logged workout carries real measured metrics instead of blanks.
+const GH_SCOPE = [
+  "https://www.googleapis.com/auth/googlehealth.activity_and_fitness.writeonly",
+  "https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly",
+  "https://www.googleapis.com/auth/googlehealth.health_metrics_and_measurements.readonly"
+].join(" ");
 // Modest per-run cap: a full first backfill of years of lessons is throttled
 // across several runs rather than firing hundreds of writes in one burst.
 const GH_MAX_LOGS_PER_RUN = 100;
@@ -243,6 +250,73 @@ async function ghApi(path, opts) {
 }
 
 // ---------------------------------------------------------------------------
+// Wearable metrics for a lesson window (rollUp endpoint)
+// ---------------------------------------------------------------------------
+// Rolls up one data type over [startMs, endMs) as a single window. Returns
+// the rollup value object, or null when there's no data / no read scope.
+async function ghRollupValue(dataType, startMs, endMs) {
+  try {
+    const res = await ghApi(`/v4/users/me/dataTypes/${dataType}/dataPoints:rollUp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        range: { startTime: new Date(startMs).toISOString(), endTime: new Date(endMs).toISOString() },
+        windowSize: Math.max(1, Math.round((endMs - startMs) / 1000)) + "s"
+      })
+    });
+    if (!res.ok) {
+      if (res.status === 403) console.log("[Boost Auto-Book] rollUp 403 — readonly scopes not granted yet (reconnect after adding them)");
+      return null;
+    }
+    const data = await res.json().catch(() => ({}));
+    for (const p of (data.rollupDataPoints || [])) {
+      for (const k of Object.keys(p)) {
+        if (k !== "startTime" && k !== "endTime") return p[k];
+      }
+    }
+    return null;
+  } catch (e) { return null; }
+}
+
+// Field names inside {DataType}RollupValue follow {field}{AggFn} — prefer the
+// documented names but fall back to the first numeric property so a naming
+// drift degrades gracefully instead of dropping the metric.
+function ghFirstNumber(obj, preferredKeys) {
+  if (!obj) return null;
+  for (const k of preferredKeys) {
+    if (obj[k] != null && isFinite(Number(obj[k]))) return Number(obj[k]);
+  }
+  for (const k of Object.keys(obj)) {
+    const v = Number(obj[k]);
+    if (isFinite(v)) return v;
+  }
+  return null;
+}
+
+// Builds a MetricsSummary for the lesson window from the wearable's data.
+// hasHeartRate tells the caller whether the watch's recording has arrived —
+// used to defer logging a just-finished lesson until the tracker syncs.
+async function fitbitFetchLessonMetrics(startMs, endMs) {
+  const out = { metrics: {}, hasHeartRate: false };
+  const [hr, cal, steps, azm] = await Promise.all([
+    ghRollupValue("heart-rate", startMs, endMs),
+    ghRollupValue("total-calories", startMs, endMs),
+    ghRollupValue("steps", startMs, endMs),
+    ghRollupValue("active-zone-minutes", startMs, endMs)
+  ]);
+  console.log("[Boost Auto-Book] lesson rollups:", JSON.stringify({ hr, cal, steps, azm }));
+  const avg = ghFirstNumber(hr, ["beatsPerMinuteAvg"]);
+  if (avg) { out.metrics.averageHeartRateBeatsPerMinute = String(Math.round(avg)); out.hasHeartRate = true; }
+  const kcal = ghFirstNumber(cal, ["caloriesKcalSum", "caloriesKcal"]);
+  if (kcal) out.metrics.caloriesKcal = Math.round(kcal);
+  const st = ghFirstNumber(steps, ["countSum", "stepsSum"]);
+  if (st != null) out.metrics.steps = String(Math.round(st));
+  const mins = ghFirstNumber(azm, ["minutesSum", "activeZoneMinutesSum"]);
+  if (mins != null) out.metrics.activeZoneMinutes = String(Math.round(mins));
+  return out;
+}
+
+// ---------------------------------------------------------------------------
 // Lesson sync
 // ---------------------------------------------------------------------------
 function fitbitLessonKey(rec) { return `${rec.date} ${rec.time} ${rec.className}`; }
@@ -262,7 +336,7 @@ function ghDataPointId(rec) {
 }
 
 // Logs one lesson as an exercise session data point.
-async function fitbitLogLesson(rec, durationMin) {
+async function fitbitLogLesson(rec, durationMin, metricsSummary) {
   const startMs = studioTimeMs(rec.date, rec.time);
   const endMs = startMs + durationMin * 60 * 1000;
   const offSec = Math.round(tzOffsetMs(STUDIO_TZ, new Date(startMs)) / 1000);
@@ -281,9 +355,10 @@ async function fitbitLogLesson(rec, durationMin) {
       },
       exerciseType: ghExerciseType(rec.className),
       displayName: rec.className || "Studio lesson",
-      // Required by the schema; all members optional — Fitbit fills metrics
-      // (calories, heart rate) from the wearable's own recording of the window.
-      metricsSummary: {},
+      // Required by the schema. Filled with the wearable's rollups for the
+      // window when available — Fitbit does NOT backfill these on its own
+      // for API-written sessions (verified: empty details in the app).
+      metricsSummary: metricsSummary || {},
       notes: [rec.teacher, rec.studio].filter(Boolean).join(" · ") || undefined
     }
   };
@@ -337,11 +412,23 @@ async function fitbitSyncLessons(historyStore) {
   }));
   pending.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
 
-  let added = 0, skipped = 0;
+  let added = 0, skipped = 0, deferred = 0;
   let error = null;
   for (const rec of pending.slice(0, GH_MAX_LOGS_PER_RUN)) {
     try {
-      await fitbitLogLesson(rec, durationMin);
+      const startMs = studioTimeMs(rec.date, rec.time);
+      const endMs = startMs + durationMin * 60 * 1000;
+      // Enrich with the wearable's measurements for the window. Only for
+      // reasonably recent lessons — a deep backfill shouldn't burn 4 read
+      // calls per ancient lesson.
+      let m = { metrics: {}, hasHeartRate: false };
+      const ageMs = now - endMs;
+      if (ageMs < 30 * 24 * 3600 * 1000) m = await fitbitFetchLessonMetrics(startMs, endMs);
+      // Just-ended lesson with no heart-rate data yet → the tracker probably
+      // hasn't synced to the Fitbit app. Defer (don't mark synced); the
+      // +50min retry alarm / 6h backstop will pick it up with metrics.
+      if (!m.hasHeartRate && ageMs < 6 * 3600 * 1000) { deferred++; continue; }
+      await fitbitLogLesson(rec, durationMin, m.metrics);
       synced[fitbitLessonKey(rec)] = Date.now();
       added++;
     } catch (e) {
@@ -357,11 +444,11 @@ async function fitbitSyncLessons(historyStore) {
   Object.keys(synced).forEach(k => { if (synced[k] < cutoff) delete synced[k]; });
 
   await setFitbitSynced(synced);
-  await setFitbitState({ lastSync: { at: Date.now(), added, skipped, error } });
+  await setFitbitState({ lastSync: { at: Date.now(), added, skipped, deferred, error } });
   if (added) {
     try { notify("Fitbit sync", `${added} lesson${added === 1 ? "" : "s"} logged as workouts.`); } catch (e) {}
   }
-  return { ok: !error, added, skipped, pending: Math.max(0, pending.length - added - skipped), error };
+  return { ok: !error, added, skipped, deferred, pending: Math.max(0, pending.length - added - skipped - deferred), error };
 }
 
 // Status snapshot for the popup — never exposes tokens or the client secret.

@@ -58,6 +58,7 @@ const I18N = {
     fb_reconnect: "⚠️ Access expired — reconnect below (Google Testing-mode tokens last 7 days)",
     fb_setup_hint: "In console.cloud.google.com: enable the Google Health API, create an OAuth client (Web application) with redirect URI {url}, add yourself as a test user with the activity_and_fitness.writeonly scope, then paste the Client ID + Secret here.",
     fb_last_sync: "Last sync: {when} — {added} added", fb_synced_total: "{n} lessons synced so far",
+    fb_deferred: "{n} waiting for watch data (auto-retries)",
     fb_sync_error: "⚠️ Last sync error: {err}",
     hint_upcoming: "Your booked lessons. Expand for participants and lesson content.",
     hint_upcoming_week: "Your booked lessons, laid out by weekday.",
@@ -1620,6 +1621,7 @@ function fbStatusLine(s) {
   if (s.syncedCount) parts.push(t("fb_synced_total", { n: s.syncedCount }));
   if (s.lastSync && s.lastSync.at) {
     parts.push(t("fb_last_sync", { when: fmtClock(s.lastSync.at), added: s.lastSync.added || 0 }));
+    if (s.lastSync.deferred) parts.push(t("fb_deferred", { n: s.lastSync.deferred }));
     if (s.lastSync.error) parts.push(t("fb_sync_error", { err: s.lastSync.error }));
   }
   return parts.join(" · ");
