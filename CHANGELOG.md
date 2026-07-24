@@ -6,6 +6,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+### Changed
+- Backup downloads are now named `boost-autobook-backup-<user>-<YYYY-MM-DD>.json`
+  (signed-in user's name + backup date), so repeated backups and different
+  accounts' backups don't overwrite each other.
+
 ## [1.3.1] — 2026-07-21
 
 ### Fixed
