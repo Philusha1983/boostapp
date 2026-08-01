@@ -136,6 +136,12 @@ async function ghTokenRequest(params) {
 async function fitbitConnect(clientId, clientSecret) {
   clientId = String(clientId || "").trim();
   clientSecret = String(clientSecret || "").trim();
+  // Disconnect keeps clientId/clientSecret in storage (only tokens are
+  // wiped), and the popup never re-displays the secret — so an empty field
+  // means "reuse the stored one", not "missing".
+  const stored = await getFitbitState();
+  if (!clientId) clientId = stored.clientId || "";
+  if (!clientSecret) clientSecret = stored.clientSecret || "";
   if (!clientId || !clientSecret) throw new Error("Missing Google OAuth Client ID / Client Secret");
   const redirectUri = chrome.identity.getRedirectURL();
   const verifier = makeCodeVerifier();

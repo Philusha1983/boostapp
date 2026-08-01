@@ -1644,9 +1644,10 @@ async function renderFitbit(status) {
 }
 if ($("fitbitCard")) {
   $("fbConnect").onclick = async () => {
+    // Empty fields are fine on reconnect — background falls back to the
+    // stored clientId/clientSecret (the secret is never re-displayed).
     const clientId = $("fbClientId").value.trim();
     const clientSecret = $("fbClientSecret").value.trim();
-    if (!clientId || !clientSecret) return toast("⚠️ " + t("fb_client") + " + " + t("fb_secret"));
     const r = await send({ cmd: "fitbitConnect", clientId, clientSecret });
     if (r && r.ok) toast(t("fb_connected")); else toast("⚠️ " + ((r && r.error) || "failed"));
     renderFitbit(r && r.status);
