@@ -360,7 +360,9 @@ async function fitbitLogLesson(rec, durationMin, metricsSummary) {
         endUtcOffset: offSecEnd + "s"
       },
       exerciseType: ghExerciseType(rec.className),
-      displayName: rec.className || "Studio lesson",
+      // Title shown in the Fitbit app — the schema has no structured venue
+      // field, so the studio name rides in the display name (and in notes).
+      displayName: [rec.className, rec.studio].filter(Boolean).join(" · ") || "Studio lesson",
       // Required by the schema. Filled with the wearable's rollups for the
       // window when available — Fitbit does NOT backfill these on its own
       // for API-written sessions (verified: empty details in the app).
