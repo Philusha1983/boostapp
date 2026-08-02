@@ -6,6 +6,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-08-01
+
+### Added
+- **Fitbit sync**: attended lessons are automatically logged to your Fitbit
+  account as workouts via the Google Health API, a few minutes after each
+  lesson ends. Each workout carries the class name and studio in its title
+  ("Stretching at Studio Training Harmony"), the correct exercise type
+  (Pilates, CrossFit, Calisthenics, …), and your tracker's measured metrics
+  for the lesson window — average heart rate, calories, steps, and active
+  zone minutes. Fitbit then shows the full heart-rate zone chart and syncs
+  the workout onward to Health Connect for other health apps.
+  - Set up in Settings → Fitbit sync: requires a free personal Google Cloud
+    project (enable "Google Health API", create a Web-application OAuth
+    client with the redirect URI shown in the card, add yourself as a test
+    user with the three googlehealth scopes), then paste the Client ID +
+    Secret and Connect.
+  - Syncs run ~5 minutes after each booked lesson ends (with an automatic
+    retry while waiting for the watch to sync), plus a 6-hourly backstop.
+    History backfills from your oldest fetched lesson; the "Sync lessons
+    from" date limits how far back.
+  - Lessons are deduplicated — re-syncing never creates duplicates.
+  - Note: while the Google project's consent screen is in "Testing" mode,
+    Google expires access every 7 days and the card asks to reconnect;
+    publish the consent screen ("In production") to make it permanent.
+
 ### Changed
 - Backup downloads are now named `boost-autobook-backup-<user>-<YYYY-MM-DD>.json`
   (signed-in user's name + backup date), so repeated backups and different
