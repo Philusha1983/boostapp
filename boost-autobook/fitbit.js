@@ -54,6 +54,12 @@ const GH_MAX_LOGS_PER_RUN = 100;
 // Class name → Google Health ExerciseType enum. First matching rule wins.
 // EXERCISE_CLASS is the fallback — it exists exactly for studio group lessons.
 const GH_CLASS_RULES = [
+  // Studio nicknames first (more specific than the generic keyword rules):
+  // "Training Harmony" = the studio's general CrossFit class, "Calisapiens"
+  // = its calisthenics class.
+  { re: /training\s*harmony/i, type: "CROSSFIT" },
+  { re: /calisapiens|calisthenic|קליסתניקה/i, type: "CALISTHENICS" },
+  { re: /crossfit|קרוספיט/i, type: "CROSSFIT" },
   { re: /pilates|פילאטיס/i, type: "PILATES" },
   { re: /yoga|יוגה/i, type: "YOGA" },
   { re: /spin|cycle|ספינינג|אופניים/i, type: "SPINNING" },
@@ -66,6 +72,19 @@ const GH_CLASS_RULES = [
   { re: /dance|ריקוד/i, type: "DANCING" },
 ];
 const GH_FALLBACK_TYPE = "EXERCISE_CLASS";
+
+// Studio nicknames → clear workout names for the title shown in health apps.
+// First matching rule wins; unmatched class names pass through unchanged.
+const GH_CLASS_DISPLAY_ALIASES = [
+  { re: /^training\s*harmony$/i, name: "CrossFit" },
+  { re: /^calisapiens$/i, name: "Calisthenics" },
+];
+function ghDisplayClassName(className) {
+  for (const a of GH_CLASS_DISPLAY_ALIASES) {
+    if (a.re.test((className || "").trim())) return a.name;
+  }
+  return className;
+}
 
 // ---------------------------------------------------------------------------
 // Storage (keys keep the bsab_fitbit name — it's still the Fitbit bridge)
@@ -361,8 +380,10 @@ async function fitbitLogLesson(rec, durationMin, metricsSummary) {
       },
       exerciseType: ghExerciseType(rec.className),
       // Title shown in the Fitbit app — the schema has no structured venue
-      // field, so the studio name rides in the display name (and in notes).
-      displayName: [rec.className, rec.studio].filter(Boolean).join(" · ") || "Studio lesson",
+      // field, so the studio rides in the display name: "<Lesson> at <Studio>".
+      // Nicknamed classes are translated to clear names first (see aliases).
+      displayName: [ghDisplayClassName(rec.className) || "Studio lesson", rec.studio]
+        .filter(Boolean).join(" at "),
       // Required by the schema. Filled with the wearable's rollups for the
       // window when available — Fitbit does NOT backfill these on its own
       // for API-written sessions (verified: empty details in the app).
