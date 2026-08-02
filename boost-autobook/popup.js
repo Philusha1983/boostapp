@@ -48,6 +48,18 @@ const I18N = {
   en: {
     tab_upcoming: "Upcoming", tab_schedule: "Weekly schedule", tab_slots: "My weekly slots",
     tab_subscription: "Subscription", tab_settings: "Settings",
+    fb_title: "Fitbit sync",
+    fb_hint: "Logs attended lessons to Fitbit as workouts — automatically, a few minutes after each lesson ends. Fitbit pairs them with your tracker's heart-rate data and syncs them to Health Connect. The date below only limits how far back to backfill.",
+    fb_client: "Google OAuth Client ID", fb_secret: "Client Secret",
+    fb_connect: "Connect Fitbit", fb_disconnect: "Disconnect",
+    fb_duration: "Lesson length (minutes)", fb_since: "Sync lessons from (date)",
+    fb_auto: "Sync automatically", fb_sync_now: "Sync now", fb_syncing: "Syncing…",
+    fb_connected: "✅ Connected (Google Health API)", fb_not_connected: "Not connected",
+    fb_reconnect: "⚠️ Access expired — reconnect below (Google Testing-mode tokens last 7 days)",
+    fb_setup_hint: "In console.cloud.google.com: enable the Google Health API, create an OAuth client (Web application) with redirect URI {url}, add yourself as a test user with the activity_and_fitness.writeonly scope, then paste the Client ID + Secret here.",
+    fb_last_sync: "Last sync: {when} — {added} added", fb_synced_total: "{n} lessons synced so far",
+    fb_deferred: "{n} waiting for watch data (auto-retries)",
+    fb_sync_error: "⚠️ Last sync error: {err}",
     hint_upcoming: "Your booked lessons. Expand for participants and lesson content.",
     hint_upcoming_week: "Your booked lessons, laid out by weekday.",
     hint_schedule: "Tick the slots you want — the extension books them every week when registration opens.",
@@ -120,6 +132,18 @@ const I18N = {
   he: {
     tab_upcoming: "שיעורים קרובים", tab_schedule: "מערכת שבועית", tab_slots: "השיעורים השבועיים שלי",
     tab_subscription: "המנוי שלי", tab_settings: "הגדרות",
+    fb_title: "סנכרון Fitbit",
+    fb_hint: "רושם שיעורים שהשתתפתם בהם כאימונים ב‑Fitbit — אוטומטית, דקות ספורות אחרי סיום השיעור. Fitbit מצמיד את נתוני הדופק מהשעון ומסנכרן ל‑Health Connect. התאריך למטה קובע רק כמה אחורה למלא היסטוריה.",
+    fb_client: "Google OAuth Client ID", fb_secret: "Client Secret",
+    fb_connect: "חיבור Fitbit", fb_disconnect: "ניתוק",
+    fb_duration: "אורך שיעור (דקות)", fb_since: "סנכרון שיעורים מ־(תאריך)",
+    fb_auto: "סנכרון אוטומטי", fb_sync_now: "סנכרן עכשיו", fb_syncing: "מסנכרן…",
+    fb_connected: "✅ מחובר (Google Health API)", fb_not_connected: "לא מחובר",
+    fb_reconnect: "⚠️ הגישה פגה — התחברו מחדש למטה (טוקנים של Google במצב Testing תקפים ל‑7 ימים)",
+    fb_setup_hint: "ב‑console.cloud.google.com: הפעילו את Google Health API, צרו OAuth client‏ (Web application) עם redirect URI‏ {url}, הוסיפו את עצמכם כמשתמש בדיקה עם הרשאת activity_and_fitness.writeonly, ואז הדביקו כאן את ה‑Client ID וה‑Secret.",
+    fb_last_sync: "סנכרון אחרון: {when} — נוספו {added}", fb_synced_total: "{n} שיעורים סונכרנו עד כה",
+    fb_deferred: "{n} ממתינים לנתוני השעון (ינוסה שוב אוטומטית)",
+    fb_sync_error: "⚠️ שגיאת סנכרון אחרונה: {err}",
     hint_upcoming: "השיעורים שהזמנת. הרחב לרשימת משתתפים ותוכן השיעור.",
     hint_upcoming_week: "השיעורים שהזמנת, מסודרים לפי ימי השבוע.",
     hint_schedule: "סמן את המשבצות הרצויות — התוסף יזמין אותן בכל שבוע כשההרשמה נפתחת.",
@@ -192,6 +216,18 @@ const I18N = {
   ru: {
     tab_upcoming: "Ближайшие", tab_schedule: "Расписание", tab_slots: "Мои недельные слоты",
     tab_subscription: "Абонемент", tab_settings: "Настройки",
+    fb_title: "Синхронизация с Fitbit",
+    fb_hint: "Записывает посещённые занятия в Fitbit как тренировки — автоматически, через несколько минут после конца занятия. Fitbit добавляет пульс с трекера и синхронизирует в Health Connect. Дата ниже задаёт только глубину заполнения истории.",
+    fb_client: "Google OAuth Client ID", fb_secret: "Client Secret",
+    fb_connect: "Подключить Fitbit", fb_disconnect: "Отключить",
+    fb_duration: "Длительность занятия (минуты)", fb_since: "Синхронизировать занятия с (дата)",
+    fb_auto: "Синхронизировать автоматически", fb_sync_now: "Синхронизировать сейчас", fb_syncing: "Синхронизация…",
+    fb_connected: "✅ Подключено (Google Health API)", fb_not_connected: "Не подключено",
+    fb_reconnect: "⚠️ Доступ истёк — подключитесь заново ниже (токены Google в режиме Testing живут 7 дней)",
+    fb_setup_hint: "В console.cloud.google.com: включите Google Health API, создайте OAuth client (Web application) с redirect URI {url}, добавьте себя как test user со scope activity_and_fitness.writeonly, затем вставьте сюда Client ID и Secret.",
+    fb_last_sync: "Последняя синхронизация: {when} — добавлено {added}", fb_synced_total: "Всего синхронизировано занятий: {n}",
+    fb_deferred: "{n} ждут данных с часов (повтор автоматически)",
+    fb_sync_error: "⚠️ Ошибка последней синхронизации: {err}",
     hint_upcoming: "Ваши записи на занятия. Разверните для списка участников и описания.",
     hint_upcoming_week: "Ваши записи, разложенные по дням недели.",
     hint_schedule: "Отметьте нужные слоты — расширение бронирует их каждую неделю при открытии записи.",
@@ -264,6 +300,18 @@ const I18N = {
   uk: {
     tab_upcoming: "Найближчі", tab_schedule: "Розклад", tab_slots: "Мої тижневі слоти",
     tab_subscription: "Абонемент", tab_settings: "Налаштування",
+    fb_title: "Синхронізація з Fitbit",
+    fb_hint: "Записує відвідані заняття у Fitbit як тренування — автоматично, за кілька хвилин після завершення заняття. Fitbit додає пульс із трекера й синхронізує в Health Connect. Дата нижче визначає лише глибину заповнення історії.",
+    fb_client: "Google OAuth Client ID", fb_secret: "Client Secret",
+    fb_connect: "Підключити Fitbit", fb_disconnect: "Відключити",
+    fb_duration: "Тривалість заняття (хвилини)", fb_since: "Синхронізувати заняття з (дата)",
+    fb_auto: "Синхронізувати автоматично", fb_sync_now: "Синхронізувати зараз", fb_syncing: "Синхронізація…",
+    fb_connected: "✅ Підключено (Google Health API)", fb_not_connected: "Не підключено",
+    fb_reconnect: "⚠️ Доступ закінчився — підключіться знову нижче (токени Google у режимі Testing діють 7 днів)",
+    fb_setup_hint: "У console.cloud.google.com: увімкніть Google Health API, створіть OAuth client (Web application) з redirect URI {url}, додайте себе як test user зі scope activity_and_fitness.writeonly, потім вставте сюди Client ID і Secret.",
+    fb_last_sync: "Остання синхронізація: {when} — додано {added}", fb_synced_total: "Усього синхронізовано занять: {n}",
+    fb_deferred: "{n} чекають на дані з годинника (повтор автоматично)",
+    fb_sync_error: "⚠️ Помилка останньої синхронізації: {err}",
     hint_upcoming: "Ваші записи на заняття. Розгорніть для списку учасників та опису.",
     hint_upcoming_week: "Ваші записи, розкладені за днями тижня.",
     hint_schedule: "Позначте потрібні слоти — розширення бронює їх щотижня, коли відкривається запис.",
@@ -336,6 +384,18 @@ const I18N = {
   ar: {
     tab_upcoming: "القادمة", tab_schedule: "الجدول الأسبوعي", tab_slots: "مواعيدي الأسبوعية",
     tab_subscription: "اشتراكي", tab_settings: "الإعدادات",
+    fb_title: "مزامنة Fitbit",
+    fb_hint: "يسجّل الدروس التي حضرتها كتمارين في Fitbit — تلقائيًا بعد دقائق من انتهاء الدرس. يضيف Fitbit نبض القلب من الساعة ويزامن إلى Health Connect. التاريخ أدناه يحدّد فقط مدى الرجوع في السجل.",
+    fb_client: "Google OAuth Client ID", fb_secret: "Client Secret",
+    fb_connect: "ربط Fitbit", fb_disconnect: "فصل",
+    fb_duration: "مدة الدرس (دقائق)", fb_since: "مزامنة الدروس من (تاريخ)",
+    fb_auto: "مزامنة تلقائية", fb_sync_now: "زامن الآن", fb_syncing: "جارٍ المزامنة…",
+    fb_connected: "✅ متصل (Google Health API)", fb_not_connected: "غير متصل",
+    fb_reconnect: "⚠️ انتهت صلاحية الوصول — أعد الاتصال أدناه (رموز Google في وضع Testing تدوم 7 أيام)",
+    fb_setup_hint: "في console.cloud.google.com: فعّل Google Health API، أنشئ OAuth client‏ (Web application) مع redirect URI‏ {url}، أضف نفسك كمستخدم اختبار مع صلاحية activity_and_fitness.writeonly، ثم الصق هنا Client ID و‑Secret.",
+    fb_last_sync: "آخر مزامنة: {when} — أُضيف {added}", fb_synced_total: "تمت مزامنة {n} دروس حتى الآن",
+    fb_deferred: "{n} بانتظار بيانات الساعة (إعادة محاولة تلقائية)",
+    fb_sync_error: "⚠️ خطأ آخر مزامنة: {err}",
     hint_upcoming: "حصصك المحجوزة. وسّع لعرض المشاركين ومحتوى الحصة.",
     hint_upcoming_week: "حصصك المحجوزة، مرتّبة حسب أيام الأسبوع.",
     hint_schedule: "حدّد الأوقات التي تريدها — تحجزها الإضافة كل أسبوع عند فتح التسجيل.",
@@ -1528,6 +1588,7 @@ async function refresh() {
   applyTheme(config.theme || "system");
   const plan = await getPlan();   // month-plan rollup for the chips (storage-only, cheap)
   renderTargets(targets || [], plan);
+  renderFitbit();                 // fire-and-forget — settings card only
 }
 
 $("checkNow").onclick = async () => { $("checkNow").textContent = t("checking"); await send({ cmd: "checkNow" }); $("checkNow").textContent = t("checkNow"); refresh(); };
@@ -1599,6 +1660,68 @@ $("saveCfg").onclick = async () => {
   toast(t("settingsSaved"));
   renderSchedule();
 };
+// ---------------------------------------------------------------------------
+// Fitbit sync card (settings panel)
+// ---------------------------------------------------------------------------
+function fbStatusLine(s) {
+  if (!s.connected) return s.needsReconnect ? t("fb_reconnect") : t("fb_not_connected");
+  const parts = [t("fb_connected")];
+  if (s.syncedCount) parts.push(t("fb_synced_total", { n: s.syncedCount }));
+  if (s.lastSync && s.lastSync.at) {
+    parts.push(t("fb_last_sync", { when: fmtClock(s.lastSync.at), added: s.lastSync.added || 0 }));
+    if (s.lastSync.deferred) parts.push(t("fb_deferred", { n: s.lastSync.deferred }));
+    if (s.lastSync.error) parts.push(t("fb_sync_error", { err: s.lastSync.error }));
+  }
+  return parts.join(" · ");
+}
+async function renderFitbit(status) {
+  if (!$("fitbitCard")) return;
+  const s = status || await send({ cmd: "fitbitStatus" });
+  if (!s) return;
+  $("fbStatus").textContent = fbStatusLine(s);
+  $("fbSetup").style.display = s.connected ? "none" : "";
+  $("fbControls").style.display = s.connected ? "" : "none";
+  if (!s.connected) {
+    if (!$("fbClientId").value) $("fbClientId").value = s.clientId || "";
+    $("fbSetupHint").textContent = t("fb_setup_hint", { url: s.redirectUrl || "" });
+  } else {
+    $("fbDuration").value = s.durationMin || 60;
+    $("fbSince").value = s.sinceDate || "";
+    $("fbAutoSync").checked = s.autoSync !== false;
+  }
+}
+if ($("fitbitCard")) {
+  $("fbConnect").onclick = async () => {
+    // Empty fields are fine on reconnect — background falls back to the
+    // stored clientId/clientSecret (the secret is never re-displayed).
+    const clientId = $("fbClientId").value.trim();
+    const clientSecret = $("fbClientSecret").value.trim();
+    const r = await send({ cmd: "fitbitConnect", clientId, clientSecret });
+    if (r && r.ok) toast(t("fb_connected")); else toast("⚠️ " + ((r && r.error) || "failed"));
+    renderFitbit(r && r.status);
+  };
+  $("fbDisconnect").onclick = async () => {
+    const r = await send({ cmd: "fitbitDisconnect" });
+    renderFitbit(r && r.status);
+  };
+  $("fbSyncNow").onclick = async () => {
+    $("fbSyncNow").textContent = t("fb_syncing");
+    const r = await send({ cmd: "fitbitSyncNow" });
+    $("fbSyncNow").textContent = t("fb_sync_now");
+    if (r && r.error) toast("⚠️ " + r.error);
+    else toast(t("fb_last_sync", { when: fmtClock(Date.now()), added: (r && r.added) || 0 }));
+    renderFitbit(r && r.status);
+  };
+  const fbSaveOpts = async () => {
+    // sinceDate always sent as a string: "" clears the boundary (= sync all fetched history)
+    const r = await send({ cmd: "fitbitSetOpts", durationMin: Number($("fbDuration").value) || 60, autoSync: $("fbAutoSync").checked, sinceDate: $("fbSince").value });
+    renderFitbit(r && r.status);
+  };
+  $("fbDuration").onchange = fbSaveOpts;
+  $("fbSince").onchange = fbSaveOpts;
+  $("fbAutoSync").onchange = fbSaveOpts;
+}
+
 // backup / transfer
 $("btnExport").onclick = async () => {
   const r = await send({ cmd: "exportState" });

@@ -59,6 +59,7 @@
       tour_fullpage_t: "Need more room?",
       tour_fullpage_b: "This opens the whole dashboard as a full browser page — same features, roomier layout with multi-column lists and a bigger calendar.",
       wn_130_1: "⛶ Full-page mode — open the dashboard as a browser tab with a wide, multi-column layout (button in the header)",
+      wn_140_1: "⌚ Fitbit sync — attended lessons are auto-logged to Fitbit as workouts (with heart rate & calories) minutes after class, and flow on to Health Connect. Set it up in Settings.",
       tour_finish_t: "You're all set! ✅",
       tour_finish_b: "Questions or ideas? Use the Feedback link in the footer. Replay this tour anytime with 🎓 Tour.",
       wn_title: "✨ What's new",
@@ -96,6 +97,7 @@
       tour_fullpage_t: "צריך יותר מקום?",
       tour_fullpage_b: "פותח את כל הדשבורד כעמוד דפדפן מלא — אותן יכולות, פריסה מרווחת עם רשימות במספר עמודות ולוח שנה גדול יותר.",
       wn_130_1: "⛶ מצב מסך מלא — פתחו את הדשבורד כלשונית דפדפן עם פריסה רחבה במספר עמודות (כפתור בכותרת)",
+      wn_140_1: "⌚ סנכרון Fitbit — שיעורים שהשתתפתם בהם נרשמים אוטומטית כאימונים ב‑Fitbit (כולל דופק וקלוריות) דקות אחרי השיעור, וממשיכים ל‑Health Connect. ההגדרה בלשונית ההגדרות.",
       tour_finish_t: "הכול מוכן! ✅",
       tour_finish_b: "שאלות או רעיונות? קישור המשוב בתחתית. אפשר להפעיל את הסיור שוב בכל רגע עם 🎓 סיור.",
       wn_title: "✨ מה חדש",
@@ -133,6 +135,7 @@
       tour_fullpage_t: "Нужно больше места?",
       tour_fullpage_b: "Открывает весь дашборд как полноценную страницу браузера — те же функции, просторная раскладка с многоколоночными списками и большим календарём.",
       wn_130_1: "⛶ Полноэкранный режим — откройте дашборд как вкладку браузера с широкой многоколоночной раскладкой (кнопка в шапке)",
+      wn_140_1: "⌚ Синхронизация с Fitbit — посещённые занятия автоматически записываются в Fitbit как тренировки (с пульсом и калориями) через несколько минут после занятия и попадают в Health Connect. Настройка — во вкладке настроек.",
       tour_finish_t: "Всё готово! ✅",
       tour_finish_b: "Вопросы или идеи? Ссылка «Feedback» внизу. Повторить тур — 🎓 Тур.",
       wn_title: "✨ Что нового",
@@ -170,6 +173,7 @@
       tour_fullpage_t: "Потрібно більше місця?",
       tour_fullpage_b: "Відкриває весь дашборд як повноцінну сторінку браузера — ті самі функції, просторе компонування з багатоколонковими списками та більшим календарем.",
       wn_130_1: "⛶ Повноекранний режим — відкрийте дашборд як вкладку браузера з широким багатоколонковим компонуванням (кнопка в шапці)",
+      wn_140_1: "⌚ Синхронізація з Fitbit — відвідані заняття автоматично записуються у Fitbit як тренування (з пульсом і калоріями) за кілька хвилин після заняття та потрапляють у Health Connect. Налаштування — у вкладці налаштувань.",
       tour_finish_t: "Усе готово! ✅",
       tour_finish_b: "Питання чи ідеї? Посилання «Feedback» унизу. Повторити тур — 🎓 Тур.",
       wn_title: "✨ Що нового",
@@ -207,6 +211,7 @@
       tour_fullpage_t: "تحتاج مساحة أكبر؟",
       tour_fullpage_b: "يفتح لوحة التحكم كاملة كصفحة متصفح — الميزات نفسها بتخطيط أرحب مع قوائم متعددة الأعمدة وتقويم أكبر.",
       wn_130_1: "⛶ وضع الصفحة الكاملة — افتح لوحة التحكم كتبويب متصفح بتخطيط عريض متعدد الأعمدة (الزر في الأعلى)",
+      wn_140_1: "⌚ مزامنة Fitbit — تُسجَّل الدروس التي حضرتها تلقائيًا كتمارين في Fitbit (مع نبض القلب والسعرات) بعد دقائق من الدرس، وتصل إلى Health Connect. الإعداد في تبويب الإعدادات.",
       tour_finish_t: "كل شيء جاهز! ✅",
       tour_finish_b: "أسئلة أو أفكار؟ رابط Feedback في الأسفل. أعد الجولة في أي وقت عبر 🎓 جولة.",
       wn_title: "✨ ما الجديد",
@@ -244,6 +249,7 @@
   // items: i18n keys listed on the update card.
   // tourKeys: keys of TOUR steps to spotlight via the "Show me" button.
   const WHATS_NEW = {
+    "1.4.0": { items: ["wn_140_1"], tourKeys: [] },
     "1.3.0": { items: ["wn_130_1"], tourKeys: ["tour_fullpage"] },
     "1.2.0": { items: ["wn_120_1", "wn_120_2"], tourKeys: [] }
   };
