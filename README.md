@@ -29,8 +29,17 @@ window opens — no more refreshing the page at midnight.
 - 🗓️ **Three views** — list, week grid, or a full calendar of your subscription period (with a preview of the next one)
 - 💳 **Subscription at a glance** — entries left, daily cap, validity, all synced live
 - 📊 **History dashboard** — a "Wrapped"-style page of your past classes with monthly stats, streaks and achievements
+- ⌚ **Fitbit & Health Connect sync** — attended lessons are logged to Fitbit automatically minutes after class, with your tracker's heart rate, zones and calories, and flow on to Health Connect for all your health apps
 - 🎓 **Guided tour** — a walkthrough on first run, plus a "What's new" card after every update
 - 🌍 **5 languages** — English, Hebrew, Russian, Ukrainian, Arabic, with full RTL support and light/dark themes
+
+<p align="center">
+  <img src="docs/assets/fitbit-crossfit.png" width="235" alt="A CrossFit lesson synced to the Fitbit app with heart-rate zones and calories">
+  &nbsp;&nbsp;
+  <img src="docs/assets/fitbit-stretching.png" width="235" alt="A stretching lesson synced to the Fitbit app with heart-rate zones and calories">
+  <br>
+  <em>Real synced lessons in the Fitbit app — logged automatically, with heart-rate zones and calories from your tracker.</em>
+</p>
 
 Works out of the box with **Training Harmony** (`app.boostapp.co.il`) and is
 configurable for any BoostApp studio. Full feature and technical details:

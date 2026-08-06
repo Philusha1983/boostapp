@@ -121,6 +121,10 @@
 
   /* ── sections ─────────────────────────────────────── */
   section { padding:70px 0; }
+  /* Fitbit sync screenshots (features section) */
+  .fitshots { display:flex; gap:22px; justify-content:center; flex-wrap:wrap; margin-top:44px; }
+  .fitshots img { width:250px; max-width:78vw; border-radius:22px; border:1px solid var(--line); box-shadow:0 16px 44px rgba(0,0,0,.28); }
+  .fitshots-cap { text-align:center; margin-top:14px; }
   .sec-title { font-size:clamp(24px,3.2vw,32px); font-weight:800; letter-spacing:-.4px; margin-bottom:10px; text-align:center; }
   .sec-sub { text-align:center; color:var(--muted); max-width:560px; margin:0 auto 42px; font-size:15px; }
   .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
@@ -280,7 +284,13 @@
       <div class="feat rv"><div class="ico">💳</div><h3 data-i18n="f4t">Subscription at a glance</h3><p data-i18n="f4b">Entries left, daily cap, validity dates — always in sync with your BoostApp account.</p></div>
       <div class="feat rv"><div class="ico">📊</div><h3 data-i18n="f5t">History dashboard</h3><p data-i18n="f5b">A full-page dashboard of all your past classes with monthly stats, streaks and personal highlights.</p></div>
       <div class="feat rv"><div class="ico">🌍</div><h3 data-i18n="f6t">Speaks your language</h3><p data-i18n="f6b">English, Hebrew, Russian, Ukrainian and Arabic — with full right-to-left support and a guided tour for new users.</p></div>
+      <div class="feat rv"><div class="ico">⌚</div><h3 data-i18n="f7t">Synced to Fitbit &amp; Health Connect</h3><p data-i18n="f7b">Attended lessons are logged to Fitbit automatically minutes after class — with your tracker's heart rate, zones and calories — and flow on to Health Connect for all your health apps.</p></div>
     </div>
+    <div class="fitshots">
+      <img class="rv" src="assets/fitbit-crossfit.png" alt="A CrossFit lesson synced to the Fitbit app with heart-rate zones and calories" loading="lazy">
+      <img class="rv" src="assets/fitbit-stretching.png" alt="A stretching lesson synced to the Fitbit app with heart-rate zones and calories" loading="lazy">
+    </div>
+    <p class="sec-sub rv fitshots-cap" data-i18n="fit_cap">Real synced lessons in the Fitbit app — logged automatically, with heart-rate zones and calories from your tracker.</p>
   </div>
 </section>
 
@@ -373,6 +383,8 @@ en: {
   f4t:"Subscription at a glance", f4b:"Entries left, daily cap, validity dates — always in sync with your BoostApp account.",
   f5t:"History dashboard", f5b:"A full-page dashboard of all your past classes with monthly stats, streaks and personal highlights.",
   f6t:"Speaks your language", f6b:"English, Hebrew, Russian, Ukrainian and Arabic — with full right-to-left support and a guided tour for new users.",
+  f7t:"Synced to Fitbit & Health Connect", f7b:"Attended lessons are logged to Fitbit automatically minutes after class — with your tracker's heart rate, zones and calories — and flow on to Health Connect for all your health apps.",
+  fit_cap:"Real synced lessons in the Fitbit app — logged automatically, with heart-rate zones and calories from your tracker.",
   inst_title:"Installed in 2 minutes", inst_sub:"No store, no account — it's a simple folder you load into Chrome once.",
   s1t:"Download & unzip", s1b:"Hit the green button above, then unzip the file into a folder you'll keep (e.g. Documents).",
   s2t:"Open the extensions page", s2b:"In Chrome, copy <code>chrome://extensions</code> into the address bar and press Enter.",
@@ -421,6 +433,8 @@ he: {
   f4t:"המנוי במבט אחד", f4b:"כניסות שנותרו, מגבלה יומית, תוקף — תמיד מסונכרן עם חשבון ה‑BoostApp שלכם.",
   f5t:"לוח היסטוריה", f5b:"דשבורד במסך מלא של כל השיעורים שעברתם, עם סטטיסטיקות חודשיות, רצפים והישגים אישיים.",
   f6t:"מדבר בשפה שלך", f6b:"עברית, אנגלית, רוסית, אוקראינית וערבית — עם תמיכה מלאה בימין־לשמאל וסיור מודרך למשתמשים חדשים.",
+  f7t:"מסונכרן ל‑Fitbit ול‑Health Connect", f7b:"שיעורים שהשתתפתם בהם נרשמים ל‑Fitbit אוטומטית דקות אחרי השיעור — עם דופק, אזורי דופק וקלוריות מהשעון — וממשיכים ל‑Health Connect לכל אפליקציות הבריאות שלכם.",
+  fit_cap:"שיעורים אמיתיים שסונכרנו לאפליקציית Fitbit — נרשמו אוטומטית, עם אזורי דופק וקלוריות מהשעון.",
   inst_title:"התקנה בשתי דקות", inst_sub:"בלי חנות, בלי חשבון — תיקייה פשוטה שטוענים לכרום פעם אחת.",
   s1t:"הורדה וחילוץ", s1b:"לחצו על הכפתור הירוק למעלה, ואז חלצו את הקובץ לתיקייה שתישאר אצלכם (למשל מסמכים).",
   s2t:"פתחו את דף התוספים", s2b:"בכרום, העתיקו <code>chrome://extensions</code> לשורת הכתובת ולחצו Enter.",
@@ -469,6 +483,8 @@ uk: {
   f4t:"Абонемент одним поглядом", f4b:"Залишок занять, денний ліміт, термін дії — завжди синхронізовано з вашим акаунтом BoostApp.",
   f5t:"Панель історії", f5b:"Повноекранна панель усіх минулих занять зі щомісячною статистикою, серіями та особистими досягненнями.",
   f6t:"Розмовляє вашою мовою", f6b:"Англійська, іврит, російська, українська й арабська — з повною підтримкою RTL і навчальним туром для новачків.",
+  f7t:"Синхронізація з Fitbit і Health Connect", f7b:"Відвідані заняття автоматично записуються у Fitbit за кілька хвилин після заняття — з пульсом, зонами й калоріями з трекера — і потрапляють у Health Connect для всіх ваших застосунків здоров'я.",
+  fit_cap:"Справжні синхронізовані заняття в застосунку Fitbit — записані автоматично, із зонами пульсу й калоріями з трекера.",
   inst_title:"Встановлення за 2 хвилини", inst_sub:"Без магазину, без акаунта — це проста тека, яку один раз завантажуєте в Chrome.",
   s1t:"Завантажте й розпакуйте", s1b:"Натисніть зелену кнопку вгорі, потім розпакуйте файл у теку, яку збережете (наприклад, Документи).",
   s2t:"Відкрийте сторінку розширень", s2b:"У Chrome скопіюйте <code>chrome://extensions</code> в адресний рядок і натисніть Enter.",
@@ -517,6 +533,8 @@ ar: {
   f4t:"اشتراكك في لمحة", f4b:"الحصص المتبقية، الحد اليومي، تواريخ الصلاحية — دائمًا بالتزامن مع حسابك في BoostApp.",
   f5t:"لوحة السجلّ", f5b:"لوحة بملء الصفحة لكل حصصك السابقة مع إحصاءات شهرية وسلاسل مواظبة وإنجازات شخصية.",
   f6t:"تتحدث لغتك", f6b:"الإنجليزية والعبرية والروسية والأوكرانية والعربية — بدعم كامل للكتابة من اليمين إلى اليسار وجولة إرشادية للمستخدمين الجدد.",
+  f7t:"مزامنة مع Fitbit و‑Health Connect", f7b:"تُسجَّل الدروس التي حضرتها في Fitbit تلقائيًا بعد دقائق من الدرس — مع نبض القلب ومناطقه والسعرات من الساعة — وتصل إلى Health Connect لكل تطبيقات الصحة لديك.",
+  fit_cap:"دروس حقيقية مزامنة في تطبيق Fitbit — سُجِّلت تلقائيًا مع مناطق نبض القلب والسعرات من الساعة.",
   inst_title:"التثبيت في دقيقتين", inst_sub:"بلا متجر وبلا حساب — مجرد مجلد بسيط تحمّله في كروم مرة واحدة.",
   s1t:"نزّل وفكّ الضغط", s1b:"اضغط الزر الأخضر أعلاه، ثم فكّ ضغط الملف في مجلد ستحتفظ به (مثل «المستندات»).",
   s2t:"افتح صفحة الإضافات", s2b:"في كروم، انسخ <code>chrome://extensions</code> إلى شريط العناوين واضغط Enter.",
@@ -565,6 +583,8 @@ ru: {
   f4t:"Абонемент одним взглядом", f4b:"Остаток занятий, дневной лимит, срок действия — всегда синхронизировано с вашим аккаунтом BoostApp.",
   f5t:"Панель истории", f5b:"Полноэкранная панель всех прошедших занятий с месячной статистикой, сериями и личными достижениями.",
   f6t:"Говорит на вашем языке", f6b:"Английский, иврит, русский, украинский и арабский — с полной поддержкой RTL и обучающим туром для новичков.",
+  f7t:"Синхронизация с Fitbit и Health Connect", f7b:"Посещённые занятия автоматически записываются в Fitbit через несколько минут после занятия — с пульсом, зонами и калориями с трекера — и попадают в Health Connect для всех ваших приложений здоровья.",
+  fit_cap:"Настоящие синхронизированные занятия в приложении Fitbit — записаны автоматически, с зонами пульса и калориями с трекера.",
   inst_title:"Установка за 2 минуты", inst_sub:"Без магазина и без аккаунта — это простая папка, которую вы один раз загружаете в Chrome.",
   s1t:"Скачайте и распакуйте", s1b:"Нажмите зелёную кнопку выше, затем распакуйте файл в папку, которую сохраните (например, «Документы»).",
   s2t:"Откройте страницу расширений", s2b:"В Chrome скопируйте <code>chrome://extensions</code> в адресную строку и нажмите Enter.",
