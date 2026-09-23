@@ -322,7 +322,7 @@ function ghFirstNumber(obj, preferredKeys) {
 // hasHeartRate tells the caller whether the watch's recording has arrived —
 // used to defer logging a just-finished lesson until the tracker syncs.
 async function fitbitFetchLessonMetrics(startMs, endMs) {
-  const out = { metrics: {}, hasHeartRate: false };
+  const out = { metrics: {}, hasHeartRate: false, health: null };
   const [hr, cal, steps, azm] = await Promise.all([
     ghRollupValue("heart-rate", startMs, endMs),
     ghRollupValue("total-calories", startMs, endMs),
@@ -346,7 +346,253 @@ async function fitbitFetchLessonMetrics(startMs, endMs) {
     else mins = ghFirstNumber(azm, ["minutesSum", "activeZoneMinutesSum"]);
   }
   if (mins != null) out.metrics.activeZoneMinutes = String(Math.round(mins));
+  // Plain numbers for the History → Health tab (stored locally only).
+  const num = (o, keys) => { const v = ghFirstNumber(o, keys); return v == null ? null : Math.round(v); };
+  out.health = {
+    avg: avg ? Math.round(avg) : null,
+    max: hr ? num({ v: hr.beatsPerMinuteMax }, ["v"]) : null,
+    min: hr ? num({ v: hr.beatsPerMinuteMin }, ["v"]) : null,
+    kcal: kcal ? Math.round(kcal) : null,
+    steps: st != null ? Math.round(st) : null,
+    azm: mins != null ? Math.round(mins) : null,
+    // Per-zone Active Zone Minutes. Cardio/peak minutes count double in AZM
+    // (a 60-min lesson rolled up to 79), so real time with a raised heart
+    // rate = fatBurn + (cardio + peak) / 2 — never longer than the lesson.
+    zones: null, zoneMin: null,
+    v: LH_VERSION
+  };
+  if (azm && Object.keys(azm).some(k => /^sumIn.*Zone$/i.test(k))) {
+    const z = k => Number(azm[k]) || 0;
+    out.health.zones = { fatBurn: z("sumInFatBurnHeartZone"), cardio: z("sumInCardioHeartZone"), peak: z("sumInPeakHeartZone") };
+    out.health.zoneMin = Math.round(out.health.zones.fatBurn + (out.health.zones.cardio + out.health.zones.peak) / 2);
+  }
   return out;
+}
+
+// ---------------------------------------------------------------------------
+// Lesson health store (History → Health tab)
+// ---------------------------------------------------------------------------
+// bsab_lesson_health: { "<date> <time> <className>": {avg,max,min,kcal,steps,
+// azm, at, tries} }. Local to the extension — never exported or shared.
+// An entry with avg == null means "no tracker HR for that window yet";
+// it is re-fetched up to LH_MAX_TRIES times (the tracker may sync late).
+const LH_KEY = "bsab_lesson_health";
+const LH_VERSION = 2;          // v2 adds per-zone minutes; older entries are re-fetched
+const LH_MAX_TRIES = 3;
+const LH_BACKFILL_DAYS = 90;   // how far back the Health tab fills in
+const LH_MAX_PER_RUN = 15;     // 5 read calls per lesson → keep bursts small
+const LH_FINAL_AFTER = 6 * 3600 * 1000;
+
+async function getLessonHealth() {
+  const o = await chrome.storage.local.get(LH_KEY);
+  return o[LH_KEY] || {};
+}
+async function saveLessonHealth(key, health, endMs) {
+  const map = await getLessonHealth();
+  const prev = map[key] || {};
+  // "final" = fetched at least LH_FINAL_AFTER after the lesson ended, when the
+  // tracker has certainly synced. Earlier fetches (e.g. the sync ~5 min after
+  // class) are provisional and get re-fetched once, then never again.
+  const final = endMs ? Date.now() >= endMs + LH_FINAL_AFTER : !!prev.final;
+  map[key] = Object.assign({}, health || {}, { at: Date.now(), tries: (prev.tries || 0) + 1, final });
+  await chrome.storage.local.set({ [LH_KEY]: map });
+}
+
+// ---------------------------------------------------------------------------
+// Heart-rate curve per lesson (History → Health, expanded row)
+// ---------------------------------------------------------------------------
+// 10-second rollUp windows → 360 points for a 60-min lesson (verified live:
+// windowSize "10s" returns one point per window; raw samples are ~2 s apart).
+// Cached locally in bsab_lesson_hr_trace; only fetched when a row is opened.
+const LT_KEY = "bsab_lesson_hr_trace";
+const LT_STEP_SEC = 10;
+
+async function fitbitLessonTrace(startMs, endMs) {
+  const res = await ghApi("/v4/users/me/dataTypes/heart-rate/dataPoints:rollUp", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      range: { startTime: new Date(startMs).toISOString(), endTime: new Date(endMs).toISOString() },
+      windowSize: LT_STEP_SEC + "s"
+    })
+  });
+  if (!res.ok) throw new Error("heart-rate rollUp failed (" + res.status + ")");
+  const data = await res.json().catch(() => ({}));
+  const n = Math.round((endMs - startMs) / (LT_STEP_SEC * 1000));
+  const pts = new Array(n).fill(null);
+  for (const p of (data.rollupDataPoints || [])) {
+    const i = Math.round((Date.parse(p.startTime) - startMs) / (LT_STEP_SEC * 1000));
+    const v = p.heartRate && Number(p.heartRate.beatsPerMinuteAvg);
+    if (i >= 0 && i < n && isFinite(v) && v > 0) pts[i] = Math.round(v);
+  }
+  return pts;
+}
+
+// Daily resting heart rate (dataType "daily-resting-heart-rate", derived by
+// the tracker). Returns the value for dateStr, or the closest earlier day.
+// Stored permanently in bsab_resting_hr { "YYYY-MM-DD": bpm } — fetched from
+// the API only for days not stored yet (at most once per 6 h).
+const RH_KEY = "bsab_resting_hr";
+let _restFetchedAt = 0;
+async function fitbitRestingHr(dateStr) {
+  const o = await chrome.storage.local.get(RH_KEY);
+  const byDate = o[RH_KEY] || {};
+  if (!byDate[dateStr] && Date.now() - _restFetchedAt > 6 * 3600 * 1000) {
+    _restFetchedAt = Date.now();
+    let pageToken = null, pages = 0;
+    do {
+      const r = await ghApi("/v4/users/me/dataTypes/daily-resting-heart-rate/dataPoints?pageSize=200" + (pageToken ? "&pageToken=" + encodeURIComponent(pageToken) : ""));
+      if (!r.ok) break;
+      const d = await r.json().catch(() => ({}));
+      for (const p of (d.dataPoints || [])) {
+        const rhr = p.dailyRestingHeartRate || {};
+        const dt = rhr.date;
+        if (!dt) continue;
+        const key = `${dt.year}-${String(dt.month).padStart(2, "0")}-${String(dt.day).padStart(2, "0")}`;
+        const rest = Object.assign({}, rhr); delete rest.date;
+        const v = ghFirstNumber(rest, ["beatsPerMinute"]);
+        if (v) byDate[key] = Math.round(v);
+      }
+      pageToken = d.nextPageToken; pages++;
+    } while (pageToken && pages < 3);
+    await chrome.storage.local.set({ [RH_KEY]: byDate });
+  }
+  if (byDate[dateStr]) return byDate[dateStr];
+  const days = Object.keys(byDate).sort();
+  let best = null;
+  for (const k of days) { if (k <= dateStr) best = k; }
+  if (!best && days.length) best = days[0];
+  return best ? byDate[best] : null;
+}
+
+async function getLessonTraceCached(key, startMs, endMs, dateStr, forceFetch) {
+  const o = await chrome.storage.local.get(LT_KEY);
+  const map = o[LT_KEY] || {};
+  const c = map[key];
+  const stale = c && !c.final && Date.now() >= endMs + LH_FINAL_AFTER;
+  if (c && c.pts && !stale && !forceFetch) return c;   // local copy — no API call
+  const [pts, rest] = await Promise.all([fitbitLessonTrace(startMs, endMs), fitbitRestingHr(dateStr).catch(() => null)]);
+  const entry = { pts, rest, step: LT_STEP_SEC, at: Date.now(), final: Date.now() >= endMs + LH_FINAL_AFTER };
+  if (pts.some(v => v != null) || entry.final) {        // an empty final trace is stored too (no re-asking)
+    const o2 = await chrome.storage.local.get(LT_KEY);  // re-read: other writes may have landed
+    const map2 = o2[LT_KEY] || {};
+    map2[key] = entry;
+    await chrome.storage.local.set({ [LT_KEY]: map2 });
+  }
+  return entry;
+}
+
+// ---------------------------------------------------------------------------
+// Zone calibration — make our zone lines agree with Fitbit's own zones
+// ---------------------------------------------------------------------------
+// Google doesn't expose the user's zone limits, but every lesson carries
+// Fitbit's per-zone Active Zone Minutes (fat-burn = 40–59 %, cardio = 60–84 %,
+// peak ≥ 85 % of heart-rate reserve). With the stored 10-s curves and that
+// day's resting heart rate, we search for the max heart rate whose zone
+// minutes best reproduce Fitbit's across all lessons. That max then drives
+// the chart's bands, so curve, legend and the 🔥 chip tell the same story.
+// Falls back to 220 − age when fewer than CAL_MIN_LESSONS are usable.
+const CAL_MIN_LESSONS = 3;
+
+function zoneMinutesFromCurve(pts, stepSec, rest, max) {
+  const hrr = max - rest;
+  const th = [rest + 0.40 * hrr, rest + 0.60 * hrr, rest + 0.85 * hrr];
+  const per = Math.max(1, Math.round(60 / stepSec));
+  const out = { moderate: 0, vigorous: 0, peak: 0 };
+  for (let i = 0; i < pts.length; i += per) {
+    const win = pts.slice(i, i + per).filter(v => v != null);
+    if (win.length < per / 2) continue;
+    const v = win.reduce((a, b) => a + b, 0) / win.length;   // per-minute average, like AZM
+    if (v >= th[2]) out.peak++; else if (v >= th[1]) out.vigorous++; else if (v >= th[0]) out.moderate++;
+  }
+  return out;
+}
+
+async function fitbitCalibrateMaxHr() {
+  const health = await getLessonHealth();
+  const traces = (await chrome.storage.local.get(LT_KEY))[LT_KEY] || {};
+  const samples = [];
+  for (const k of Object.keys(health)) {
+    const h = health[k], tr = traces[k];
+    if (!h || !h.zones || !tr || !tr.pts || !tr.rest) continue;
+    // Fitbit's zone minutes (AZM points → minutes: cardio/peak count double).
+    const fb = { moderate: h.zones.fatBurn, vigorous: h.zones.cardio / 2, peak: h.zones.peak / 2 };
+    if (fb.moderate + fb.vigorous + fb.peak < 3) continue;   // near-flat lessons don't constrain the fit
+    samples.push({ pts: tr.pts, step: tr.step || 10, rest: tr.rest, fb });
+  }
+  if (samples.length < CAL_MIN_LESSONS) { await setFitbitState({ hrMaxCal: null }); return null; }
+  let best = null;
+  for (let max = 140; max <= 215; max++) {
+    let err = 0;
+    for (const s of samples) {
+      if (max <= s.rest + 20) { err = Infinity; break; }
+      const m = zoneMinutesFromCurve(s.pts, s.step, s.rest, max);
+      err += Math.abs(m.moderate - s.fb.moderate) + Math.abs(m.vigorous - s.fb.vigorous) + Math.abs(m.peak - s.fb.peak);
+    }
+    if (!best || err < best.err) best = { max, err };
+  }
+  const cal = { max: best.max, lessons: samples.length, avgErrMin: Math.round(best.err / samples.length * 10) / 10, at: Date.now() };
+  await setFitbitState({ hrMaxCal: cal });
+  console.log("[Boost Auto-Book] zone calibration:", JSON.stringify(cal));
+  return cal;
+}
+
+// What still has to come from the API for one lesson. Once an entry is
+// "final" (fetched ≥ 6 h after the lesson) it is never fetched again.
+function lhNeedsSummary(e, endMs, now) {
+  if (!e || e.v !== LH_VERSION) return true;
+  if (e.final) return false;
+  if (now >= endMs + LH_FINAL_AFTER) return true;              // one final re-fetch
+  return e.avg == null && (e.tries || 0) < LH_MAX_TRIES;       // still waiting for the tracker
+}
+function lhNeedsTrace(e, tr, endMs, now) {
+  if (!e || e.avg == null) return false;                       // no heart rate → no curve
+  if (!tr || !tr.pts) return true;
+  return !tr.final && now >= endMs + LH_FINAL_AFTER;
+}
+
+// Fills health numbers for attended lessons from the last LH_BACKFILL_DAYS
+// that don't have them yet. Reuses the same rollups as the Fitbit sync.
+async function fitbitFillLessonHealth(historyStore, maxLessons) {
+  const st = await getFitbitState();
+  if (!fitbitConnected(st)) return { ok: false, error: "not connected" };
+  const store = historyStore || await getHistoryStore();
+  const map = await getLessonHealth();
+  const durationMin = Math.max(5, Number(st.durationMin) || 60);
+  const now = Date.now();
+  const cutoff = now - LH_BACKFILL_DAYS * 24 * 3600 * 1000;
+  const traces = (await chrome.storage.local.get(LT_KEY))[LT_KEY] || {};
+  const todo = [];
+  Object.values(store.months || {}).forEach(m => (m.rows || []).forEach(rec => {
+    if (rec.status !== "attended" || !rec.date || !rec.time) return;
+    const startMs = studioTimeMs(rec.date, rec.time);
+    const endMs = startMs + durationMin * 60 * 1000;
+    if (startMs < cutoff || endMs + 10 * 60 * 1000 > now) return;
+    const key = fitbitLessonKey(rec);
+    if (!lhNeedsSummary(map[key], endMs, now) && !lhNeedsTrace(map[key], traces[key], endMs, now)) return;
+    todo.push({ rec, startMs, endMs });
+  }));
+  todo.sort((a, b) => b.startMs - a.startMs); // newest first
+  let filled = 0;
+  for (const t of todo.slice(0, maxLessons || LH_MAX_PER_RUN)) {
+    const key = fitbitLessonKey(t.rec);
+    if (lhNeedsSummary(map[key], t.endMs, Date.now())) {
+      const m = await fitbitFetchLessonMetrics(t.startMs, t.endMs);
+      await saveLessonHealth(key, m.health, t.endMs);
+      map[key] = (await getLessonHealth())[key];
+    }
+    // The curve is stored alongside, so opening a lesson never calls the API.
+    if (lhNeedsTrace(map[key], traces[key], t.endMs, Date.now())) {
+      try { traces[key] = await getLessonTraceCached(key, t.startMs, t.endMs, t.rec.date, true); }
+      catch (err) { console.log("[Boost Auto-Book] curve fetch failed:", String(err && err.message || err)); }
+    }
+    filled++;
+  }
+  if (filled || !st.hrMaxCal) {
+    try { await fitbitCalibrateMaxHr(); }
+    catch (err) { console.log("[Boost Auto-Book] zone calibration failed:", String(err && err.message || err)); }
+  }
+  return { ok: true, filled, remaining: Math.max(0, todo.length - filled) };
 }
 
 // ---------------------------------------------------------------------------
@@ -570,7 +816,10 @@ async function fitbitSyncLessons(historyStore) {
       // calls per ancient lesson.
       let m = { metrics: {}, hasHeartRate: false };
       const ageMs = now - endMs;
-      if (ageMs < 30 * 24 * 3600 * 1000) m = await fitbitFetchLessonMetrics(startMs, endMs);
+      if (ageMs < 30 * 24 * 3600 * 1000) {
+        m = await fitbitFetchLessonMetrics(startMs, endMs);
+        if (m.health) await saveLessonHealth(fitbitLessonKey(rec), m.health, endMs);
+      }
       // Just-ended lesson with no heart-rate data yet → the tracker probably
       // hasn't synced to the Fitbit app. Defer (don't mark synced); the
       // +50min retry alarm / 6h backstop will pick it up with metrics.
@@ -596,6 +845,8 @@ async function fitbitSyncLessons(historyStore) {
   let repaired = 0;
   try { repaired = (await fitbitRepairMetrics(st)).repaired; }
   catch (e) { console.log("[Boost Auto-Book] repair pass failed:", String(e && e.message || e)); }
+  try { await fitbitFillLessonHealth(store); }
+  catch (e) { console.log("[Boost Auto-Book] lesson health fill failed:", String(e && e.message || e)); }
 
   await setFitbitState({ lastSync: { at: Date.now(), added, skipped, deferred, repaired, error } });
   if (added) {
