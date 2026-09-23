@@ -336,7 +336,15 @@ async function fitbitFetchLessonMetrics(startMs, endMs) {
   if (kcal) out.metrics.caloriesKcal = Math.round(kcal);
   const st = ghFirstNumber(steps, ["countSum", "stepsSum"]);
   if (st != null) out.metrics.steps = String(Math.round(st));
-  const mins = ghFirstNumber(azm, ["minutesSum", "activeZoneMinutesSum"]);
+  // AZM rolls up per zone ({sumInFatBurnHeartZone, sumInCardioHeartZone,
+  // sumInPeakHeartZone}, string values) — the lesson total is their sum.
+  // Older/other shapes fall back to a single documented total.
+  let mins = null;
+  if (azm) {
+    const zoneKeys = Object.keys(azm).filter(k => /^sumIn.*Zone$/i.test(k));
+    if (zoneKeys.length) mins = zoneKeys.reduce((a, k) => a + (Number(azm[k]) || 0), 0);
+    else mins = ghFirstNumber(azm, ["minutesSum", "activeZoneMinutesSum"]);
+  }
   if (mins != null) out.metrics.activeZoneMinutes = String(Math.round(mins));
   return out;
 }
@@ -413,7 +421,117 @@ async function fitbitLogLesson(rec, durationMin, metricsSummary) {
   if (op && op.error) {
     throw new Error(`Exercise create operation failed for ${fitbitLessonKey(rec)}: ${JSON.stringify(op.error).slice(0, 200)}`);
   }
+  // Since ~11 Sep 2026 the server drops client metricsSummary on CREATE of a
+  // MANUAL exercise (keeps only its own calorie estimate). A PATCH of the
+  // same record afterwards keeps averageHeartRateBeatsPerMinute (verified
+  // 2026-09-23: the app then shows avg HR + the zone chart). caloriesKcal and
+  // displayName stay server-owned either way.
+  const serverName = op && op.response && op.response.name;
+  if (serverName && metricsSummary && metricsSummary.averageHeartRateBeatsPerMinute) {
+    try {
+      const ok = await ghPatchExerciseMetrics(serverName, body.exercise, metricsSummary);
+      console.log("[Boost Auto-Book] metrics PATCH after create", fitbitLessonKey(rec), ok ? "kept HR" : "HR NOT kept — repair pass will retry");
+    } catch (e) {
+      console.log("[Boost Auto-Book] metrics PATCH after create failed (repair pass will retry):", String(e && e.message || e));
+    }
+  }
   return op;
+}
+
+// PATCHes an existing exercise record (full DataPoint body — the endpoint has
+// no updateMask) with the given metrics, then reads it back. Returns true when
+// the stored record carries the average heart rate.
+async function ghPatchExerciseMetrics(name, exercise, metricsSummary) {
+  const body = {
+    name,
+    dataSource: { recordingMethod: "MANUAL" },
+    exercise: {
+      interval: exercise.interval,
+      exerciseType: exercise.exerciseType,
+      displayName: exercise.displayName,
+      metricsSummary,
+      notes: exercise.notes
+    }
+  };
+  const res = await ghApi("/v4/" + name, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (res.status === 429) throw Object.assign(new Error("Google Health API rate limit hit"), { rateLimited: true });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error(`Exercise patch failed (${res.status}) for ${name}: ${txt.slice(0, 200)}`);
+  }
+  const op = await res.json().catch(() => ({}));
+  if (op && op.error) throw new Error(`Exercise patch operation failed for ${name}: ${JSON.stringify(op.error).slice(0, 200)}`);
+  const back = await ghApi("/v4/" + name).then(r => r.ok ? r.json() : null).catch(() => null);
+  const ms = back && back.exercise && back.exercise.metricsSummary;
+  return !!(ms && ms.averageHeartRateBeatsPerMinute);
+}
+
+// ---------------------------------------------------------------------------
+// Metrics repair pass
+// ---------------------------------------------------------------------------
+// Backstop for the create→PATCH step: finds this extension's own MANUAL
+// exercise records from the last GH_REPAIR_DAYS that lack an average heart
+// rate and PATCHes the wearable's rollups onto them. Also heals lessons
+// logged between the server change (~11 Sep 2026) and this fix.
+// Only records written by our OAuth client are touched — workouts logged in
+// the app itself (or by other apps) are left alone. Records whose window has
+// no heart-rate data (tracker not worn) are retried at most GH_REPAIR_MAX_TRIES.
+const GH_REPAIR_DAYS = 30;
+const GH_REPAIR_MAX_TRIES = 5;
+
+// "123-abc.apps.googleusercontent.com" and "123-abc" name the same client.
+function ghClientKey(id) { return String(id || "").trim().replace(/\.apps\.googleusercontent\.com$/i, ""); }
+
+async function fitbitRepairMetrics(st) {
+  const cutoffMs = Date.now() - GH_REPAIR_DAYS * 24 * 3600 * 1000;
+  const { bsab_fitbit_repair_tries: tries0 } = await chrome.storage.local.get("bsab_fitbit_repair_tries");
+  const tries = tries0 || {};
+  const candidates = [];
+  let pageToken = null, pages = 0, reachedCutoff = false;
+  do {
+    const res = await ghApi("/v4/users/me/dataTypes/exercise/dataPoints?pageSize=100" + (pageToken ? "&pageToken=" + encodeURIComponent(pageToken) : ""));
+    if (!res.ok) { console.log("[Boost Auto-Book] repair: list failed", res.status); break; }
+    const data = await res.json().catch(() => ({}));
+    for (const p of (data.dataPoints || [])) {
+      const ex = p.exercise || {};
+      const startMs = Date.parse(ex.interval && ex.interval.startTime);
+      if (!isFinite(startMs)) continue;
+      if (startMs < cutoffMs) { reachedCutoff = true; continue; }
+      const ds = p.dataSource || {};
+      if (ds.recordingMethod !== "MANUAL") continue;
+      if (!ds.application || ghClientKey(ds.application.googleWebClientId) !== ghClientKey(st.clientId)) continue;
+      if (ex.metricsSummary && ex.metricsSummary.averageHeartRateBeatsPerMinute) continue;
+      if ((tries[p.name] || 0) >= GH_REPAIR_MAX_TRIES) continue;
+      candidates.push(p);
+    }
+    pageToken = data.nextPageToken;
+    pages++;
+  } while (pageToken && !reachedCutoff && pages < 10);
+
+  let repaired = 0, failed = 0;
+  for (const p of candidates) {
+    const ex = p.exercise;
+    const startMs = Date.parse(ex.interval.startTime);
+    const endMs = Date.parse(ex.interval.endTime);
+    if (!isFinite(endMs) || endMs > Date.now()) continue;
+    try {
+      const m = await fitbitFetchLessonMetrics(startMs, endMs);
+      if (!m.hasHeartRate) { tries[p.name] = (tries[p.name] || 0) + 1; failed++; continue; }
+      const ok = await ghPatchExerciseMetrics(p.name, ex, m.metrics);
+      if (ok) { repaired++; delete tries[p.name]; }
+      else { tries[p.name] = (tries[p.name] || 0) + 1; failed++; }
+    } catch (e) {
+      if (e && e.rateLimited) break;
+      tries[p.name] = (tries[p.name] || 0) + 1; failed++;
+    }
+  }
+  await chrome.storage.local.set({ bsab_fitbit_repair_tries: tries });
+  console.log("[Boost Auto-Book] repair pass:", JSON.stringify({ candidates: candidates.length, repaired, failed }));
+  return { repaired, failed };
 }
 
 // Syncs every attended lesson that (a) starts on/after sinceDate, (b) has
@@ -473,11 +591,17 @@ async function fitbitSyncLessons(historyStore) {
   Object.keys(synced).forEach(k => { if (synced[k] < cutoff) delete synced[k]; });
 
   await setFitbitSynced(synced);
-  await setFitbitState({ lastSync: { at: Date.now(), added, skipped, deferred, error } });
+
+  // Heal records whose heart rate the server dropped (see ghPatchExerciseMetrics).
+  let repaired = 0;
+  try { repaired = (await fitbitRepairMetrics(st)).repaired; }
+  catch (e) { console.log("[Boost Auto-Book] repair pass failed:", String(e && e.message || e)); }
+
+  await setFitbitState({ lastSync: { at: Date.now(), added, skipped, deferred, repaired, error } });
   if (added) {
     try { notify("Fitbit sync", `${added} lesson${added === 1 ? "" : "s"} logged as workouts.`); } catch (e) {}
   }
-  return { ok: !error, added, skipped, deferred, pending: Math.max(0, pending.length - added - skipped - deferred), error };
+  return { ok: !error, added, skipped, deferred, repaired, pending: Math.max(0, pending.length - added - skipped - deferred), error };
 }
 
 // Status snapshot for the popup — never exposes tokens or the client secret.
