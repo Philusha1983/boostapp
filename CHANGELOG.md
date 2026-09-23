@@ -6,6 +6,33 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.5.0] — 2026-09-23
+
+### Added
+- **Health tab** in Past Events (needs Fitbit sync): your tracker's numbers
+  for every attended lesson of the last 90 days.
+  - Per lesson: average heart rate, highest heart rate, time in the zone
+    (minutes with a raised heart rate) and steps.
+  - Per lesson type: lessons, average and highest heart rate, average time in
+    the zone, and the effort score (Fitbit's Active Zone Minutes — the same
+    number the Google Health app shows).
+  - Click a lesson to open its heart-rate curve (one point every 10 seconds),
+    coloured Light / Moderate / Vigorous / Peak, with zone lines, a hover
+    readout, minutes per zone and that day's resting heart rate.
+  - Zones are matched to your own Fitbit zones: the extension fits your max
+    heart rate so its zone minutes reproduce Fitbit's across your lessons
+    (falls back to your age, entered once, until there's enough data).
+    Minutes per zone always use Fitbit's own figures, so the chart, the
+    lesson chip and the Google Health app agree.
+- Health data is fetched once per lesson and stored in the extension (a
+  lesson synced minutes after class is re-checked once after 6 hours, in case
+  the tracker uploaded late). It stays in this browser only — never included
+  in share images, the CSV export, backups or the shareable history.
+
+### Notes
+- Calories are not shown: for manually logged workouts the Google Health app
+  now displays its own estimate, which differs from the tracker's reading.
+
 ## [1.4.1] — 2026-09-23
 
 ### Fixed
