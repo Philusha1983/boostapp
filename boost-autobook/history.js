@@ -36,6 +36,25 @@ const I18N = {
     emptyAuth: "Couldn't confirm you're signed in while syncing.", emptyAuthHint: "Keep a BoostApp tab open and signed in, then click Resync all history.",
     emptyNetwork: "Syncing kept timing out.", emptyNetworkHint: "Check your connection, keep a BoostApp tab open, then click Resync all history.",
     viewDashboard: "Dashboard", viewStory: "Story", viewCompare: "Compare",
+    viewHealth: "Health",
+    health_type: "Your lesson types · last 90 days", health_recent: "Lesson by lesson",
+    health_col_lessons: "Lessons", health_col_avg: "Avg heart rate", health_col_peak: "Highest heart rate", health_col_zoneMin: "Time in the zone", health_col_azm: "Effort score",
+    health_zoneMinTip: "Average minutes per lesson with your heart rate raised (Fitbit's fat-burn, cardio or peak zones).",
+    health_azmTip: "Fitbit's Active Zone Minutes, averaged per lesson: 1 point per minute in fat-burn, 2 per minute in cardio or peak. The same number the Google Health app shows — it can be higher than the lesson length.",
+    health_notConnected: "Heart rate per lesson comes from Fitbit sync.", health_notConnectedHint: "Connect it in the extension popup → Settings → Fitbit sync, then come back here.",
+    health_loading: "Getting your tracker's numbers for recent lessons…", health_more: "Load {n} older lessons",
+    health_noData: "Tracker wasn't recording", health_pending: "Not loaded yet", health_empty: "No attended lessons in the last 90 days.",
+    health_avg: "♥ {n} bpm avg", health_peak: "▲ {n} bpm top", health_zone: "🔥 {n} min in the zone", health_steps: "👣 {n} steps",
+    health_zoneTip: "Minutes your heart rate was raised: {f} fat-burn · {c} cardio · {p} peak",
+    health_minUnit: "min",
+    health_note: "Measured by your tracker over each lesson's {m} minutes. Stored only in this browser — never included in share images, CSV or the shareable history.",
+    health_openHint: "Click a lesson to see its heart-rate curve.",
+    health_z_light: "Light", health_z_moderate: "Moderate", health_z_vigorous: "Vigorous", health_z_peak: "Peak",
+    health_traceLoading: "Loading heart rate…", health_traceNone: "No heart-rate readings for this lesson.", health_traceErr: "Couldn't load the heart rate: {e}",
+    health_ageBasis: "Zones use age {a} and your resting heart rate from Google Health.", health_ageChange: "Change",
+    health_agePrompt: "Add your age to colour the curve by heart-rate zone (stays in this browser):", health_ageSave: "Save", health_agePh: "Age",
+    health_restNote: "Resting {r} bpm", health_zoneTime: "{z} {n} min",
+    health_calBasis: "Zones are matched to your Fitbit zones (max heart rate ≈ {m} bpm, fitted from {n} lessons) and that day\u2019s resting heart rate.",
     shareImg: "🖼️ Share image", exportCsv: "⬇️ Export CSV",
     stat_total: "Classes attended", stat_thisMonth: "This month",
     stats_thisSelection: "Showing", stats_allTime: "All-time records",
@@ -108,6 +127,25 @@ const I18N = {
     emptyAuth: "לא הצלחנו לוודא שאתם מחוברים במהלך הסנכרון.", emptyAuthHint: "השאירו כרטיסייה של BoostApp פתוחה כשאתם מחוברים, ואז לחצו על סנכרון מלא מחדש.",
     emptyNetwork: "הסנכרון נתקל שוב ושוב בזמן המתנה שפג.", emptyNetworkHint: "בדקו את החיבור לאינטרנט, השאירו כרטיסייה של BoostApp פתוחה, ואז לחצו על סנכרון מלא מחדש.",
     viewDashboard: "לוח בקרה", viewStory: "סיפור", viewCompare: "השוואה",
+    viewHealth: "בריאות",
+    health_type: "סוגי השיעורים שלך · 90 הימים האחרונים", health_recent: "שיעור אחר שיעור",
+    health_col_lessons: "שיעורים", health_col_avg: "דופק ממוצע", health_col_peak: "דופק הכי גבוה", health_col_zoneMin: "זמן באזור המאמץ", health_col_azm: "ציון מאמץ",
+    health_zoneMinTip: "ממוצע הדקות בשיעור שבהן הדופק היה מוגבר (אזורי שריפת שומן, קרדיו או שיא של Fitbit).",
+    health_azmTip: "דקות אזור פעיל של Fitbit, ממוצע לשיעור: נקודה לכל דקה בשריפת שומן, 2 לכל דקה בקרדיו או בשיא. אותו מספר שמופיע באפליקציית Google Health — הוא יכול להיות גבוה מאורך השיעור.",
+    health_notConnected: "הדופק לכל שיעור מגיע מסנכרון Fitbit.", health_notConnectedHint: "חברו אותו בחלון התוסף ← הגדרות ← סנכרון Fitbit, וחזרו לכאן.",
+    health_loading: "מביא את נתוני הצמיד לשיעורים האחרונים…", health_more: "טען עוד {n} שיעורים קודמים",
+    health_noData: "הצמיד לא מדד", health_pending: "עוד לא נטען", health_empty: "אין שיעורים שהשתתפתם בהם ב‑90 הימים האחרונים.",
+    health_avg: "♥ {n} דופק ממוצע", health_peak: "▲ {n} דופק שיא", health_zone: "🔥 {n} דק׳ באזור המאמץ", health_steps: "👣 {n} צעדים",
+    health_zoneTip: "דקות עם דופק מוגבר: {f} שריפת שומן · {c} קרדיו · {p} שיא",
+    health_minUnit: "דק׳",
+    health_note: "נמדד על ידי הצמיד לאורך {m} הדקות של כל שיעור. נשמר רק בדפדפן הזה — לא נכלל בתמונות שיתוף, ב‑CSV או בהיסטוריה המשותפת.",
+    health_openHint: "לחצו על שיעור כדי לראות את גרף הדופק שלו.",
+    health_z_light: "קל", health_z_moderate: "בינוני", health_z_vigorous: "מאומץ", health_z_peak: "שיא",
+    health_traceLoading: "טוען דופק…", health_traceNone: "אין מדידות דופק לשיעור הזה.", health_traceErr: "לא ניתן לטעון את הדופק: {e}",
+    health_ageBasis: "האזורים מחושבים לפי גיל {a} והדופק במנוחה שלך מ‑Google Health.", health_ageChange: "שינוי",
+    health_agePrompt: "הוסיפו את הגיל כדי לצבוע את הגרף לפי אזורי דופק (נשמר רק בדפדפן הזה):", health_ageSave: "שמירה", health_agePh: "גיל",
+    health_restNote: "במנוחה {r}", health_zoneTime: "{z} {n} דק׳",
+    health_calBasis: "האזורים מותאמים לאזורי ה‑Fitbit שלך (דופק מרבי ≈ {m}, מחושב מ‑{n} שיעורים) ולדופק במנוחה של אותו יום.",
     shareImg: "🖼️ שתף תמונה", exportCsv: "⬇️ ייצוא CSV",
     stat_total: "שיעורים שהגעת אליהם", stat_thisMonth: "החודש",
     stats_thisSelection: "מציג נתונים עבור", stats_allTime: "שיאים כלליים",
@@ -180,6 +218,25 @@ const I18N = {
     emptyAuth: "Не удалось подтвердить вход в аккаунт во время синхронизации.", emptyAuthHint: "Оставьте вкладку BoostApp открытой и войдите в аккаунт, затем нажмите «Пересинхронизировать историю».",
     emptyNetwork: "Синхронизация постоянно превышала время ожидания.", emptyNetworkHint: "Проверьте соединение, оставьте вкладку BoostApp открытой, затем нажмите «Пересинхронизировать историю».",
     viewDashboard: "Дашборд", viewStory: "История", viewCompare: "Сравнение",
+    viewHealth: "Здоровье",
+    health_type: "Ваши типы занятий · последние 90 дней", health_recent: "По занятиям",
+    health_col_lessons: "Занятия", health_col_avg: "Средний пульс", health_col_peak: "Самый высокий пульс", health_col_zoneMin: "Время в зоне", health_col_azm: "Баллы нагрузки",
+    health_zoneMinTip: "Сколько минут за занятие в среднем пульс был повышен (зоны Fitbit: жиросжигание, кардио, пик).",
+    health_azmTip: "Минуты в активных зонах Fitbit в среднем за занятие: 1 балл за минуту жиросжигания, 2 — за минуту кардио или пика. То же число, что в приложении Google Health; может быть больше длительности занятия.",
+    health_notConnected: "Пульс по занятиям берётся из синхронизации с Fitbit.", health_notConnectedHint: "Подключите её в окне расширения → Настройки → Синхронизация с Fitbit и вернитесь сюда.",
+    health_loading: "Получаем данные трекера для недавних занятий…", health_more: "Загрузить ещё {n} прошлых занятий",
+    health_noData: "Трекер не записывал", health_pending: "Ещё не загружено", health_empty: "За последние 90 дней посещённых занятий нет.",
+    health_avg: "♥ {n} уд/мин в среднем", health_peak: "▲ {n} уд/мин макс.", health_zone: "🔥 {n} мин в зоне", health_steps: "👣 {n} шагов",
+    health_zoneTip: "Минуты с повышенным пульсом: {f} жиросжигание · {c} кардио · {p} пик",
+    health_minUnit: "мин",
+    health_note: "Измерено трекером за {m} минут каждого занятия. Хранится только в этом браузере — не попадает в картинки для публикации, CSV и общую историю.",
+    health_openHint: "Нажмите на занятие, чтобы увидеть график пульса.",
+    health_z_light: "Лёгкая", health_z_moderate: "Умеренная", health_z_vigorous: "Интенсивная", health_z_peak: "Пик",
+    health_traceLoading: "Загружаем пульс…", health_traceNone: "Для этого занятия нет данных пульса.", health_traceErr: "Не удалось загрузить пульс: {e}",
+    health_ageBasis: "Зоны рассчитаны по возрасту {a} и вашему пульсу в покое из Google Health.", health_ageChange: "Изменить",
+    health_agePrompt: "Укажите возраст, чтобы раскрасить график по пульсовым зонам (хранится только в этом браузере):", health_ageSave: "Сохранить", health_agePh: "Возраст",
+    health_restNote: "В покое {r}", health_zoneTime: "{z} {n} мин",
+    health_calBasis: "Зоны подогнаны под ваши зоны Fitbit (макс. пульс ≈ {m}, по {n} занятиям) и пульс в покое в тот день.",
     shareImg: "🖼️ Поделиться", exportCsv: "⬇️ Экспорт CSV",
     stat_total: "Посещено занятий", stat_thisMonth: "В этом месяце",
     stats_thisSelection: "Показано за", stats_allTime: "Общие показатели",
@@ -252,6 +309,25 @@ const I18N = {
     emptyAuth: "Не вдалося підтвердити вхід в акаунт під час синхронізації.", emptyAuthHint: "Залиште вкладку BoostApp відкритою та увійдіть в акаунт, потім натисніть «Пересинхронізувати історію».",
     emptyNetwork: "Синхронізація постійно перевищувала час очікування.", emptyNetworkHint: "Перевірте з'єднання, залиште вкладку BoostApp відкритою, потім натисніть «Пересинхронізувати історію».",
     viewDashboard: "Дашборд", viewStory: "Історія", viewCompare: "Порівняння",
+    viewHealth: "Здоров'я",
+    health_type: "Ваші типи занять · останні 90 днів", health_recent: "По заняттях",
+    health_col_lessons: "Заняття", health_col_avg: "Середній пульс", health_col_peak: "Найвищий пульс", health_col_zoneMin: "Час у зоні", health_col_azm: "Бали навантаження",
+    health_zoneMinTip: "Скільки хвилин за заняття в середньому пульс був підвищений (зони Fitbit: спалювання жиру, кардіо, пік).",
+    health_azmTip: "Хвилини в активних зонах Fitbit у середньому за заняття: 1 бал за хвилину спалювання жиру, 2 — за хвилину кардіо або піку. Те саме число, що в застосунку Google Health; може перевищувати тривалість заняття.",
+    health_notConnected: "Пульс за заняттями береться із синхронізації з Fitbit.", health_notConnectedHint: "Підключіть її у вікні розширення → Налаштування → Синхронізація з Fitbit і поверніться сюди.",
+    health_loading: "Отримуємо дані трекера для нещодавніх занять…", health_more: "Завантажити ще {n} минулих занять",
+    health_noData: "Трекер не записував", health_pending: "Ще не завантажено", health_empty: "За останні 90 днів відвіданих занять немає.",
+    health_avg: "♥ {n} уд/хв у середньому", health_peak: "▲ {n} уд/хв макс.", health_zone: "🔥 {n} хв у зоні", health_steps: "👣 {n} кроків",
+    health_zoneTip: "Хвилини з підвищеним пульсом: {f} спалювання жиру · {c} кардіо · {p} пік",
+    health_minUnit: "хв",
+    health_note: "Виміряно трекером за {m} хвилин кожного заняття. Зберігається лише в цьому браузері — не потрапляє в картинки для поширення, CSV і спільну історію.",
+    health_openHint: "Натисніть на заняття, щоб побачити графік пульсу.",
+    health_z_light: "Легка", health_z_moderate: "Помірна", health_z_vigorous: "Інтенсивна", health_z_peak: "Пік",
+    health_traceLoading: "Завантажуємо пульс…", health_traceNone: "Для цього заняття немає даних пульсу.", health_traceErr: "Не вдалося завантажити пульс: {e}",
+    health_ageBasis: "Зони розраховано за віком {a} і вашим пульсом у спокої з Google Health.", health_ageChange: "Змінити",
+    health_agePrompt: "Вкажіть вік, щоб розфарбувати графік за пульсовими зонами (зберігається лише в цьому браузері):", health_ageSave: "Зберегти", health_agePh: "Вік",
+    health_restNote: "У спокої {r}", health_zoneTime: "{z} {n} хв",
+    health_calBasis: "Зони підлаштовано під ваші зони Fitbit (макс. пульс ≈ {m}, за {n} заняттями) і пульс у спокої того дня.",
     shareImg: "🖼️ Поділитися", exportCsv: "⬇️ Експорт CSV",
     stat_total: "Відвідано занять", stat_thisMonth: "Цього місяця",
     stats_thisSelection: "Показано за", stats_allTime: "Загальні показники",
@@ -324,6 +400,25 @@ const I18N = {
     emptyAuth: "تعذّر التأكد من تسجيل دخولك أثناء المزامنة.", emptyAuthHint: "أبقِ تبويب BoostApp مفتوحًا ومسجّلاً للدخول، ثم اضغط على إعادة مزامنة السجل بالكامل.",
     emptyNetwork: "استمرت المزامنة في تجاوز مهلة الانتظار.", emptyNetworkHint: "تحقق من اتصالك بالإنترنت، أبقِ تبويب BoostApp مفتوحًا، ثم اضغط على إعادة مزامنة السجل بالكامل.",
     viewDashboard: "لوحة التحكم", viewStory: "القصة", viewCompare: "مقارنة",
+    viewHealth: "الصحة",
+    health_type: "أنواع دروسك · آخر 90 يومًا", health_recent: "درسًا بدرس",
+    health_col_lessons: "الدروس", health_col_avg: "متوسط النبض", health_col_peak: "أعلى نبض", health_col_zoneMin: "الوقت في المنطقة", health_col_azm: "نقاط الجهد",
+    health_zoneMinTip: "متوسط الدقائق في كل درس التي كان فيها نبضك مرتفعًا (مناطق Fitbit: حرق الدهون، القلب، الذروة).",
+    health_azmTip: "دقائق المنطقة النشطة من Fitbit، بالمتوسط لكل درس: نقطة لكل دقيقة في حرق الدهون، ونقطتان لكل دقيقة في القلب أو الذروة. نفس الرقم في تطبيق Google Health — وقد يتجاوز مدة الدرس.",
+    health_notConnected: "نبض القلب لكل درس يأتي من مزامنة Fitbit.", health_notConnectedHint: "فعّلها من نافذة الإضافة ← الإعدادات ← مزامنة Fitbit، ثم عد إلى هنا.",
+    health_loading: "جارٍ جلب بيانات السوار للدروس الأخيرة…", health_more: "تحميل {n} دروس سابقة",
+    health_noData: "السوار لم يكن يسجّل", health_pending: "لم يُحمَّل بعد", health_empty: "لا دروس حضرتها في آخر 90 يومًا.",
+    health_avg: "♥ {n} نبضة متوسط", health_peak: "▲ {n} نبضة أعلى", health_zone: "🔥 {n} دقيقة في المنطقة", health_steps: "👣 {n} خطوة",
+    health_zoneTip: "دقائق بنبض مرتفع: {f} حرق دهون · {c} قلب · {p} ذروة",
+    health_minUnit: "د",
+    health_note: "قاسه السوار خلال {m} دقيقة من كل درس. يُحفظ في هذا المتصفح فقط — لا يدخل في صور المشاركة أو CSV أو السجل المشترك.",
+    health_openHint: "انقر على درس لرؤية منحنى نبضه.",
+    health_z_light: "خفيف", health_z_moderate: "معتدل", health_z_vigorous: "مكثف", health_z_peak: "ذروة",
+    health_traceLoading: "جارٍ تحميل النبض…", health_traceNone: "لا قراءات نبض لهذا الدرس.", health_traceErr: "تعذّر تحميل النبض: {e}",
+    health_ageBasis: "المناطق محسوبة حسب العمر {a} ونبضك أثناء الراحة من Google Health.", health_ageChange: "تغيير",
+    health_agePrompt: "أضف عمرك لتلوين المنحنى حسب مناطق النبض (يُحفظ في هذا المتصفح فقط):", health_ageSave: "حفظ", health_agePh: "العمر",
+    health_restNote: "راحة {r}", health_zoneTime: "{z} {n} د",
+    health_calBasis: "المناطق مطابقة لمناطق Fitbit لديك (أقصى نبض ≈ {m}، محسوب من {n} دروس) ونبض الراحة في ذلك اليوم.",
     shareImg: "🖼️ مشاركة صورة", exportCsv: "⬇️ تصدير CSV",
     stat_total: "الحصص التي حضرتها", stat_thisMonth: "هذا الشهر",
     stats_thisSelection: "يعرض", stats_allTime: "أرقام قياسية شاملة",
@@ -1046,6 +1141,257 @@ function renderDashboard() {
 }
 
 // ---------------------------------------------------------------------------
+// Health view — tracker numbers per attended lesson (from the Fitbit bridge)
+// ---------------------------------------------------------------------------
+const HEALTH_DAYS = 90;
+let HEALTH = null; // { connected, health, fill, durationMin }
+
+function healthKey(r) { return `${r.date} ${r.time} ${r.className}`; }
+function healthWhen(r) {
+  const d = new Date(r.date + "T00:00:00");
+  const wd = (WDSHORT[LANG] || WDSHORT.en)[d.getDay()];
+  return `<b>${esc(wd)} ${pad(d.getDate())}.${pad(d.getMonth() + 1)}</b>${esc(r.time || "")}`;
+}
+function healthChips(h) {
+  if (!h) return `<span class="lh-chip none">${esc(t("health_pending"))}</span>`;
+  if (h.avg == null) return `<span class="lh-chip none">${esc(t("health_noData"))}</span>`;
+  const c = [`<span class="lh-chip hr">${esc(t("health_avg", { n: h.avg }))}</span>`];
+  if (h.max != null) c.push(`<span class="lh-chip">${esc(t("health_peak", { n: h.max }))}</span>`);
+  if (h.zoneMin != null) {
+    const z = h.zones || {};
+    const tip = t("health_zoneTip", { f: Math.round(z.fatBurn || 0), c: Math.round((z.cardio || 0) / 2), p: Math.round((z.peak || 0) / 2) });
+    c.push(`<span class="lh-chip" title="${esc(tip)}">${esc(t("health_zone", { n: h.zoneMin }))}</span>`);
+  }
+  if (h.steps != null) c.push(`<span class="lh-chip">${esc(t("health_steps", { n: h.steps }))}</span>`);
+  return c.join("");
+}
+
+function renderHealthBody() {
+  const app = document.getElementById("app");
+  if (CURRENT_VIEW !== "health") return;
+  if (!HEALTH) { app.innerHTML = `<div class="loading">${esc(t("health_loading"))}</div>`; return; }
+  if (!HEALTH.connected) {
+    app.innerHTML = `<div class="empty">${esc(t("health_notConnected"))}<br><span style="font-size:12.5px;">${esc(t("health_notConnectedHint"))}</span></div>`;
+    return;
+  }
+  const cutoff = new Date(Date.now() - HEALTH_DAYS * 864e5);
+  const cutoffStr = `${cutoff.getFullYear()}-${pad(cutoff.getMonth() + 1)}-${pad(cutoff.getDate())}`;
+  const lessons = ALL_RECORDS
+    .filter(r => r.status === "attended" && r.date >= cutoffStr && r.date <= todayStr())
+    .sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+  if (!lessons.length) { app.innerHTML = `<div class="empty">${esc(t("health_empty"))}</div>`; return; }
+
+  const map = HEALTH.health || {};
+  const byType = {};
+  lessons.forEach(r => {
+    const h = map[healthKey(r)];
+    if (!h || h.avg == null) return;
+    const b = byType[r.className] || (byType[r.className] = { n: 0, avgSum: 0, peak: null, zoneSum: 0, zoneN: 0, minSum: 0, minN: 0 });
+    b.n++; b.avgSum += h.avg;
+    if (h.max != null) b.peak = Math.max(b.peak || 0, h.max);
+    if (h.azm != null) { b.zoneSum += h.azm; b.zoneN++; }
+    if (h.zoneMin != null) { b.minSum += h.zoneMin; b.minN++; }
+  });
+  const types = Object.entries(byType).sort((a, b) => b[1].n - a[1].n);
+  const typeTable = types.length ? `
+    <div class="card"><div class="lh-type">
+      <div class="hd"></div><div class="hd">${esc(t("health_col_lessons"))}</div><div class="hd">${esc(t("health_col_avg"))}</div><div class="hd">${esc(t("health_col_peak"))}</div>
+      <div class="hd tip" title="${esc(t("health_zoneMinTip"))}">${esc(t("health_col_zoneMin"))} ⓘ</div><div class="hd tip" title="${esc(t("health_azmTip"))}">${esc(t("health_col_azm"))} ⓘ</div>
+      ${types.map(([name, b]) => `
+        <div class="nm" title="${esc(name)}">${esc(name)}</div>
+        <div class="v">${b.n}</div>
+        <div class="v">${Math.round(b.avgSum / b.n)} bpm</div>
+        <div class="v">${b.peak != null ? b.peak + " bpm" : "—"}</div>
+        <div class="v">${b.minN ? Math.round(b.minSum / b.minN) + " " + esc(t("health_minUnit")) : "—"}</div>
+        <div class="v">${b.zoneN ? Math.round(b.zoneSum / b.zoneN) : "—"}</div>`).join("")}
+    </div></div>` : `<div class="subnote">—</div>`;
+
+  const remaining = HEALTH.fill && HEALTH.fill.remaining || 0;
+  const age = HEALTH.hrAge, cal = HEALTH.hrMaxCal;
+  const ageBar = cal && cal.max
+    ? `<div class="lh-age">${esc(t("health_calBasis", { m: cal.max, n: cal.lessons }))}</div>`
+    : age
+    ? `<div class="lh-age">${esc(t("health_ageBasis", { a: age }))} <a href="#" id="lhAgeChange">${esc(t("health_ageChange"))}</a></div>`
+    : `<div class="lh-age">${esc(t("health_agePrompt"))} <input id="lhAge" type="number" min="10" max="100" placeholder="${esc(t("health_agePh"))}"> <button id="lhAgeSave">${esc(t("health_ageSave"))}</button></div>`;
+  app.innerHTML = `
+    ${ageBar}
+    <h2>${esc(t("health_type"))}</h2>
+    ${typeTable}
+    <h2>${esc(t("health_recent"))}</h2>
+    <div class="subnote" style="margin-top:-4px;">${esc(t("health_openHint"))}</div>
+    <div class="lh-list">
+      ${lessons.map(r => `
+        <div class="lh-row${map[healthKey(r)] && map[healthKey(r)].avg != null ? " openable" : ""}" data-key="${esc(healthKey(r))}" data-date="${esc(r.date)}" data-time="${esc(r.time)}" data-cls="${esc(r.className)}" tabindex="0" role="button" aria-expanded="false">
+          <div class="lh-when">${healthWhen(r)}</div>
+          <div class="lh-cls"><div class="c">${esc(r.className)}</div>${r.teacher ? `<div class="tch">${esc(r.teacher)}</div>` : ""}</div>
+          <div class="lh-chips">${healthChips(map[healthKey(r)])}</div>
+          <div class="lh-detail" hidden></div>
+        </div>`).join("")}
+    </div>
+    ${remaining ? `<button id="lhMore" class="lh-more">${esc(t("health_more", { n: Math.min(remaining, 15) }))}</button>` : ""}
+    <div class="subnote" style="margin-top:14px;">${esc(t("health_note", { m: HEALTH.durationMin || 60 }))}</div>
+  `;
+  const more = document.getElementById("lhMore");
+  if (more) more.addEventListener("click", () => loadHealth(true));
+  const saveAge = async (v) => { const r = await send({ cmd: "setHrAge", age: v }); HEALTH.hrAge = r && r.hrAge; renderHealthBody(); };
+  const ageBtn = document.getElementById("lhAgeSave");
+  if (ageBtn) ageBtn.addEventListener("click", () => saveAge(document.getElementById("lhAge").value));
+  const ageIn = document.getElementById("lhAge");
+  if (ageIn) ageIn.addEventListener("keydown", e => { if (e.key === "Enter") saveAge(ageIn.value); });
+  const ageChange = document.getElementById("lhAgeChange");
+  if (ageChange) ageChange.addEventListener("click", e => { e.preventDefault(); HEALTH.hrAge = null; renderHealthBody(); });
+  document.querySelectorAll(".lh-row.openable").forEach(row => {
+    const toggle = (e) => { if (e.target.closest(".lh-detail")) return; toggleTrace(row); };
+    row.addEventListener("click", toggle);
+    row.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(e); } });
+  });
+}
+
+// ── Heart-rate curve (expanded row) ─────────────────────────────────────────
+// Zones follow Fitbit's heart-rate-reserve model: max = 220 − age,
+// reserve = max − resting; Moderate ≥ 40 %, Vigorous ≥ 60 %, Peak ≥ 85 % of
+// the reserve above resting. (Checked against the Google Health app's chart
+// for 22 Sep: its lines sit at ≈112 / 134 / 161 bpm = 40 / 60 / 85 %.)
+const ZONES = ["light", "moderate", "vigorous", "peak"];
+function hrMax() {
+  if (HEALTH && HEALTH.hrMaxCal && HEALTH.hrMaxCal.max) return HEALTH.hrMaxCal.max;   // fitted to Fitbit's zones
+  if (HEALTH && HEALTH.hrAge) return 220 - HEALTH.hrAge;                            // fallback
+  return null;
+}
+function hrZones(max, rest) {
+  if (!max) return null;
+  const r = rest || 60, hrr = max - r;
+  return { moderate: Math.round(r + 0.40 * hrr), vigorous: Math.round(r + 0.60 * hrr), peak: Math.round(r + 0.85 * hrr) };
+}
+function zoneOf(v, z) {
+  if (!z) return "light";
+  return v >= z.peak ? "peak" : v >= z.vigorous ? "vigorous" : v >= z.moderate ? "moderate" : "light";
+}
+function clockAdd(time, sec) {
+  const [h, m] = String(time).split(":").map(Number);
+  const tot = (h * 3600 + m * 60 + sec) % 86400;
+  return `${pad(Math.floor(tot / 3600))}:${pad(Math.floor(tot % 3600 / 60))}`;
+}
+
+async function toggleTrace(row) {
+  const det = row.querySelector(".lh-detail");
+  const open = det.hidden;
+  det.hidden = !open;
+  row.setAttribute("aria-expanded", String(open));
+  if (!open || det.dataset.loaded) return;
+  det.innerHTML = `<div class="subnote">${esc(t("health_traceLoading"))}</div>`;
+  const res = await send({ cmd: "getLessonTrace", date: row.dataset.date, time: row.dataset.time, className: row.dataset.cls });
+  if (!res || !res.ok) { det.innerHTML = `<div class="subnote">${esc(t("health_traceErr", { e: (res && res.error) || "?" }))}</div>`; return; }
+  if (!res.pts || !res.pts.some(v => v != null)) { det.innerHTML = `<div class="subnote">${esc(t("health_traceNone"))}</div>`; return; }
+  det.dataset.loaded = "1";
+  renderTrace(det, res, row.dataset.time, (HEALTH.health || {})[row.dataset.key]);
+}
+
+function renderTrace(det, res, time, summary) {
+  const pts = res.pts, step = res.step || 10;
+  const z = hrZones(hrMax(), res.rest);
+  const vals = pts.filter(v => v != null);
+  const dMin = Math.min(...vals), dMax = Math.max(...vals);
+  const yMin = Math.max(30, Math.floor((dMin - 10) / 10) * 10);
+  const yMax = Math.ceil((Math.max(dMax + 8, z ? z.vigorous + 8 : 0)) / 10) * 10;
+  const W = Math.max(280, det.clientWidth || 600), H = 190;
+  const L = 8, R = 44, T = 10, B = 24;
+  const x = i => L + (W - L - R) * (i / Math.max(1, pts.length - 1));
+  const y = v => T + (H - T - B) * (1 - (v - yMin) / (yMax - yMin));
+
+  let bands = "", lines = "", labels = "";
+  if (z) {
+    const edges = [["moderate", z.moderate], ["vigorous", z.vigorous], ["peak", z.peak]];
+    const tops = [z.moderate, z.vigorous, z.peak, Infinity];
+    ZONES.forEach((name, k) => {
+      const lo = k === 0 ? yMin : tops[k - 1], hi = Math.min(tops[k], yMax);
+      if (hi <= yMin || lo >= yMax) return;
+      bands += `<rect x="${L}" y="${y(hi)}" width="${W - L - R}" height="${Math.max(0, y(Math.max(lo, yMin)) - y(hi))}" class="z-band z-${name}"/>`;
+    });
+    edges.forEach(([name, v]) => {
+      if (v <= yMin || v >= yMax) return;
+      lines += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" class="z-line z-${name}"/>`;
+      labels += `<text x="${W - R + 6}" y="${y(v) + 4}" class="ax">${v}</text>`;
+    });
+  } else {
+    [yMin, Math.round((yMin + yMax) / 2), yMax].forEach(v => { labels += `<text x="${W - R + 6}" y="${y(v) + 4}" class="ax">${v}</text>`; });
+  }
+  // Curve: one path per zone run so colour follows the zone; gaps break the line.
+  let paths = "", cur = null, d = "";
+  const flush = () => { if (d) paths += `<path d="${d}" class="hr z-${cur}"/>`; d = ""; };
+  for (let i = 0; i < pts.length; i++) {
+    const v = pts[i];
+    if (v == null) { flush(); cur = null; continue; }
+    const zn = zoneOf(v, z);
+    if (zn !== cur) {
+      const prev = i > 0 && pts[i - 1] != null ? `M${x(i - 1).toFixed(1)},${y(pts[i - 1]).toFixed(1)}L` : "M";
+      flush(); cur = zn; d = prev + `${x(i).toFixed(1)},${y(v).toFixed(1)}`;
+    } else d += `L${x(i).toFixed(1)},${y(v).toFixed(1)}`;
+  }
+  flush();
+  const n = pts.length, times = [0, Math.floor(n / 2), n - 1];
+  const tlabels = times.map((i, k) => `<text x="${x(i)}" y="${H - 6}" class="ax" text-anchor="${k === 0 ? "start" : k === 2 ? "end" : "middle"}">${clockAdd(time, i * step)}</text>`).join("");
+
+  // Minutes per zone: Fitbit's own zone minutes when the lesson has them — the
+  // same source as the 🔥 chip and the Google Health app — so the numbers
+  // never disagree. Only lessons without them fall back to counting the curve.
+  let mins;
+  if (summary && summary.zones) {
+    const zz = summary.zones;
+    const mod = Math.round(zz.fatBurn), vig = Math.round(zz.cardio / 2), pk = Math.round(zz.peak / 2);
+    const total = Math.round(vals.length * step / 60);
+    mins = { light: Math.max(0, total - mod - vig - pk), moderate: mod, vigorous: vig, peak: pk };
+  } else {
+    const secs = { light: 0, moderate: 0, vigorous: 0, peak: 0 };
+    vals.forEach(v => { secs[zoneOf(v, z)] += step; });
+    mins = { light: Math.round(secs.light / 60), moderate: Math.round(secs.moderate / 60), vigorous: Math.round(secs.vigorous / 60), peak: Math.round(secs.peak / 60) };
+  }
+  const legend = z || (summary && summary.zones)
+    ? ZONES.map(k => `<span class="lg"><i class="z-dot z-${k}"></i>${esc(t("health_zoneTime", { z: t("health_z_" + k), n: mins[k] }))}</span>`).join("")
+    : "";
+  const rest = res.rest ? `<span class="lg muted">${esc(t("health_restNote", { r: res.rest }))}</span>` : "";
+
+  det.innerHTML = `
+    <div class="lh-chart" dir="ltr">
+      <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="heart rate">
+        ${bands}${lines}${paths}${labels}${tlabels}
+        <line class="xh" y1="${T}" y2="${H - B}" x1="0" x2="0" visibility="hidden"/>
+        <rect class="hit" x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}"/>
+      </svg>
+      <div class="lh-tip" hidden></div>
+    </div>
+    <div class="lh-legend">${legend}${rest}</div>`;
+
+  const svg = det.querySelector("svg"), xh = det.querySelector(".xh"), tip = det.querySelector(".lh-tip");
+  const hit = det.querySelector(".hit");
+  hit.addEventListener("mousemove", e => {
+    const box = svg.getBoundingClientRect();
+    const px = e.clientX - box.left;
+    const i = Math.max(0, Math.min(n - 1, Math.round((px - L) / (W - L - R) * (n - 1))));
+    const v = pts[i];
+    xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
+    if (v == null) { tip.hidden = true; return; }
+    tip.hidden = false;
+    tip.innerHTML = `<b>${v} bpm</b> · ${clockAdd(time, i * step)}${z ? ` · ${esc(t("health_z_" + zoneOf(v, z)))}` : ""}`;
+    const tx = Math.min(Math.max(x(i) - tip.offsetWidth / 2, 0), W - tip.offsetWidth);
+    tip.style.left = tx + "px"; tip.style.top = Math.max(0, y(v) - 34) + "px";
+  });
+  hit.addEventListener("mouseleave", () => { tip.hidden = true; xh.setAttribute("visibility", "hidden"); });
+}
+
+async function loadHealth(fill) {
+  const btn = document.getElementById("lhMore");
+  if (btn) { btn.disabled = true; btn.textContent = t("health_loading"); }
+  HEALTH = await send({ cmd: "getLessonHealth", fill: !!fill });
+  renderHealthBody();
+}
+
+function renderHealth() {
+  renderHealthBody();                    // cached numbers (or loading state) right away
+  loadHealth(true);                      // then top up missing lessons and re-render
+}
+
+// ---------------------------------------------------------------------------
 // Compare view
 // ---------------------------------------------------------------------------
 function periodRange(key) {
@@ -1415,6 +1761,7 @@ function setView(view) {
   if (view === "dashboard") renderDashboard();
   else if (view === "story") openStory();
   else if (view === "compare") renderCompare();
+  else if (view === "health") renderHealth();
 }
 
 async function loadAndRender() {

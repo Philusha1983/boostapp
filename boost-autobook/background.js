@@ -1669,6 +1669,42 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           fitbitAutoSync(store);
           break;
         }
+        case "getLessonHealth": {
+          // History → Health tab. fill:true tops up missing lessons first
+          // (bounded per call); the page can call again for more.
+          const st = await getFitbitState();
+          const connected = fitbitConnected(st);
+          let fill = null;
+          if (connected && msg.fill) {
+            try { fill = await fitbitFillLessonHealth(null, msg.max); }
+            catch (e) { fill = { ok: false, error: String(e && e.message || e) }; }
+          }
+          sendResponse({ connected, health: await getLessonHealth(), fill, durationMin: st.durationMin || 60, hrAge: st.hrAge || null, hrMaxCal: (await getFitbitState()).hrMaxCal || null });
+          break;
+        }
+        case "getLessonTrace": {
+          // One lesson's heart-rate curve (10-s points) + resting HR for zones.
+          try {
+            const st = await getFitbitState();
+            if (!fitbitConnected(st)) { sendResponse({ ok: false, error: "not connected" }); break; }
+            const durationMin = Math.max(5, Number(st.durationMin) || 60);
+            const startMs = studioTimeMs(msg.date, msg.time);
+            const endMs = startMs + durationMin * 60 * 1000;
+            const key = `${msg.date} ${msg.time} ${msg.className}`;
+            const t = await getLessonTraceCached(key, startMs, endMs, msg.date);
+            sendResponse({ ok: true, pts: t.pts, rest: t.rest, step: t.step, hrAge: st.hrAge || null, hrMaxCal: st.hrMaxCal || null });
+          } catch (e) {
+            sendResponse({ ok: false, error: String(e && e.message || e) });
+          }
+          break;
+        }
+        case "setHrAge": {
+          // Age for heart-rate zones (max HR = 220 − age). Stored locally only.
+          const age = Math.round(Number(msg.age));
+          await setFitbitState({ hrAge: age >= 10 && age <= 100 ? age : null });
+          sendResponse({ ok: true, hrAge: (await getFitbitState()).hrAge });
+          break;
+        }
         case "fitbitStatus": {
           sendResponse(await fitbitStatus());
           break;

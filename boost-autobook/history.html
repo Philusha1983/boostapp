@@ -180,6 +180,50 @@
   .subcard-title { font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); font-weight:700; margin-bottom:10px; flex:0 0 auto; }
   .growth-caption { font-size:11.5px; color:var(--muted); line-height:1.5; margin-top:10px; }
 
+  /* Health tab */
+  .lh-type { display:grid; grid-template-columns:minmax(0,1.5fr) repeat(5, minmax(0,1fr)); gap:6px 10px; align-items:baseline; font-size:13px; }
+  .lh-type .hd { font-size:11px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+  .lh-type .hd.tip { cursor:help; }
+  .lh-type .nm { font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .lh-type .v { font-variant-numeric:tabular-nums; }
+  .lh-list { display:flex; flex-direction:column; gap:8px; }
+  .lh-row { display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 14px; box-shadow:var(--shadow); flex-wrap:wrap; }
+  .lh-when { flex:0 0 96px; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .lh-when b { display:block; color:var(--text); font-size:13px; }
+  .lh-cls { flex:1 1 140px; min-width:0; }
+  .lh-cls .c { font-weight:700; font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .lh-cls .tch { font-size:12px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .lh-chips { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+  .lh-chip { font-size:12px; font-weight:700; padding:3px 8px; border-radius:999px; background:var(--ghost); color:var(--text); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .lh-chip.hr { background:var(--green-deep); color:#fff; }
+  .lh-chip.none { font-weight:600; color:var(--muted); }
+  .lh-more { margin-top:12px; }
+  .lh-row.openable { cursor:pointer; }
+  .lh-row.openable:hover { background:var(--hover); }
+  .lh-row.openable:focus-visible { outline:2px solid var(--green-deep); outline-offset:2px; }
+  .lh-detail { flex:1 1 100%; cursor:default; border-top:1px solid var(--line); padding-top:10px; margin-top:2px; }
+  .lh-age { font-size:12.5px; color:var(--muted); margin:0 0 6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .lh-age input { width:70px; padding:4px 6px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--text); }
+  .lh-age a { color:var(--green-deep); font-weight:700; }
+  /* Zone colours: validated as a 4-slot set on both surfaces (dataviz validator) */
+  .lh-chart { --z-light:#3f93d4; --z-moderate:#22a676; --z-vigorous:#c7850c; --z-peak:#e25563; position:relative; }
+  .lh-chart svg { display:block; max-width:100%; overflow:visible; }
+  .lh-chart .ax { font-size:11px; fill:var(--muted); font-variant-numeric:tabular-nums; }
+  .lh-chart .hr { fill:none; stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
+  .lh-chart .hr.z-light { stroke:var(--z-light); } .lh-chart .hr.z-moderate { stroke:var(--z-moderate); }
+  .lh-chart .hr.z-vigorous { stroke:var(--z-vigorous); } .lh-chart .hr.z-peak { stroke:var(--z-peak); }
+  .lh-chart .z-band { opacity:.07; } .lh-chart .z-band.z-light { fill:var(--z-light); } .lh-chart .z-band.z-moderate { fill:var(--z-moderate); }
+  .lh-chart .z-band.z-vigorous { fill:var(--z-vigorous); } .lh-chart .z-band.z-peak { fill:var(--z-peak); }
+  .lh-chart .z-line { stroke-width:1; stroke-dasharray:2 4; opacity:.8; }
+  .lh-chart .z-line.z-moderate { stroke:var(--z-moderate); } .lh-chart .z-line.z-vigorous { stroke:var(--z-vigorous); } .lh-chart .z-line.z-peak { stroke:var(--z-peak); }
+  .lh-chart .xh { stroke:var(--muted); stroke-width:1; opacity:.6; pointer-events:none; }
+  .lh-chart .hit { fill:transparent; cursor:crosshair; }
+  .lh-tip { position:absolute; pointer-events:none; background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow); border-radius:8px; padding:4px 8px; font-size:12px; color:var(--text); white-space:nowrap; }
+  .lh-legend { display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--text); margin-top:6px; }
+  .lh-legend .lg { display:inline-flex; align-items:center; gap:6px; }
+  .lh-legend .muted { color:var(--muted); }
+  .z-dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .z-dot.z-light { background:#3f93d4; } .z-dot.z-moderate { background:#22a676; } .z-dot.z-vigorous { background:#c7850c; } .z-dot.z-peak { background:#e25563; }
   .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:9px; font-size:13px; }
   .bar-row .bl { flex:0 0 118px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .bar-row .bt { flex:1 1 auto; background:var(--ghost); border-radius:6px; height:16px; position:relative; overflow:hidden; }
@@ -285,6 +329,7 @@
         <button data-view="dashboard" class="active" data-i18n="viewDashboard">Dashboard</button>
         <button data-view="story" data-i18n="viewStory">Story</button>
         <button data-view="compare" data-i18n="viewCompare">Compare</button>
+        <button data-view="health" data-i18n="viewHealth">Health</button>
       </div>
       <span class="sharegroup">
         <select id="shareTemplate"></select>
