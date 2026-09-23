@@ -6,6 +6,29 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.4.1] — 2026-09-23
+
+### Fixed
+- **Fitbit sync: heart rate missing on synced lessons.** Since ~Sept 11, 2026
+  Google's servers drop the measured metrics sent when a workout is created,
+  so lessons showed only duration and calories. The extension now writes the
+  heart rate, steps and active zone minutes in a follow-up update right after
+  creating each workout (which Google keeps), and verifies it stuck — the
+  Google Health / Fitbit app again shows average heart rate and the full
+  heart-rate zone chart.
+- A repair pass after every sync restores heart rate on the extension's own
+  workouts from the last 30 days that are missing it (retried up to 5 times,
+  e.g. while the tracker hasn't synced; windows with no tracker data are
+  skipped). Workouts logged by hand or by other apps are never touched.
+- Active zone minutes are now the total across all heart-rate zones (was
+  only the cardio zone).
+
+### Known limitations
+- Google now owns the calories and title of manually logged workouts: the app
+  shows Google's own calorie estimate rather than the tracker's measured
+  value, and the title is the exercise type ("Stretching"); the studio name
+  stays in the workout notes.
+
 ## [1.4.0] — 2026-08-01
 
 ### Added
