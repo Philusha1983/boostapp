@@ -6,6 +6,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+### Added
+- Groundwork for matching lesson plans to heart-rate curves: the extension
+  now quietly saves the studio's written workout plan for each Training
+  Harmony / Calisapiens lesson you book or attend (on the lesson day and again
+  after it ends). No visible change yet; stored in this browser only.
+
 ## [1.5.0] — 2026-09-23
 
 ### Added
