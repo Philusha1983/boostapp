@@ -210,3 +210,118 @@ async function schedulePlanAlarms() {
     console.log("[Boost Auto-Book] schedulePlanAlarms failed:", String(e && e.message || e));
   }
 }
+
+// ===========================================================================
+// Day-level capture + look-ahead log (2026-09-27)
+// ===========================================================================
+// Every Training Harmony class on a day carries the same plan (verified Aug +
+// Sep 2026), so one capture per day × class type covers every lesson that day
+// — including lessons not booked through the extension. Philip's hypothesis:
+// the day's plan is ready by the morning (maybe the whole week ahead). The
+// look-ahead log checks the next 7 days on every run and records when each
+// day's own plan first appears and whether it changes, so the hypothesis is
+// settled by data rather than assumed.
+//
+// bsab_day_plans      { "<date>|<type>": { date, type, classId, text, headerDate, capturedAt, revisions[] } }
+// bsab_plan_lookahead { "<date>|<type>": { firstClassAt, checks, firstOwnAt, firstOwnHoursBefore,
+//                                           ownChanges, seen:[{at, headerDate, hash}] } }
+const DP_KEY = "bsab_day_plans";
+const LA_KEY = "bsab_plan_lookahead";
+const LA_DAYS = 7;
+const LA_KEEP_DAYS = 45;
+const DP_TYPES = [
+  { type: "Training Harmony", re: /training\s*harmony/i },
+  { type: "Calisapiens", re: /calisapiens/i },
+];
+
+function lpHash(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+function lpDayType(className) { const t = DP_TYPES.find(t => t.re.test(className || "")); return t ? t.type : null; }
+function lpAddDays(dateStr, n) { const d = new Date(dateStr + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+
+async function dayPlanTick() {
+  try {
+    const cfg = await getConfig();
+    const now = Date.now(), today = lpStudioDate(now);
+    const o = await chrome.storage.local.get([DP_KEY, LA_KEY]);
+    const dayPlans = o[DP_KEY] || {}, log = o[LA_KEY] || {};
+    for (let i = 0; i < LA_DAYS; i++) {
+      const date = lpAddDays(today, i);
+      let classes = [];
+      try { classes = await fetchClassesForDate(cfg, date); } catch (e) { continue; }
+      for (const t of DP_TYPES) {
+        const cls = classes.filter(c => t.re.test(c.className || ""))
+          .sort((a, b) => String(a.startTime).localeCompare(String(b.startTime)))[0];
+        if (!cls) continue;
+        let text = "";
+        try {
+          const r = await api({ sessionRequire: false, action: "getClassInfo", classId: Number(cls.id), companyNum: Number(cfg.companyNum) });
+          text = lpHtmlToText(r && r.data && r.data.description);
+        } catch (e) { continue; }                       // offline — try next run
+        const key = date + "|" + t.type;
+        const hd = text ? lpHeaderDate(text) : null, hash = text ? lpHash(text) : null;
+        const firstClassAt = studioTimeMs(date, String(cls.startTime || "00:00").slice(0, 5));
+        // --- look-ahead log -------------------------------------------------
+        const L = log[key] || { firstClassAt, checks: 0, firstOwnAt: null, firstOwnHoursBefore: null, ownChanges: 0, seen: [] };
+        L.firstClassAt = firstClassAt; L.checks++;
+        const last = L.seen[L.seen.length - 1];
+        if (!last || last.hash !== hash) {
+          if (last && hd === date && last.headerDate === date) L.ownChanges++;   // the day's own plan was edited
+          L.seen.push({ at: now, headerDate: hd, hash, chars: text.length });
+          if (L.seen.length > 20) L.seen = L.seen.slice(-20);
+        }
+        if (hd === date && !L.firstOwnAt) {
+          L.firstOwnAt = now;
+          L.firstOwnHoursBefore = Math.round((firstClassAt - now) / 36e5 * 10) / 10;
+        }
+        log[key] = L;
+        // --- day plan: any own-dated plan, as soon as it is seen ------------
+        // Look-ahead log 27.09–13.10: the studio posts the whole coming week
+        // in one batch (Sat 03.10 11:50 → 04–09.10; Sat 10.10 13:16 → 11–16.10),
+        // 1–6 days ahead, never edited afterwards; and each class's text rolls
+        // on to the NEXT day's plan shortly after that class ends. Waiting
+        // for the day itself lost 06.10 (laptop asleep until the roll-over).
+        if (hd === date) {
+          const prev = dayPlans[key];
+          const entry = { date, type: t.type, classId: cls.id, text, headerDate: hd, capturedAt: now, revisions: (prev && prev.revisions) || [] };
+          if (prev && prev.text && prev.text !== text) entry.revisions = entry.revisions.concat([{ text: prev.text, capturedAt: prev.capturedAt }]).slice(-5);
+          if (!prev || prev.text !== text) dayPlans[key] = entry;
+        }
+      }
+    }
+    const cutoff = lpAddDays(today, -LA_KEEP_DAYS);
+    Object.keys(log).forEach(k => { if (k.slice(0, 10) < cutoff) delete log[k]; });
+    await chrome.storage.local.set({ [DP_KEY]: dayPlans, [LA_KEY]: log });
+    await applyDayPlansToLessons(dayPlans);
+  } catch (e) {
+    console.log("[Boost Auto-Book] dayPlanTick failed:", String(e && e.message || e));
+  }
+}
+
+// Lessons (booked or attended) that have no plan of their own get the day
+// plan for their date + class type.
+async function applyDayPlansToLessons(dayPlans) {
+  const plans = await getLessonPlans();
+  let changed = false;
+  for (const l of await lpCandidates()) {
+    const type = lpDayType(l.className);
+    const dp = type && dayPlans[l.date + "|" + type];
+    if (!dp) continue;
+    const k = lpKey(l.date, l.time, l.className);
+    const e = plans[k];
+    if (e && e.text) continue;
+    plans[k] = Object.assign({}, e || { date: l.date, time: l.time, className: l.className, revisions: [], tries: 0 }, {
+      classId: (e && e.classId) || null, text: dp.text, headerDate: dp.headerDate, dateMatches: true,
+      capturedAt: dp.capturedAt, phase: "day-plan", source: "day", final: false, error: null, gaveUp: false,
+    });
+    changed = true;
+  }
+  if (changed) await chrome.storage.local.set({ [LP_KEY]: plans });
+}
+
+// Daily morning run at 06:30 studio time (the 3-hourly run covers the rest).
+function scheduleMorningPlanAlarm() {
+  const now = Date.now(), today = lpStudioDate(now);
+  let when = studioTimeMs(today, "06:30");
+  if (when <= now) when = studioTimeMs(lpAddDays(today, 1), "06:30");
+  chrome.alarms.create("planMorning", { when, periodInMinutes: 24 * 60 });
+}

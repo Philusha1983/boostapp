@@ -1317,6 +1317,7 @@ async function ensurePollAlarm() {
   // Lesson plan capture (plans.js): 3-hourly backstop + per-lesson alarms.
   chrome.alarms.create("planCapture", { periodInMinutes: 3 * 60, delayInMinutes: 2 });
   schedulePlanAlarms();
+  scheduleMorningPlanAlarm();
 }
 
 // One-shot syncs right after each booked lesson ends, so workouts appear in
@@ -1395,8 +1396,9 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     await scheduleFitbitLessonAlarms();
   } else if (alarm.name.startsWith(FITBIT_LESSON_ALARM_PREFIX)) {
     await fitbitAutoSync();
-  } else if (alarm.name === "planCapture" || alarm.name.startsWith(LP_ALARM_PREFIX)) {
+  } else if (alarm.name === "planCapture" || alarm.name === "planMorning" || alarm.name.startsWith(LP_ALARM_PREFIX)) {
     await planCaptureTick();
+    await dayPlanTick();   // day plans + look-ahead log (next 7 days)
     await schedulePlanAlarms();
   } else if (alarm.name.startsWith("snipe:")) {
     await snipe(alarm.name.slice("snipe:".length));
@@ -1692,8 +1694,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         }
         case "getLessonPlans": {
           // Captured workout plans (plans.js). msg.capture:true runs a capture pass first.
-          if (msg.capture) await planCaptureTick();
-          sendResponse({ ok: true, plans: await getLessonPlans() });
+          if (msg.capture) { await planCaptureTick(); await dayPlanTick(); }
+          const o = await chrome.storage.local.get([DP_KEY, LA_KEY]);
+          sendResponse({ ok: true, plans: await getLessonPlans(), dayPlans: o[DP_KEY] || {}, lookahead: o[LA_KEY] || {} });
           break;
         }
         case "getLessonTrace": {
