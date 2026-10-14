@@ -16,6 +16,8 @@
 // Fitbit bridge (OAuth + lesson→activity logging) — shares this global scope.
 importScripts("fitbit.js");
 importScripts("plans.js");
+// bsab_lesson_parts { "<date> <time> <className>": { savedAt, guess, segs:[{key,t0,t1}], auto } }
+const LPARTS_KEY = "bsab_lesson_parts";
 
 const API_URL = "https://app.boostapp.co.il/controllerAction/OrderClasses.php";
 
@@ -1699,6 +1701,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           sendResponse({ ok: true, plans: await getLessonPlans(), dayPlans: o[DP_KEY] || {}, lookahead: o[LA_KEY] || {} });
           break;
         }
+        case "saveLessonParts": {
+          // Drag fix-ups of the part bands (Health tab). msg.segs null = reset to the estimate.
+          const o = await chrome.storage.local.get(LPARTS_KEY);
+          const all = o[LPARTS_KEY] || {};
+          if (msg.segs) all[msg.key] = { savedAt: new Date().toISOString(), guess: msg.guess || null, segs: msg.segs, auto: msg.auto || null };
+          else delete all[msg.key];
+          await chrome.storage.local.set({ [LPARTS_KEY]: all });
+          sendResponse({ ok: true });
+          break;
+        }
         case "getLessonTrace": {
           // One lesson's heart-rate curve (10-s points) + resting HR for zones.
           try {
@@ -1709,7 +1721,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             const endMs = startMs + durationMin * 60 * 1000;
             const key = `${msg.date} ${msg.time} ${msg.className}`;
             const t = await getLessonTraceCached(key, startMs, endMs, msg.date);
-            sendResponse({ ok: true, pts: t.pts, rest: t.rest, step: t.step, hrAge: st.hrAge || null, hrMaxCal: st.hrMaxCal || null });
+            // Experimental part bands: the lesson's plan (own capture, else the
+            // day plan for its class type) and any saved drag fix-ups.
+            const o = await chrome.storage.local.get([LP_KEY, DP_KEY, LPARTS_KEY]);
+            const lp = (o[LP_KEY] || {})[key], type = lpDayType(msg.className);
+            const dp = type && (o[DP_KEY] || {})[msg.date + "|" + type];
+            const planText = (lp && lp.text && lp.dateMatches !== false && lp.text) || (dp && dp.text) || null;
+            sendResponse({ ok: true, pts: t.pts, rest: t.rest, step: t.step, hrAge: st.hrAge || null, hrMaxCal: st.hrMaxCal || null,
+              planText, planDate: msg.date, parts: (o[LPARTS_KEY] || {})[key] || null });
           } catch (e) {
             sendResponse({ ok: false, error: String(e && e.message || e) });
           }

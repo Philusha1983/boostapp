@@ -54,6 +54,7 @@ const I18N = {
     health_ageBasis: "Zones use age {a} and your resting heart rate from Google Health.", health_ageChange: "Change",
     health_agePrompt: "Add your age to colour the curve by heart-rate zone (stays in this browser):", health_ageSave: "Save", health_agePh: "Age",
     health_restNote: "Resting {r} bpm", health_zoneTime: "{z} {n} min",
+    parts_warm: "Warm-up", parts_exp: "Experimental", parts_est: "Parts are estimated from your heart rate — drag an edge to where it really was.", parts_fixed: "Parts placed by you.", parts_reset: "Back to estimate", parts_plan: "Workout plan", parts_between: "between parts", parts_round: "round {r}", parts_work: "work", parts_rest: "rest", parts_self: "self-paced", parts_clock: "clock-driven",
     health_calBasis: "Zones are matched to your Fitbit zones (max heart rate ≈ {m} bpm, fitted from {n} lessons) and that day\u2019s resting heart rate.",
     shareImg: "🖼️ Share image", exportCsv: "⬇️ Export CSV",
     stat_total: "Classes attended", stat_thisMonth: "This month",
@@ -145,6 +146,7 @@ const I18N = {
     health_ageBasis: "האזורים מחושבים לפי גיל {a} והדופק במנוחה שלך מ‑Google Health.", health_ageChange: "שינוי",
     health_agePrompt: "הוסיפו את הגיל כדי לצבוע את הגרף לפי אזורי דופק (נשמר רק בדפדפן הזה):", health_ageSave: "שמירה", health_agePh: "גיל",
     health_restNote: "במנוחה {r}", health_zoneTime: "{z} {n} דק׳",
+    parts_warm: "חימום", parts_exp: "ניסיוני", parts_est: "החלקים מוערכים לפי הדופק — גררו קצה למקום האמיתי.", parts_fixed: "החלקים מוקמו על ידך.", parts_reset: "חזרה להערכה", parts_plan: "תוכנית האימון", parts_between: "בין חלקים", parts_round: "סבב {r}", parts_work: "עבודה", parts_rest: "מנוחה", parts_self: "בקצב אישי", parts_clock: "לפי שעון",
     health_calBasis: "האזורים מותאמים לאזורי ה‑Fitbit שלך (דופק מרבי ≈ {m}, מחושב מ‑{n} שיעורים) ולדופק במנוחה של אותו יום.",
     shareImg: "🖼️ שתף תמונה", exportCsv: "⬇️ ייצוא CSV",
     stat_total: "שיעורים שהגעת אליהם", stat_thisMonth: "החודש",
@@ -236,6 +238,7 @@ const I18N = {
     health_ageBasis: "Зоны рассчитаны по возрасту {a} и вашему пульсу в покое из Google Health.", health_ageChange: "Изменить",
     health_agePrompt: "Укажите возраст, чтобы раскрасить график по пульсовым зонам (хранится только в этом браузере):", health_ageSave: "Сохранить", health_agePh: "Возраст",
     health_restNote: "В покое {r}", health_zoneTime: "{z} {n} мин",
+    parts_warm: "Разминка", parts_exp: "Эксперимент", parts_est: "Части оценены по пульсу — перетащите край туда, где он был на самом деле.", parts_fixed: "Части расставлены вами.", parts_reset: "Вернуть оценку", parts_plan: "План тренировки", parts_between: "между частями", parts_round: "раунд {r}", parts_work: "работа", parts_rest: "отдых", parts_self: "в своём темпе", parts_clock: "по таймеру",
     health_calBasis: "Зоны подогнаны под ваши зоны Fitbit (макс. пульс ≈ {m}, по {n} занятиям) и пульс в покое в тот день.",
     shareImg: "🖼️ Поделиться", exportCsv: "⬇️ Экспорт CSV",
     stat_total: "Посещено занятий", stat_thisMonth: "В этом месяце",
@@ -327,6 +330,7 @@ const I18N = {
     health_ageBasis: "Зони розраховано за віком {a} і вашим пульсом у спокої з Google Health.", health_ageChange: "Змінити",
     health_agePrompt: "Вкажіть вік, щоб розфарбувати графік за пульсовими зонами (зберігається лише в цьому браузері):", health_ageSave: "Зберегти", health_agePh: "Вік",
     health_restNote: "У спокої {r}", health_zoneTime: "{z} {n} хв",
+    parts_warm: "Розминка", parts_exp: "Експеримент", parts_est: "Частини оцінено за пульсом — перетягніть край туди, де він був насправді.", parts_fixed: "Частини розставлено вами.", parts_reset: "Повернути оцінку", parts_plan: "План тренування", parts_between: "між частинами", parts_round: "раунд {r}", parts_work: "робота", parts_rest: "відпочинок", parts_self: "у своєму темпі", parts_clock: "за таймером",
     health_calBasis: "Зони підлаштовано під ваші зони Fitbit (макс. пульс ≈ {m}, за {n} заняттями) і пульс у спокої того дня.",
     shareImg: "🖼️ Поділитися", exportCsv: "⬇️ Експорт CSV",
     stat_total: "Відвідано занять", stat_thisMonth: "Цього місяця",
@@ -418,6 +422,7 @@ const I18N = {
     health_ageBasis: "المناطق محسوبة حسب العمر {a} ونبضك أثناء الراحة من Google Health.", health_ageChange: "تغيير",
     health_agePrompt: "أضف عمرك لتلوين المنحنى حسب مناطق النبض (يُحفظ في هذا المتصفح فقط):", health_ageSave: "حفظ", health_agePh: "العمر",
     health_restNote: "راحة {r}", health_zoneTime: "{z} {n} د",
+    parts_warm: "إحماء", parts_exp: "تجريبي", parts_est: "الأجزاء مُقدّرة من النبض — اسحب الحافة إلى مكانها الفعلي.", parts_fixed: "الأجزاء حددتها أنت.", parts_reset: "العودة للتقدير", parts_plan: "خطة التمرين", parts_between: "بين الأجزاء", parts_round: "جولة {r}", parts_work: "عمل", parts_rest: "راحة", parts_self: "بإيقاعك", parts_clock: "بالمؤقت",
     health_calBasis: "المناطق مطابقة لمناطق Fitbit لديك (أقصى نبض ≈ {m}، محسوب من {n} دروس) ونبض الراحة في ذلك اليوم.",
     shareImg: "🖼️ مشاركة صورة", exportCsv: "⬇️ تصدير CSV",
     stat_total: "الحصص التي حضرتها", stat_thisMonth: "هذا الشهر",
@@ -1284,18 +1289,19 @@ async function toggleTrace(row) {
   if (!res || !res.ok) { det.innerHTML = `<div class="subnote">${esc(t("health_traceErr", { e: (res && res.error) || "?" }))}</div>`; return; }
   if (!res.pts || !res.pts.some(v => v != null)) { det.innerHTML = `<div class="subnote">${esc(t("health_traceNone"))}</div>`; return; }
   det.dataset.loaded = "1";
-  renderTrace(det, res, row.dataset.time, (HEALTH.health || {})[row.dataset.key]);
+  renderTrace(det, res, row.dataset.time, (HEALTH.health || {})[row.dataset.key], row.dataset.key);
 }
 
-function renderTrace(det, res, time, summary) {
+function renderTrace(det, res, time, summary, key) {
   const pts = res.pts, step = res.step || 10;
+  const PT = lessonParts(res, pts, step);
   const z = hrZones(hrMax(), res.rest);
   const vals = pts.filter(v => v != null);
   const dMin = Math.min(...vals), dMax = Math.max(...vals);
   const yMin = Math.max(30, Math.floor((dMin - 10) / 10) * 10);
   const yMax = Math.ceil((Math.max(dMax + 8, z ? z.vigorous + 8 : 0)) / 10) * 10;
-  const W = Math.max(280, det.clientWidth || 600), H = 190;
-  const L = 8, R = 44, T = 10, B = 24;
+  const W = Math.max(280, det.clientWidth || 600), H = PT ? 226 : 190;
+  const L = 8, R = 44, T = PT ? 24 : 10, B = 24;
   const x = i => L + (W - L - R) * (i / Math.max(1, pts.length - 1));
   const y = v => T + (H - T - B) * (1 - (v - yMin) / (yMax - yMin));
 
@@ -1354,13 +1360,15 @@ function renderTrace(det, res, time, summary) {
   det.innerHTML = `
     <div class="lh-chart" dir="ltr">
       <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="heart rate">
-        ${bands}${lines}${paths}${labels}${tlabels}
+        ${bands}<g class="lp"></g>${lines}${paths}${labels}${tlabels}
         <line class="xh" y1="${T}" y2="${H - B}" x1="0" x2="0" visibility="hidden"/>
         <rect class="hit" x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}"/>
+        <g class="lp-h"></g>
       </svg>
       <div class="lh-tip" hidden></div>
     </div>
-    <div class="lh-legend">${legend}${rest}</div>`;
+    <div class="lh-legend">${legend}${rest}</div>
+    ${PT ? `<div class="lp-bar"></div>${partsPlanHtml(PT.plan)}` : ""}`;
 
   const svg = det.querySelector("svg"), xh = det.querySelector(".xh"), tip = det.querySelector(".lh-tip");
   const hit = det.querySelector(".hit");
@@ -1372,12 +1380,125 @@ function renderTrace(det, res, time, summary) {
     xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
     if (v == null) { tip.hidden = true; return; }
     tip.hidden = false;
-    tip.innerHTML = `<b>${v} bpm</b> · ${clockAdd(time, i * step)}${z ? ` · ${esc(t("health_z_" + zoneOf(v, z)))}` : ""}`;
+    tip.innerHTML = `<b>${v} bpm</b> · ${clockAdd(time, i * step)}${z ? ` · ${esc(t("health_z_" + zoneOf(v, z)))}` : ""}${PT ? partsTipHtml(PT, i * step) : ""}`;
     const tx = Math.min(Math.max(x(i) - tip.offsetWidth / 2, 0), W - tip.offsetWidth);
     tip.style.left = tx + "px"; tip.style.top = Math.max(0, y(v) - 34) + "px";
   });
   hit.addEventListener("mouseleave", () => { tip.hidden = true; xh.setAttribute("visibility", "hidden"); });
+
+  if (PT) {
+    const geo = { L, R, T, B, W, H, n, step, xs: sec => x(Math.min(n - 1, sec / step)), total: n * step };
+    PT.det = det; PT.geo = geo; PT.key = key;
+    drawParts(PT);
+    det.querySelector(".lp-h").addEventListener("pointerdown", e => {
+      const h = e.target.closest(".lp-grip"); if (!h) return;
+      e.preventDefault(); e.stopPropagation();
+      PART_DRAG = { PT, i: +h.dataset.i, edge: h.dataset.edge, svg };
+      tip.hidden = true; xh.setAttribute("visibility", "hidden");
+    });
+  }
 }
+
+// ---------------------------------------------------------------------------
+// Experimental: the workout plan's parts on the heart-rate chart.
+// Placement is an estimate (LessonParts.guessV1) until the user drags an edge;
+// fix-ups are stored per lesson (bsab_lesson_parts) and win over the guess.
+// ---------------------------------------------------------------------------
+let PART_DRAG = null;
+function lessonParts(res, pts, step) {
+  if (!res.planText || !self.LessonPlanParser || !self.LessonParts) return null;
+  try {
+    const plan = LessonPlanParser.parsePlan(res.planText, { date: res.planDate });
+    const auto = LessonParts.guessV1(plan, pts, step);
+    if (!auto) return null;
+    return { plan, auto, segs: LessonParts.applySaved(auto, res.parts), fixed: !!(res.parts && res.parts.segs) };
+  } catch (e) { return null; }
+}
+function partName(s) { return s.key === "W" ? t("parts_warm") : `${s.key} · ${s.label}`; }
+function drawParts(PT) {
+  const { L, R, T, B, W, H, xs } = PT.geo, det = PT.det;
+  let g = "", hg = "";
+  PT.segs.forEach((s, i) => {
+    const x0 = xs(s.t0), x1 = xs(s.t1), w = Math.max(1, x1 - x0);
+    const cls = s.key === "W" ? "w" : (i % 2 ? "a" : "b");
+    g += `<rect class="lp-band ${cls}" x="${x0}" y="${T}" width="${w}" height="${H - T - B}"/>`;
+    const full = partName(s), fit = Math.floor((w - 6) / 6.2);
+    const lbl = full.length <= fit ? full : fit >= 8 ? full.slice(0, fit - 1).trimEnd() + "…" : w > 14 ? s.key : "";
+    if (lbl) g += `<text class="lp-lbl" x="${x0 + 3}" y="${T - 7}">${esc(lbl)}</text>`;
+    if (s.locked && s.blockIndex != null) {
+      for (const k of LessonPlanParser.blockTimeline(PT.plan.blocks[s.blockIndex]) || []) {
+        if (k.kind !== "work") continue;
+        const a = xs(s.t0 + k.t0), b = xs(s.t0 + k.t1);
+        g += `<rect class="lp-slot" x="${a}" y="${H - B - 9}" width="${Math.max(1, b - a - 0.5)}" height="7"/>`;
+      }
+    }
+    ["t0", "t1"].forEach(edge => {
+      if (edge === "t0" && s.key === "W") return;                 // the lesson start is fixed
+      const ex = xs(s[edge]);
+      hg += `<g class="lp-grip" data-i="${i}" data-edge="${edge}"><rect x="${ex - 6}" y="${T}" width="12" height="${H - T - B}"/><line x1="${ex}" x2="${ex}" y1="${T}" y2="${H - B}"/></g>`;
+    });
+  });
+  det.querySelector(".lp").innerHTML = g;
+  det.querySelector(".lp-h").innerHTML = hg;
+  const bar = det.querySelector(".lp-bar");
+  if (bar) bar.innerHTML = `<span class="lp-pill">${esc(t("parts_exp"))}</span> ${esc(t(PT.fixed ? "parts_fixed" : "parts_est"))}` +
+    (PT.fixed ? ` <a href="#" class="lp-reset">${esc(t("parts_reset"))}</a>` : "");
+  const r = det.querySelector(".lp-reset");
+  if (r) r.addEventListener("click", async e => {
+    e.preventDefault();
+    PT.segs = LessonParts.applySaved(PT.auto, null); PT.fixed = false;
+    drawParts(PT);
+    await send({ cmd: "saveLessonParts", key: PT.key, segs: null });
+  });
+}
+function partsTipHtml(PT, sec) {
+  const hit = LessonParts.at(PT.segs, PT.plan, sec);
+  if (!hit) return ` · <span class="muted">${esc(t("parts_between"))}</span>`;
+  let h = ` · ${esc(partName(hit.seg))}`;
+  if (hit.slot) h += ` · ${esc(t("parts_round", { r: hit.slot.round }))} · ${hit.slot.kind === "work" ? `<b>${esc(hit.slot.item + " " + (hit.slot.name || ""))}</b>` : esc(t("parts_rest"))}`;
+  return h;
+}
+function partsModeText(b) {
+  const mm = sec => `${Math.floor(sec / 60)}:${pad(Math.round(sec % 60))}`;
+  switch (b.mode) {
+    case "ROUNDS": return `${b.rounds} × ${b.work ? `${b.work}s / ${b.rest || 0}s` : "rounds"} · ${mm(LessonParts.planSec(b))}`;
+    case "INTERVAL": return `${b.sets || ""} × ${b.work}s / ${b.rest}s · ${mm(LessonParts.planSec(b))}`;
+    case "EMOM": return `EMOM ${b.durationMin} min`;
+    case "EVERY_X": return `every ${mm(b.period)} × ${b.sets}`;
+    case "CHIPPER": return `${b.targetReps ? b.targetReps + " reps · " : ""}cap ${mm(LessonParts.planSec(b))}`;
+    case "AMRAP": return `AMRAP ${b.durationMin} min`;
+    case "PAIR_SETS": case "SETS_EACH": return `${b.sets} sets${b.rest ? ` · rest ${b.rest}s` : ""} · ≈${mm(LessonParts.planSec(b))}`;
+    default: return b.mode || "";
+  }
+}
+function partsPlanHtml(plan) {
+  const hd = plan.header ? `<div class="lp-hd">${esc([plan.header.weekday, plan.header.program, plan.header.weekNumber ? `Week ${plan.header.weekNumber}${plan.header.phase ? ": " + plan.header.phase : ""}` : ""].filter(Boolean).join(" · "))}</div>` : "";
+  const blocks = plan.blocks.filter(b => b.items && b.items.length).map((b, i) => {
+    const items = b.items.map(it => {
+      const r = it.reps != null ? `${it.reps}${it.repsMax ? "–" + it.repsMax : ""}${it.unit === "reps_each_side" ? "/side" : it.unit === "total_reps" ? " total" : ""} ` : "";
+      return `<li><b>${esc(it.key)}</b> ${esc(r + it.name)}</li>`;
+    }).join("");
+    const clock = LessonPlanParser.blockTimeline(b) ? ` · ${esc(t("parts_clock"))}` : "";
+    return `<div class="lp-blk"><div><b>${esc((b.key || "ABCD"[i]) + " · " + b.label)}</b> <span class="muted">${esc(partsModeText(b))}${clock}</span></div><ol>${items}</ol></div>`;
+  }).join("");
+  return `<details class="lp-plan" dir="ltr"><summary>${esc(t("parts_plan"))}</summary>${hd}<div class="lp-blks">${blocks}</div></details>`;
+}
+window.addEventListener("pointermove", e => {
+  if (!PART_DRAG) return;
+  const { PT, i, edge, svg } = PART_DRAG, g = PT.geo;
+  const px = e.clientX - svg.getBoundingClientRect().left;
+  const sec = Math.round(Math.max(0, Math.min(g.total, (px - g.L) / (g.W - g.L - g.R) * (g.n - 1) * g.step)) / 5) * 5;
+  LessonParts.moveEdge(PT.segs, i, edge, sec, g.total);
+  drawParts(PT);
+});
+window.addEventListener("pointerup", async () => {
+  if (!PART_DRAG) return;
+  const PT = PART_DRAG.PT; PART_DRAG = null;
+  PT.fixed = true; drawParts(PT);
+  await send({ cmd: "saveLessonParts", key: PT.key, guess: LessonParts.VERSION,
+    segs: PT.segs.map(s => ({ key: s.key, t0: s.t0, t1: s.t1 })),
+    auto: PT.auto.map(s => ({ key: s.key, t0: s.t0, t1: s.t1 })) });
+});
 
 async function loadHealth(fill) {
   const btn = document.getElementById("lhMore");

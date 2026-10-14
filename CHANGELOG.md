@@ -6,11 +6,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.6.0] — 2026-10-14
+
 ### Added
-- Groundwork for matching lesson plans to heart-rate curves: the extension
-  now quietly saves the studio's written workout plan for each Training
-  Harmony / Calisapiens lesson you book or attend (on the lesson day and again
-  after it ends). No visible change yet; stored in this browser only.
+- **Workout plan on the heart-rate chart** (Health tab, experimental): when a
+  lesson has a posted plan, its parts — warm-up, A, B, C — are shaded on the
+  lesson's heart-rate curve.
+  - Hover the curve to see which part you were in; for timed parts (fixed
+    work/rest rounds) it names the exact exercise and round, and small ticks
+    mark each work interval.
+  - The plan itself is listed under the chart.
+  - Where each part sat is **estimated** from your heart rate (work raises it,
+    set-up between parts lets it drop). Drag a part's edge to where it really
+    was; your fix is saved for that lesson ("Back to estimate" undoes it).
+- The extension saves the studio's written workout plan for each Training
+  Harmony / Calisapiens lesson you book or attend. The studio posts the whole
+  week's plans on Saturday, so they are saved as soon as they appear and
+  again on the lesson day. Stored in this browser only.
 
 ## [1.5.0] — 2026-09-23
 
