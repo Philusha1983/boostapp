@@ -498,6 +498,7 @@ function applyLang(lang) {
   document.documentElement.dir = RTL_LANGS.includes(LANG) ? "rtl" : "ltr";
   document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.getAttribute("data-i18n")); });
   document.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.getAttribute("data-i18n-title")); });
+  if (self.MusclePanel) { MusclePanel.setLang(LANG); renderBodyPref(); }
   applyViewToggleUI("upcoming"); applyViewToggleUI("slots");
   if ($("checkNow")) $("checkNow").textContent = t("checkNow");
   if ($("refreshBtn")) $("refreshBtn").textContent = t("refresh");
@@ -1050,6 +1051,30 @@ function buildRegWeekActions(inner, e) {
 }
 
 // Expand-body with an inner wrapper (needed for the 0fr→1fr height animation).
+// ---------------------------------------------------------------------------
+// Muscle map (v1.7.0): plan → muscles per lesson (musclepanel.js)
+// ---------------------------------------------------------------------------
+let MUSCLE = null;
+const muscleCache = {};
+async function loadMuscle() { try { MUSCLE = await send({ cmd: "getMuscleLessons" }); } catch (e) { MUSCLE = null; } }
+function muscleLesson(e) {
+  if (!self.MusclePanel || !MUSCLE || !MUSCLE.ok || !e || e.startAt == null) return null;
+  const l = MUSCLE.lessons.find(x => x.startAt === e.startAt && x.className === e.className);
+  if (!l) return null;
+  if (!(l.key in muscleCache)) muscleCache[l.key] = MusclePanel.parse(l.text, l.date);
+  return muscleCache[l.key];
+}
+const bodySex = () => (MUSCLE && MUSCLE.body && MUSCLE.body.sex) || "neutral";
+function renderBodyPref() {
+  if (!self.MusclePanel || !$("bodyPref")) return;
+  const T = MusclePanel.t;
+  $("bodyPrefLbl").textContent = T("body");
+  [...$("bodyPref").options].forEach(o => { o.textContent = T(o.value === "auto" ? "bodyAuto" : o.value); });
+  const b = MUSCLE && MUSCLE.body;
+  if (b) $("bodyPref").value = b.pref || "auto";
+  $("bodyPrefHint").textContent = (b && b.pref === "auto" && b.checkedAt ? (b.detected ? T("found", { x: T(b.detected) }) : T("notFound")) + " · " : "") + T("bodyHint");
+}
+
 function makeExpand() {
   const b = document.createElement("div"); b.className = "expand-body";
   const i = document.createElement("div"); i.className = "expand-inner";
@@ -1065,6 +1090,7 @@ async function softRefresh() {
   const state = await send({ cmd: "getState" });
   if (!state) return;
   const { subscription, registrations, auth, client } = state;
+  await loadMuscle();
   renderAuth(auth, client); renderSubscription(subscription); renderRegistrations(registrations);
   $("badge-upcoming").textContent = registrations && registrations.items ? registrations.items.length : 0;
   $("badge-sub").textContent = subBadgeText(subscription);
@@ -1442,14 +1468,14 @@ function sanitizeHtml(html) {
   return doc.body.innerHTML;
 }
 function escapeHtml(s) { const d = document.createElement("div"); d.textContent = s || ""; return d.innerHTML; }
-async function toggleInfo(classId, body, kind) {
+async function toggleInfo(classId, body, kind, lesson) {
   if (body.classList.contains("open")) { body.classList.remove("open"); return; }
   body.classList.add("open");
   const inner = body.querySelector(".expand-inner") || body;
   if (!body.dataset.loaded) {
     inner.innerHTML = `<span class="muted">${t("loading")}</span>`;
     const info = await getInfo(classId);
-    if (!info) { inner.innerHTML = `<span class="muted">${t("couldNotLoad")}</span>`; return; }
+    if (!info && !lesson) { inner.innerHTML = `<span class="muted">${t("couldNotLoad")}</span>`; return; }
     if (kind === "participants") {
       const parts = info.participants || [];
       let h = `<div class="subhdr">${t("registeredCount", { r: info.registered ?? parts.length, m: info.registered_max ?? "?" })}</div>`;
@@ -1459,7 +1485,9 @@ async function toggleInfo(classId, body, kind) {
       }
       inner.innerHTML = h;
     } else {
-      inner.innerHTML = info.description ? `<div class="lesson-desc">${sanitizeHtml(info.description)}</div>` : `<span class="muted">${t("noDetails")}</span>`;
+      const desc = info && info.description ? `<div class="lesson-desc">${sanitizeHtml(info.description)}</div>` : (lesson ? "" : `<span class="muted">${t("noDetails")}</span>`);
+      inner.innerHTML = (lesson ? `<div class="mp-host"></div>` : "") + desc;
+      if (lesson) MusclePanel.panel(inner.querySelector(".mp-host"), lesson, { sex: bodySex(), compact: true });
     }
     body.dataset.loaded = "1";
   }
@@ -1521,6 +1549,13 @@ function renderRegistrations(registrations) {
       </div>
       ${meta.length ? `<div class="t-meta">${meta.join(" &nbsp;·&nbsp; ")}</div>` : ""}
       ${e.cancellation ? `<div class="t-meta">${e.cancellation}</div>` : ""}`;
+    const ml = muscleLesson(e);
+    if (ml) {
+      const row = document.createElement("div"); row.className = "t-muscles";
+      row.appendChild(MusclePanel.mini(ml, bodySex()));
+      const tx = document.createElement("span"); tx.textContent = MusclePanel.top(ml, 3).join(" · ");
+      row.appendChild(tx); card.appendChild(row);
+    }
     const headAct = card.querySelector(".t-head-act");
     if (e.bookingActId) {
       const c = btn(t("cancelLesson"), "danger small");
@@ -1536,7 +1571,7 @@ function renderRegistrations(registrations) {
       const pBody = makeExpand();
       const iBody = makeExpand();
       pBtn.onclick = () => toggleInfo(e.classId, pBody, "participants");
-      iBtn.onclick = () => toggleInfo(e.classId, iBody, "info");
+      iBtn.onclick = () => toggleInfo(e.classId, iBody, "info", ml);
       card.appendChild(row); card.appendChild(pBody); card.appendChild(iBody);
     }
     el.appendChild(card);
@@ -1568,6 +1603,7 @@ async function refresh() {
   if (config && config.lang && config.lang !== LANG) applyLang(config.lang);
   renderAuth(auth, client);
   renderSubscription(subscription);
+  await loadMuscle(); renderBodyPref();
   renderRegistrations(registrations);
 
   const regCount = registrations && registrations.items ? registrations.items.length : 0;
@@ -1638,6 +1674,11 @@ $("lang").onchange = async () => {
   applyLang($("lang").value);
   await send({ cmd: "updateConfig", config: { lang: $("lang").value } });
   await renderSchedule(); refresh();
+};
+if ($("bodyPref")) $("bodyPref").onchange = async () => {
+  const r = await send({ cmd: "setBodyPref", pref: $("bodyPref").value });
+  if (MUSCLE && r && r.body) MUSCLE.body = r.body;
+  renderBodyPref(); renderRegistrations(lastRegistrations);
 };
 $("theme").onchange = async () => {
   applyTheme($("theme").value);

@@ -107,6 +107,41 @@
     return { empty: items.length === 0, items };
   }
 
+  // Body figure for the muscle map (v1.7.0): read the gender on the user's own
+  // BoostApp profile page, at most once a week and only while the setting is
+  // "From my BoostApp profile". Read-only; the answer stays in this browser.
+  // Matches the visible option text, so it doesn't depend on BoostApp's codes.
+  const SEX_RE = /gender|sex|מין|מגדר/i;
+  function sexFromText(s) {
+    s = String(s || "").trim();
+    if (/נקבה|אישה|female|woman|жен|أنثى/i.test(s)) return "female";
+    if (/זכר|גבר|\bmale\b|\bman\b|муж|ذكر/i.test(s)) return "male";
+    return null;
+  }
+  function readSex(doc) {
+    const fields = [...doc.querySelectorAll("select, input[type=radio]")].filter(e => {
+      const lab = (e.id && doc.querySelector(`label[for="${CSS.escape(e.id)}"]`)) || e.closest("label, .form-group, .form-row, div");
+      return SEX_RE.test([e.name, e.id, lab ? lab.textContent.slice(0, 120) : ""].join(" "));
+    });
+    for (const e of fields) {
+      if (e.tagName === "SELECT") { const o = e.options[e.selectedIndex]; const v = o && o.value !== "" ? sexFromText(o.text) : null; if (v) return v; }
+      else if (e.checked) { const lab = (e.id && doc.querySelector(`label[for="${CSS.escape(e.id)}"]`)) || e.closest("label") || e.parentElement; const v = sexFromText(lab && lab.textContent) || sexFromText(e.value); if (v) return v; }
+    }
+    return null;
+  }
+  async function checkProfileSex() {
+    try {
+      const r = await chrome.runtime.sendMessage({ cmd: "bodyCheckDue" });
+      if (!r || !r.due) return;
+      const gu = new URLSearchParams(location.search).get("GetUrl") || r.getUrl;
+      if (!gu) return;
+      const res = await fetch(`/MyProfile.php?GetUrl=${encodeURIComponent(gu)}`, { credentials: "include" });
+      if (!res.ok || !/MyProfile/i.test(res.url)) return;          // redirected (signed out) → try another day
+      const doc = new DOMParser().parseFromString(await res.text(), "text/html");
+      chrome.runtime.sendMessage({ cmd: "profileSex", value: readSex(doc) });
+    } catch (e) {}
+  }
+
   // The events widget renders only AFTER its XHR returns, so its container is
   // absent until then. We only trust an events read once the container exists.
   function eventsRendered() { return !!document.querySelector(".client-booked__events__container"); }
@@ -127,6 +162,7 @@
       syncedAt: Date.now()
     };
     try { chrome.runtime.sendMessage({ cmd: "syncFromPage", payload }); } catch (e) {}
+    if (loggedIn) checkProfileSex();
   }
 
   // Wait until the events widget has actually rendered (container present),

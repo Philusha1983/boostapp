@@ -516,6 +516,7 @@ function applyLang(lang) {
   document.documentElement.lang = LANG;
   document.documentElement.dir = RTL_LANGS.includes(LANG) ? "rtl" : "ltr";
   document.querySelectorAll("[data-i18n]").forEach(el => { el.innerHTML = t(el.getAttribute("data-i18n")); });
+  if (self.MusclePanel) MusclePanel.setLang(LANG);
   updateStickyOffsets();
 }
 
@@ -1150,6 +1151,7 @@ function renderDashboard() {
 // ---------------------------------------------------------------------------
 const HEALTH_DAYS = 90;
 let HEALTH = null; // { connected, health, fill, durationMin }
+let MUSCLE = null; // getMuscleLessons: { lessons:[{key,date,time,className,startAt,done,text}], today, body }
 
 function healthKey(r) { return `${r.date} ${r.time} ${r.className}`; }
 function healthWhen(r) {
@@ -1176,7 +1178,8 @@ function renderHealthBody() {
   if (CURRENT_VIEW !== "health") return;
   if (!HEALTH) { app.innerHTML = `<div class="loading">${esc(t("health_loading"))}</div>`; return; }
   if (!HEALTH.connected) {
-    app.innerHTML = `<div class="empty">${esc(t("health_notConnected"))}<br><span style="font-size:12.5px;">${esc(t("health_notConnectedHint"))}</span></div>`;
+    app.innerHTML = weekCardHtml() + `<div class="empty">${esc(t("health_notConnected"))}<br><span style="font-size:12.5px;">${esc(t("health_notConnectedHint"))}</span></div>`;
+    wireWeekCard();
     return;
   }
   const cutoff = new Date(Date.now() - HEALTH_DAYS * 864e5);
@@ -1220,6 +1223,7 @@ function renderHealthBody() {
     : `<div class="lh-age">${esc(t("health_agePrompt"))} <input id="lhAge" type="number" min="10" max="100" placeholder="${esc(t("health_agePh"))}"> <button id="lhAgeSave">${esc(t("health_ageSave"))}</button></div>`;
   app.innerHTML = `
     ${ageBar}
+    ${weekCardHtml()}
     <h2>${esc(t("health_type"))}</h2>
     ${typeTable}
     <h2>${esc(t("health_recent"))}</h2>
@@ -1236,6 +1240,7 @@ function renderHealthBody() {
     ${remaining ? `<button id="lhMore" class="lh-more">${esc(t("health_more", { n: Math.min(remaining, 15) }))}</button>` : ""}
     <div class="subnote" style="margin-top:14px;">${esc(t("health_note", { m: HEALTH.durationMin || 60 }))}</div>
   `;
+  wireWeekCard();
   const more = document.getElementById("lhMore");
   if (more) more.addEventListener("click", () => loadHealth(true));
   const saveAge = async (v) => { const r = await send({ cmd: "setHrAge", age: v }); HEALTH.hrAge = r && r.hrAge; renderHealthBody(); };
@@ -1278,6 +1283,41 @@ function clockAdd(time, sec) {
   return `${pad(Math.floor(tot / 3600))}:${pad(Math.floor(tot % 3600 / 60))}`;
 }
 
+// ---------------------------------------------------------------------------
+// Muscle map (v1.7.0): this week's coverage + per-lesson panel (musclepanel.js)
+// ---------------------------------------------------------------------------
+const mmSex = () => (MUSCLE && MUSCLE.body && MUSCLE.body.sex) || "neutral";
+function weekItems() {
+  if (!self.MusclePanel || !MUSCLE || !MUSCLE.ok) return [];
+  const today = new Date(MUSCLE.today + "T12:00:00Z");
+  const sun = new Date(today); sun.setUTCDate(today.getUTCDate() - today.getUTCDay());
+  const sat = new Date(sun); sat.setUTCDate(sun.getUTCDate() + 6);
+  const a = sun.toISOString().slice(0, 10), b = sat.toISOString().slice(0, 10);
+  const wd = new Intl.DateTimeFormat(LANG, { weekday: "short", timeZone: "UTC" });
+  return MUSCLE.lessons.filter(l => l.date >= a && l.date <= b).sort((x, y) => (x.date + x.time).localeCompare(y.date + y.time))
+    .map(l => ({ lesson: MusclePanel.parse(l.text, l.date), done: l.done, label: `${wd.format(new Date(l.date + "T12:00:00Z"))} ${l.date.slice(8)}.${l.date.slice(5, 7)} ${l.time}` }))
+    .filter(x => x.lesson);
+}
+function weekCardHtml() {
+  if (!self.MusclePanel || !MUSCLE || !MUSCLE.ok) return "";
+  const T = MusclePanel.t, pref = (MUSCLE.body && MUSCLE.body.pref) || "auto";
+  const sel = `<label>${esc(T("body"))} <select id="mmBody">${["auto", "male", "female", "neutral"].map(v => `<option value="${v}"${v === pref ? " selected" : ""}>${esc(T(v === "auto" ? "bodyAuto" : v))}</option>`).join("")}</select></label>`;
+  const items = weekItems();
+  return `<div class="mm-week-hd"><h2>${esc(T("week"))}</h2>${sel}</div>
+    <div class="subnote" style="margin-top:-4px;">${esc(T(items.length ? "weekSub" : "noPlans"))}</div>
+    ${items.length ? `<div class="card" id="mmWeek"></div>` : ""}`;
+}
+function wireWeekCard() {
+  const host = document.getElementById("mmWeek");
+  if (host) MusclePanel.week(host, weekItems(), { sex: mmSex() });
+  const sel = document.getElementById("mmBody");
+  if (sel) sel.addEventListener("change", async () => {
+    const r = await send({ cmd: "setBodyPref", pref: sel.value });
+    if (r && r.body) MUSCLE.body = r.body;
+    renderHealthBody();
+  });
+}
+
 async function toggleTrace(row) {
   const det = row.querySelector(".lh-detail");
   const open = det.hidden;
@@ -1295,6 +1335,7 @@ async function toggleTrace(row) {
 function renderTrace(det, res, time, summary, key) {
   const pts = res.pts, step = res.step || 10;
   const PT = lessonParts(res, pts, step);
+  const ML = self.MusclePanel && res.planText ? MusclePanel.parse(res.planText, res.planDate) : null;
   const z = hrZones(hrMax(), res.rest);
   const vals = pts.filter(v => v != null);
   const dMin = Math.min(...vals), dMax = Math.max(...vals);
@@ -1368,7 +1409,7 @@ function renderTrace(det, res, time, summary, key) {
       <div class="lh-tip" hidden></div>
     </div>
     <div class="lh-legend">${legend}${rest}</div>
-    ${PT ? `<div class="lp-bar"></div>${partsPlanHtml(PT.plan)}` : ""}`;
+    ${PT ? `<div class="lp-bar"></div>` : ""}${ML ? `<details class="lp-plan" dir="ltr"><summary>${esc(t("parts_plan"))}</summary><div class="mp-host"></div></details>` : ""}`;
 
   const svg = det.querySelector("svg"), xh = det.querySelector(".xh"), tip = det.querySelector(".lh-tip");
   const hit = det.querySelector(".hit");
@@ -1384,7 +1425,15 @@ function renderTrace(det, res, time, summary, key) {
     const tx = Math.min(Math.max(x(i) - tip.offsetWidth / 2, 0), W - tip.offsetWidth);
     tip.style.left = tx + "px"; tip.style.top = Math.max(0, y(v) - 34) + "px";
   });
-  hit.addEventListener("mouseleave", () => { tip.hidden = true; xh.setAttribute("visibility", "hidden"); });
+  hit.addEventListener("mouseleave", () => { tip.hidden = true; xh.setAttribute("visibility", "hidden"); if (MP) MP.preview(null); });
+  // Muscle panel under the chart; hovering a part on the chart previews its muscles.
+  const MP = ML ? MusclePanel.panel(det.querySelector(".mp-host"), ML, { sex: mmSex(), modeText: partsModeText }) : null;
+  if (MP && PT) hit.addEventListener("mousemove", e => {
+    const px = e.clientX - svg.getBoundingClientRect().left;
+    const sec = Math.max(0, Math.min(n - 1, Math.round((px - L) / (W - L - R) * (n - 1)))) * step;
+    const h = LessonParts.at(PT.segs, PT.plan, sec);
+    MP.preview(h && h.seg.key !== "W" ? h.seg.key : null);
+  });
 
   if (PT) {
     const geo = { L, R, T, B, W, H, n, step, xs: sec => x(Math.min(n - 1, sec / step)), total: n * step };
@@ -1471,18 +1520,6 @@ function partsModeText(b) {
     default: return b.mode || "";
   }
 }
-function partsPlanHtml(plan) {
-  const hd = plan.header ? `<div class="lp-hd">${esc([plan.header.weekday, plan.header.program, plan.header.weekNumber ? `Week ${plan.header.weekNumber}${plan.header.phase ? ": " + plan.header.phase : ""}` : ""].filter(Boolean).join(" · "))}</div>` : "";
-  const blocks = plan.blocks.filter(b => b.items && b.items.length).map((b, i) => {
-    const items = b.items.map(it => {
-      const r = it.reps != null ? `${it.reps}${it.repsMax ? "–" + it.repsMax : ""}${it.unit === "reps_each_side" ? "/side" : it.unit === "total_reps" ? " total" : ""} ` : "";
-      return `<li><b>${esc(it.key)}</b> ${esc(r + it.name)}</li>`;
-    }).join("");
-    const clock = LessonPlanParser.blockTimeline(b) ? ` · ${esc(t("parts_clock"))}` : "";
-    return `<div class="lp-blk"><div><b>${esc((b.key || "ABCD"[i]) + " · " + b.label)}</b> <span class="muted">${esc(partsModeText(b))}${clock}</span></div><ol>${items}</ol></div>`;
-  }).join("");
-  return `<details class="lp-plan" dir="ltr"><summary>${esc(t("parts_plan"))}</summary>${hd}<div class="lp-blks">${blocks}</div></details>`;
-}
 window.addEventListener("pointermove", e => {
   if (!PART_DRAG) return;
   const { PT, i, edge, svg } = PART_DRAG, g = PT.geo;
@@ -1503,7 +1540,7 @@ window.addEventListener("pointerup", async () => {
 async function loadHealth(fill) {
   const btn = document.getElementById("lhMore");
   if (btn) { btn.disabled = true; btn.textContent = t("health_loading"); }
-  HEALTH = await send({ cmd: "getLessonHealth", fill: !!fill });
+  [HEALTH, MUSCLE] = await Promise.all([send({ cmd: "getLessonHealth", fill: !!fill }), send({ cmd: "getMuscleLessons" }).catch(() => null)]);
   renderHealthBody();
 }
 

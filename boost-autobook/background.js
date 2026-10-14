@@ -18,6 +18,12 @@ importScripts("fitbit.js");
 importScripts("plans.js");
 // bsab_lesson_parts { "<date> <time> <className>": { savedAt, guess, segs:[{key,t0,t1}], auto } }
 const LPARTS_KEY = "bsab_lesson_parts";
+// bsab_body { pref: "auto"|"male"|"female"|"neutral", detected: "male"|"female"|null, checkedAt }
+// Body figure for the muscle map. "auto" = from the BoostApp profile (read by
+// content.js at most weekly); nothing found → neutral figure.
+const BODY_KEY = "bsab_body";
+async function getBody() { const o = await chrome.storage.local.get(BODY_KEY); return Object.assign({ pref: "auto", detected: null, checkedAt: 0 }, o[BODY_KEY] || {}); }
+function bodySex(b) { return b.pref === "auto" ? (b.detected || "neutral") : (["male", "female", "neutral"].includes(b.pref) ? b.pref : "neutral"); }
 
 const API_URL = "https://app.boostapp.co.il/controllerAction/OrderClasses.php";
 
@@ -1699,6 +1705,40 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           if (msg.capture) { await planCaptureTick(); await dayPlanTick(); }
           const o = await chrome.storage.local.get([DP_KEY, LA_KEY]);
           sendResponse({ ok: true, plans: await getLessonPlans(), dayPlans: o[DP_KEY] || {}, lookahead: o[LA_KEY] || {} });
+          break;
+        }
+        case "getMuscleLessons": {
+          // Lessons (booked + recently attended) with their workout plan text, for the muscle map.
+          const o = await chrome.storage.local.get([LP_KEY, DP_KEY]);
+          const lp = o[LP_KEY] || {}, dp = o[DP_KEY] || {}, now = Date.now();
+          const lessons = (await lpCandidates()).map(l => {
+            const k = lpKey(l.date, l.time, l.className), e = lp[k], type = lpDayType(l.className), d = type && dp[l.date + "|" + type];
+            const text = (e && e.text && e.dateMatches !== false && e.text) || (d && d.text) || null;
+            return { key: k, date: l.date, time: l.time, className: l.className, startAt: l.startAt, done: (l.startAt || 0) < now, text };
+          }).filter(l => l.text);
+          const b = await getBody();
+          sendResponse({ ok: true, lessons, today: lpStudioDate(now), body: Object.assign({}, b, { sex: bodySex(b) }) });
+          break;
+        }
+        case "setBodyPref": {
+          const b = await getBody();
+          if (["auto", "male", "female", "neutral"].includes(msg.pref)) b.pref = msg.pref;
+          await chrome.storage.local.set({ [BODY_KEY]: b });
+          sendResponse({ ok: true, body: Object.assign({}, b, { sex: bodySex(b) }) });
+          break;
+        }
+        case "bodyCheckDue": {
+          const b = await getBody();
+          sendResponse({ due: b.pref === "auto" && Date.now() - (b.checkedAt || 0) > 7 * 864e5, getUrl: (await getConfig()).getUrl || null });
+          break;
+        }
+        case "profileSex": {
+          // From content.js reading MyProfile.php with the user's own session.
+          const b = await getBody();
+          b.detected = msg.value === "male" || msg.value === "female" ? msg.value : null;
+          b.checkedAt = Date.now();
+          await chrome.storage.local.set({ [BODY_KEY]: b });
+          sendResponse({ ok: true });
           break;
         }
         case "saveLessonParts": {

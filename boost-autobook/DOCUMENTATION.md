@@ -112,6 +112,16 @@ any class, and the lesson description.
   their planned length and order and are placed where heart rate is highest,
   with priors for a ~10-min warm-up and short gaps); dragging an edge saves a
   per-lesson fix that overrides the estimate.
+- **Muscle map** (1.7.0) — `muscles.js` maps each plan exercise to main /
+  helping muscle groups (17 groups, ordered keyword rules; unknown names are
+  reported, never dropped); `body.js` draws an original front/back SVG figure
+  (male, female, neutral) with one path per muscle; `musclepanel.js` renders
+  the interactive panel (part chips, hover links, plan list), the mini figure
+  for Upcoming rows and the This-week view. Shown in the popup's Upcoming list
+  and Lesson info, under each Health-tab chart, and as This week on the Health
+  tab. Body figure: Settings → *From my BoostApp profile* (content.js reads the
+  gender on `MyProfile.php` at most weekly, by the visible option text) / Male
+  / Female / Not specified.
 - Same 5-language i18n and theming as the popup.
 
 **Presentation**
@@ -235,6 +245,7 @@ history.js ── getHistory ─▶ background ─▶ (in-tab, backward-walked) 
 | `fitbit.js` | Fitbit / Google Health API: lesson sync, heart-rate repair, per-lesson health summary and 10-s trace, resting HR, max-HR calibration. Imported by the service worker. |
 | `plans.js` | Workout-plan capture from the studio (`getClassInfo`): per lesson and per day (the week is posted on Saturday), plus a posting-time log. Imported by the service worker. |
 | `lessonplan-parse.js` | Plan text → structured plan (parts, mode, items, timed slots). Loaded by `history.html`. |
+| `muscles.js` / `body.js` / `musclepanel.js` | Muscle map: exercise → muscles, the SVG body figure, and the shared UI (popup + Health tab). |
 | `lessonparts.js` | Estimates where each plan part sat on the heart-rate curve; drag/fix helpers. Loaded by `history.html`. |
 | `app.webmanifest` | Web app manifest for the home-screen shortcut. |
 | `icons/` | Toolbar and home-screen icons (16/32/48/128 + full-bleed 192/512). |
@@ -297,6 +308,7 @@ immediately.
 | `bsab_lesson_plans` | Captured workout plan per lesson (same key): text, header date, revisions, capture phase. |
 | `bsab_day_plans` / `bsab_plan_lookahead` | Plan per day and class type (`"<date>\|<type>"`), and a log of when each day's plan first appeared (pruned after 45 days). |
 | `bsab_lesson_parts` | User fixes of the part bands on the heart-rate chart: `{savedAt, guess, segs:[{key,t0,t1}], auto}` per lesson (`t0`/`t1` = seconds from lesson start). |
+| `bsab_body` | Body figure for the muscle map: `{pref: "auto"\|"male"\|"female"\|"neutral", detected, checkedAt}` — `detected` from the BoostApp profile (auto only). |
 
 **Schedule completeness note:** `getClassesData` returns only a rolling, capped
 set, which once caused a weekday (Tuesday) to disappear. The fix unions a forward
