@@ -6,6 +6,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.7.0] — 2026-10-14
+
+### Added
+- **Muscle map**: which muscles each lesson works, drawn on a body figure
+  (front and back), built from the studio's posted workout plan.
+  - **Upcoming** (popup): each booked lesson with a plan shows a small figure
+    and its three most-worked muscles; **Lesson info** opens the full map —
+    pick Whole lesson or a part (A / B / C), hover a muscle to see which
+    exercises work it, hover an exercise to see its muscles.
+  - **Past Events → Health**: the same map under each lesson's heart-rate
+    chart; hovering a part on the chart shows that part's muscles.
+  - **This week** (Health tab): the week's lessons, done and booked, on one
+    figure, with a ranked list of muscles and how many lessons hit each.
+  - Muscles come from the exercise names (main and helping muscles). An
+    exercise the map doesn't know yet is shown as "not mapped yet".
+- **Body figure** setting (Settings, and on the Health tab): *From my
+  BoostApp profile* (default — read from your BoostApp profile page at most
+  once a week), *Male*, *Female* or *Not specified* (a neutral figure, also
+  used when the profile has no answer). Stays in this browser.
+
 ## [1.6.0] — 2026-10-14
 
 ### Added
