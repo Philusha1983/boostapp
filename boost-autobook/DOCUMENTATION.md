@@ -100,6 +100,18 @@ any class, and the lesson description.
   history across two ranges.
 - **Share/export** — a shareable image card (canvas-rendered, multiple
   templates) and a CSV export of the filtered records.
+- **Health view** (needs Fitbit sync) — per attended lesson: average and
+  highest heart rate, time in the zone, steps, plus averages per lesson type.
+  Clicking a lesson opens its heart-rate curve (10-s points) coloured by zone;
+  zones use a max heart rate fitted to the user's own Fitbit zones (fallback:
+  age). Fetched once per lesson and stored locally.
+- **Workout plan on the curve** (experimental, 1.6.0) — when the lesson has a
+  captured plan, its parts (warm-up, A, B, C) are shaded on the curve, the
+  exact exercise is shown on hover for clock-driven parts, and the plan is
+  listed below. Part placement is an estimate (`lessonparts.js`: parts keep
+  their planned length and order and are placed where heart rate is highest,
+  with priors for a ~10-min warm-up and short gaps); dragging an edge saves a
+  per-lesson fix that overrides the estimate.
 - Same 5-language i18n and theming as the popup.
 
 **Presentation**
@@ -220,6 +232,10 @@ history.js ── getHistory ─▶ background ─▶ (in-tab, backward-walked) 
 | `walkthrough.js` | Onboarding spotlight tour + per-version "What's new" card (5-language). Runs after `popup.js`; keeps the `WHATS_NEW` table and tour steps that MUST be updated each release (see the release checklist in the file header). |
 | `history.html` | Class history dashboard markup + CSS (Dashboard/Story/Compare views, badges, heatmap, charts). |
 | `history.js` | Class history dashboard logic: requests/aggregates history from the background, filters, badges, highlights, share/export, i18n. |
+| `fitbit.js` | Fitbit / Google Health API: lesson sync, heart-rate repair, per-lesson health summary and 10-s trace, resting HR, max-HR calibration. Imported by the service worker. |
+| `plans.js` | Workout-plan capture from the studio (`getClassInfo`): per lesson and per day (the week is posted on Saturday), plus a posting-time log. Imported by the service worker. |
+| `lessonplan-parse.js` | Plan text → structured plan (parts, mode, items, timed slots). Loaded by `history.html`. |
+| `lessonparts.js` | Estimates where each plan part sat on the heart-rate curve; drag/fix helpers. Loaded by `history.html`. |
 | `app.webmanifest` | Web app manifest for the home-screen shortcut. |
 | `icons/` | Toolbar and home-screen icons (16/32/48/128 + full-bleed 192/512). |
 
@@ -276,6 +292,11 @@ immediately.
 | `bsab_view_upcoming` / `bsab_view_slots` | Remembered list/week choice per tab (localStorage). |
 | `bsab_tour_done` | Onboarding tour state: version string when completed, or `"pending-signin"` if the first run happened signed out (the full tour re-runs once after sign-in). |
 | `bsab_seen_version` | Last version whose "What's new" card was shown. Any `WHATS_NEW` entries newer than this appear once after an update. |
+| `bsab_lesson_health` / `bsab_lesson_hr_trace` | Per-lesson Fitbit summary and 10-s heart-rate trace, keyed `"<date> <time> <className>"`. Fetched once; never exported or shared. |
+| `bsab_resting_hr` | Resting heart rate per day (zones). |
+| `bsab_lesson_plans` | Captured workout plan per lesson (same key): text, header date, revisions, capture phase. |
+| `bsab_day_plans` / `bsab_plan_lookahead` | Plan per day and class type (`"<date>\|<type>"`), and a log of when each day's plan first appeared (pruned after 45 days). |
+| `bsab_lesson_parts` | User fixes of the part bands on the heart-rate chart: `{savedAt, guess, segs:[{key,t0,t1}], auto}` per lesson (`t0`/`t1` = seconds from lesson start). |
 
 **Schedule completeness note:** `getClassesData` returns only a rolling, capped
 set, which once caused a weekday (Tuesday) to disappear. The fix unions a forward

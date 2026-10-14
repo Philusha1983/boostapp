@@ -222,6 +222,24 @@
   .lh-legend { display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--text); margin-top:6px; }
   .lh-legend .lg { display:inline-flex; align-items:center; gap:6px; }
   .lh-legend .muted { color:var(--muted); }
+  /* experimental: workout-plan parts on the chart (neutral, so the zone colours keep their meaning) */
+  .lh-chart .lp-band { fill:var(--text); pointer-events:none; } .lh-chart .lp-band.w { opacity:.03; }
+  .lh-chart .lp-band.a { opacity:.075; } .lh-chart .lp-band.b { opacity:.045; }
+  .lh-chart .lp-lbl { font-size:11px; font-weight:700; fill:var(--text); opacity:.8; }
+  .lh-chart .lp-slot { fill:var(--text); opacity:.28; pointer-events:none; }
+  .lh-chart .lp-grip { cursor:ew-resize; touch-action:none; } .lh-chart .lp-grip rect { fill:transparent; }
+  .lh-chart .lp-grip line { stroke:var(--muted); stroke-width:1; opacity:.55; }
+  .lh-chart .lp-grip:hover line { stroke:var(--text); stroke-width:2; opacity:1; }
+  .lp-bar { font-size:12px; color:var(--muted); margin-top:8px; display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  .lp-bar a { color:var(--green-deep); font-weight:700; }
+  .lp-pill { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:2px 7px; border-radius:999px; background:var(--ghost); color:var(--text); }
+  .lp-plan { margin-top:8px; font-size:12.5px; }
+  .lp-plan summary { cursor:pointer; font-weight:700; color:var(--text); }
+  .lp-hd { color:var(--muted); margin:6px 0; }
+  .lp-blks { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:8px 16px; }
+  .lp-blk .muted { color:var(--muted); }
+  .lp-blk ol { margin:4px 0 0; padding-inline-start:0; list-style:none; }
+  .lp-blk li { margin:2px 0; }
   .z-dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
   .z-dot.z-light { background:#3f93d4; } .z-dot.z-moderate { background:#22a676; } .z-dot.z-vigorous { background:#c7850c; } .z-dot.z-peak { background:#e25563; }
   .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:9px; font-size:13px; }
@@ -351,6 +369,8 @@
     <div class="loading" data-i18n="loading">Loading your class history…</div>
   </main>
   <canvas id="confettiCanvas" class="hidden"></canvas>
+  <script src="lessonplan-parse.js"></script>
+  <script src="lessonparts.js"></script>
   <script src="history.js"></script>
 </body>
 </html>
