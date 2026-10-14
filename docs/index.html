@@ -125,6 +125,8 @@
   .fitshots { display:flex; gap:22px; justify-content:center; flex-wrap:wrap; margin-top:44px; }
   .fitshots img { width:250px; max-width:78vw; border-radius:22px; border:1px solid var(--line); box-shadow:0 16px 44px rgba(0,0,0,.28); }
   .fitshots-cap { text-align:center; margin-top:14px; }
+  .healthshot { margin:44px auto 0; max-width:820px; }
+  .healthshot img { display:block; width:100%; height:auto; border-radius:18px; border:1px solid var(--line); box-shadow:0 16px 44px rgba(0,0,0,.22); }
   .sec-title { font-size:clamp(24px,3.2vw,32px); font-weight:800; letter-spacing:-.4px; margin-bottom:10px; text-align:center; }
   .sec-sub { text-align:center; color:var(--muted); max-width:560px; margin:0 auto 42px; font-size:15px; }
   .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
@@ -285,12 +287,16 @@
       <div class="feat rv"><div class="ico">📊</div><h3 data-i18n="f5t">History dashboard</h3><p data-i18n="f5b">A full-page dashboard of all your past classes with monthly stats, streaks and personal highlights.</p></div>
       <div class="feat rv"><div class="ico">🌍</div><h3 data-i18n="f6t">Speaks your language</h3><p data-i18n="f6b">English, Hebrew, Russian, Ukrainian and Arabic — with full right-to-left support and a guided tour for new users.</p></div>
       <div class="feat rv"><div class="ico">⌚</div><h3 data-i18n="f7t">Synced to Fitbit &amp; Health Connect</h3><p data-i18n="f7b">Attended lessons are logged to Fitbit automatically minutes after class — with your tracker's heart rate, zones and calories — and flow on to Health Connect for all your health apps.</p></div>
+      <div class="feat rv"><div class="ico">📈</div><h3 data-i18n="f8t">Heart rate, lesson by lesson</h3><p data-i18n="f8b">A Health tab with each lesson's heart-rate curve in your own Fitbit zones — and the workout plan laid on top, so you can see which part (and in timed parts, which exercise) you were doing at every minute.</p></div>
+      <div class="feat rv"><div class="ico">💪</div><h3 data-i18n="f9t">Muscle map</h3><p data-i18n="f9b">See which muscles each lesson works, part by part, on a body figure — before you book, after class, and for the whole week. Male, female or neutral figure.</p></div>
     </div>
     <div class="fitshots">
       <img class="rv" src="assets/fitbit-crossfit.png" alt="A CrossFit lesson synced to the Fitbit app with heart-rate zones and calories" loading="lazy">
       <img class="rv" src="assets/fitbit-stretching.png" alt="A stretching lesson synced to the Fitbit app with heart-rate zones and calories" loading="lazy">
     </div>
     <p class="sec-sub rv fitshots-cap" data-i18n="fit_cap">Real synced lessons in the Fitbit app — logged automatically, with heart-rate zones and calories from your tracker.</p>
+    <div class="healthshot rv"><img src="assets/health-lesson.webp" alt="A lesson in the Health tab: the heart-rate curve with the workout plan's parts on top, and a body figure showing the muscles part C worked" loading="lazy" width="1341" height="1041"></div>
+    <p class="sec-sub rv fitshots-cap" data-i18n="hl_cap">A real lesson in the Health tab: the heart-rate curve with the plan's parts on top, and the muscles each part worked.</p>
   </div>
 </section>
 
@@ -385,6 +391,9 @@ en: {
   f6t:"Speaks your language", f6b:"English, Hebrew, Russian, Ukrainian and Arabic — with full right-to-left support and a guided tour for new users.",
   f7t:"Synced to Fitbit & Health Connect", f7b:"Attended lessons are logged to Fitbit automatically minutes after class — with your tracker's heart rate, zones and calories — and flow on to Health Connect for all your health apps.",
   fit_cap:"Real synced lessons in the Fitbit app — logged automatically, with heart-rate zones and calories from your tracker.",
+  f8t:"Heart rate, lesson by lesson", f8b:"A Health tab with each lesson's heart-rate curve in your own Fitbit zones — and the workout plan laid on top, so you can see which part (and in timed parts, which exercise) you were doing at every minute.",
+  f9t:"Muscle map", f9b:"See which muscles each lesson works, part by part, on a body figure — before you book, after class, and for the whole week. Male, female or neutral figure.",
+  hl_cap:"A real lesson in the Health tab: the heart-rate curve with the plan's parts on top, and the muscles each part worked.",
   inst_title:"Installed in 2 minutes", inst_sub:"No store, no account — it's a simple folder you load into Chrome once.",
   s1t:"Download & unzip", s1b:"Hit the green button above, then unzip the file into a folder you'll keep (e.g. Documents).",
   s2t:"Open the extensions page", s2b:"In Chrome, copy <code>chrome://extensions</code> into the address bar and press Enter.",
@@ -435,6 +444,9 @@ he: {
   f6t:"מדבר בשפה שלך", f6b:"עברית, אנגלית, רוסית, אוקראינית וערבית — עם תמיכה מלאה בימין־לשמאל וסיור מודרך למשתמשים חדשים.",
   f7t:"מסונכרן ל‑Fitbit ול‑Health Connect", f7b:"שיעורים שהשתתפתם בהם נרשמים ל‑Fitbit אוטומטית דקות אחרי השיעור — עם דופק, אזורי דופק וקלוריות מהשעון — וממשיכים ל‑Health Connect לכל אפליקציות הבריאות שלכם.",
   fit_cap:"שיעורים אמיתיים שסונכרנו לאפליקציית Fitbit — נרשמו אוטומטית, עם אזורי דופק וקלוריות מהשעון.",
+  f8t:"דופק, שיעור אחר שיעור", f8b:"לשונית בריאות עם גרף הדופק של כל שיעור לפי אזורי ה‑Fitbit שלך — ותוכנית האימון מעליו, כך שרואים באיזה חלק (ובחלקים מתוזמנים — באיזה תרגיל) הייתם בכל דקה.",
+  f9t:"מפת שרירים", f9b:"רואים אילו שרירים כל שיעור מפעיל, חלק אחר חלק, על דמות גוף — לפני ההזמנה, אחרי השיעור ולכל השבוע. דמות גבר, אישה או ניטרלית.",
+  hl_cap:"שיעור אמיתי בלשונית הבריאות: גרף הדופק עם חלקי התוכנית מעליו, והשרירים שכל חלק הפעיל.",
   inst_title:"התקנה בשתי דקות", inst_sub:"בלי חנות, בלי חשבון — תיקייה פשוטה שטוענים לכרום פעם אחת.",
   s1t:"הורדה וחילוץ", s1b:"לחצו על הכפתור הירוק למעלה, ואז חלצו את הקובץ לתיקייה שתישאר אצלכם (למשל מסמכים).",
   s2t:"פתחו את דף התוספים", s2b:"בכרום, העתיקו <code>chrome://extensions</code> לשורת הכתובת ולחצו Enter.",
@@ -485,6 +497,9 @@ uk: {
   f6t:"Розмовляє вашою мовою", f6b:"Англійська, іврит, російська, українська й арабська — з повною підтримкою RTL і навчальним туром для новачків.",
   f7t:"Синхронізація з Fitbit і Health Connect", f7b:"Відвідані заняття автоматично записуються у Fitbit за кілька хвилин після заняття — з пульсом, зонами й калоріями з трекера — і потрапляють у Health Connect для всіх ваших застосунків здоров'я.",
   fit_cap:"Справжні синхронізовані заняття в застосунку Fitbit — записані автоматично, із зонами пульсу й калоріями з трекера.",
+  f8t:"Пульс, заняття за заняттям", f8b:"Вкладка «Здоров'я» з графіком пульсу кожного заняття у ваших зонах Fitbit — і планом тренування поверх нього, щоб бачити, яку частину (а в частинах за таймером — яку вправу) ви виконували щохвилини.",
+  f9t:"Карта м'язів", f9b:"Які м'язи працюють на кожному занятті, частина за частиною, на фігурі тіла — до бронювання, після заняття і за весь тиждень. Чоловіча, жіноча або нейтральна фігура.",
+  hl_cap:"Справжнє заняття у вкладці «Здоров'я»: графік пульсу з частинами плану поверх нього і м'язи, які працювали в кожній частині.",
   inst_title:"Встановлення за 2 хвилини", inst_sub:"Без магазину, без акаунта — це проста тека, яку один раз завантажуєте в Chrome.",
   s1t:"Завантажте й розпакуйте", s1b:"Натисніть зелену кнопку вгорі, потім розпакуйте файл у теку, яку збережете (наприклад, Документи).",
   s2t:"Відкрийте сторінку розширень", s2b:"У Chrome скопіюйте <code>chrome://extensions</code> в адресний рядок і натисніть Enter.",
@@ -535,6 +550,9 @@ ar: {
   f6t:"تتحدث لغتك", f6b:"الإنجليزية والعبرية والروسية والأوكرانية والعربية — بدعم كامل للكتابة من اليمين إلى اليسار وجولة إرشادية للمستخدمين الجدد.",
   f7t:"مزامنة مع Fitbit و‑Health Connect", f7b:"تُسجَّل الدروس التي حضرتها في Fitbit تلقائيًا بعد دقائق من الدرس — مع نبض القلب ومناطقه والسعرات من الساعة — وتصل إلى Health Connect لكل تطبيقات الصحة لديك.",
   fit_cap:"دروس حقيقية مزامنة في تطبيق Fitbit — سُجِّلت تلقائيًا مع مناطق نبض القلب والسعرات من الساعة.",
+  f8t:"النبض، درسًا بدرس", f8b:"تبويب صحة فيه منحنى نبض كل درس بحسب مناطق Fitbit لديك — وخطة التمرين فوقه، لترى أي جزء (وفي الأجزاء المؤقتة: أي تمرين) كنت تؤديه في كل دقيقة.",
+  f9t:"خريطة العضلات", f9b:"شاهد العضلات التي يعمل عليها كل درس، جزءًا جزءًا، على شكل جسم — قبل الحجز وبعد الدرس وللأسبوع كله. شكل ذكر أو أنثى أو محايد.",
+  hl_cap:"درس حقيقي في تبويب الصحة: منحنى النبض وفوقه أجزاء الخطة، والعضلات التي عمل عليها كل جزء.",
   inst_title:"التثبيت في دقيقتين", inst_sub:"بلا متجر وبلا حساب — مجرد مجلد بسيط تحمّله في كروم مرة واحدة.",
   s1t:"نزّل وفكّ الضغط", s1b:"اضغط الزر الأخضر أعلاه، ثم فكّ ضغط الملف في مجلد ستحتفظ به (مثل «المستندات»).",
   s2t:"افتح صفحة الإضافات", s2b:"في كروم، انسخ <code>chrome://extensions</code> إلى شريط العناوين واضغط Enter.",
@@ -585,6 +603,9 @@ ru: {
   f6t:"Говорит на вашем языке", f6b:"Английский, иврит, русский, украинский и арабский — с полной поддержкой RTL и обучающим туром для новичков.",
   f7t:"Синхронизация с Fitbit и Health Connect", f7b:"Посещённые занятия автоматически записываются в Fitbit через несколько минут после занятия — с пульсом, зонами и калориями с трекера — и попадают в Health Connect для всех ваших приложений здоровья.",
   fit_cap:"Настоящие синхронизированные занятия в приложении Fitbit — записаны автоматически, с зонами пульса и калориями с трекера.",
+  f8t:"Пульс, занятие за занятием", f8b:"Вкладка «Здоровье» с графиком пульса каждого занятия в ваших зонах Fitbit — и планом тренировки поверх него, чтобы видеть, какую часть (а в частях по таймеру — какое упражнение) вы делали каждую минуту.",
+  f9t:"Карта мышц", f9b:"Какие мышцы работают на каждом занятии, часть за частью, на фигуре тела — до бронирования, после занятия и за всю неделю. Мужская, женская или нейтральная фигура.",
+  hl_cap:"Настоящее занятие во вкладке «Здоровье»: график пульса с частями плана поверх него и мышцы, которые работали в каждой части.",
   inst_title:"Установка за 2 минуты", inst_sub:"Без магазина и без аккаунта — это простая папка, которую вы один раз загружаете в Chrome.",
   s1t:"Скачайте и распакуйте", s1b:"Нажмите зелёную кнопку выше, затем распакуйте файл в папку, которую сохраните (например, «Документы»).",
   s2t:"Откройте страницу расширений", s2b:"В Chrome скопируйте <code>chrome://extensions</code> в адресную строку и нажмите Enter.",

@@ -36,6 +36,13 @@ BoostApp studio.
   in the popup) that walks `ClassHistory.php` backward month by month, caches it,
   and turns it into stats, achievements, a punch-card heatmap, and a Story mode —
   see `DOCUMENTATION.md` for how the sync, caching, and filters work.
+- **Fitbit sync + Health tab.** Attended lessons are logged to Fitbit as
+  workouts minutes after class. The history page's **Health** tab shows each
+  lesson's heart-rate curve in your own Fitbit zones, with the studio's
+  workout plan laid on top (parts estimated from your heart rate; drag to fix).
+- **Muscle map.** Which muscles each lesson works, part by part, on a body
+  figure: on Upcoming lessons (Lesson info), under each Health-tab chart, and
+  as a This-week view.
 
 > ⚠️ It **cannot** beat the studio's 72-hour gate — the server rejects bookings
 > before the window opens. The extension simply fires the instant it legitimately
@@ -75,6 +82,7 @@ Chrome must be running for background polling to occur.
 - **Company #** / **Studio token (GetUrl)** — prefilled for Training Harmony.
 - **Poll every (minutes)** — enrichment/detection cadence (min 1; Chrome alarm limit).
 - **Snipe lead (minutes)** — how early before open to switch to fast-retry.
+- **Body figure** — for the muscle map: from your BoostApp profile (default), male, female, or not specified (neutral).
 
 ---
 
@@ -137,4 +145,7 @@ extension opens a hidden tab at the open moment, which costs a couple of seconds
 - `manifest.json` — MV3 manifest
 - `background.js` — service worker: polling, detection, booking, alarms, messaging, history sync
 - `popup.html` / `popup.js` — watchlist UI
-- `history.html` / `history.js` — class history dashboard (Dashboard/Story/Compare views, i18n, share/export)
+- `history.html` / `history.js` — class history dashboard (Dashboard/Story/Compare/Health views, i18n, share/export)
+- `fitbit.js` / `plans.js` — Fitbit / Google Health sync and per-lesson health data; workout-plan capture
+- `lessonplan-parse.js` / `lessonparts.js` — plan parser; plan parts on the heart-rate chart
+- `muscles.js` / `body.js` / `musclepanel.js` — muscle map (exercise → muscles, body figure, shared UI)
