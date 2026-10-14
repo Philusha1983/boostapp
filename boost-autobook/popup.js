@@ -1487,7 +1487,7 @@ async function toggleInfo(classId, body, kind, lesson) {
     } else {
       const desc = info && info.description ? `<div class="lesson-desc">${sanitizeHtml(info.description)}</div>` : (lesson ? "" : `<span class="muted">${t("noDetails")}</span>`);
       inner.innerHTML = (lesson ? `<div class="mp-host"></div>` : "") + desc;
-      if (lesson) MusclePanel.panel(inner.querySelector(".mp-host"), lesson, { sex: bodySex() });
+      if (lesson) MusclePanel.panel(inner.querySelector(".mp-host"), lesson, { sex: bodySex(), compact: true });
     }
     body.dataset.loaded = "1";
   }

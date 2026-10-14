@@ -75,6 +75,8 @@
   .mp-grid { display:grid; grid-template-columns:minmax(200px, 280px) 1fr; gap:18px; align-items:start; }
   @container (max-width: 560px) { .mp-grid { grid-template-columns:1fr; } .mp-figs .mm-fig { max-width:96px; } .mp-li { flex-wrap:wrap; } .mp-li .ms { flex-basis:100%; text-align:start; padding-inline-start:28px; } }
   .mp-figwrap { position:relative; }
+  .mp.compact .mp-grid { grid-template-columns:1fr; } .mp.compact .mp-figwrap { max-width:210px; margin:0 auto; width:100%; } .mp.compact .mp-figs .mm-fig { max-width:92px; }
+  .mp.compact .mp-li { flex-wrap:wrap; } .mp.compact .mp-li .ms { flex-basis:100%; text-align:start; padding-inline-start:28px; }
   .mp-figs { display:flex; gap:4px; justify-content:center; direction:ltr; }
   .mp-figs .mm-fig { width:50%; max-width:140px; }
   .mp-cap { display:flex; justify-content:space-around; font-size:11px; color:var(--muted); margin-top:2px; }
@@ -147,7 +149,7 @@
     ensureCss();
     const sex = opt.sex || "neutral";
     let part = "all", prev = null;
-    container.classList.add("mp");
+    container.classList.add("mp"); container.classList.toggle("compact", !!opt.compact);
     container.innerHTML = `
       <div class="mp-chips">${[["all", t("whole")]].concat(lesson.parts.map(b => [b.key, b.key + " · " + b.label])).map(([k, l]) => `<button type="button" class="mp-chip" data-p="${esc(k)}">${esc(l)}</button>`).join("")}</div>
       <div class="mp-grid">
