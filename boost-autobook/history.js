@@ -539,7 +539,15 @@ function weekStart(dateStr) {
 }
 function daysBetween(a, b) { return Math.round((new Date(b + "T00:00:00") - new Date(a + "T00:00:00")) / 864e5); }
 function todayStr() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
-function estimateDurationMin(className) { return /stretch/i.test(className || "") ? 45 : 55; }
+// Grouping key for a lesson's class. Records stored before the Oct 2026
+// rename carry the old name ("Training Harmony"); the same class now comes
+// back as "FUNCTIONAL". Without this they count as two different classes.
+function classKey(className) { return ClassTypes.canonical(className); }
+function estimateDurationMin(className) {
+  const m = ClassTypes.minutes(className);
+  if (m != null) return m;
+  return /stretch/i.test(className || "") ? 45 : 55;
+}
 
 // ---------------------------------------------------------------------------
 // Filtering
@@ -558,7 +566,7 @@ function filterRecords(records, filters) {
   const start = rangeStart(filters.range);
   return records.filter(r => {
     if (start && r.date < start) return false;
-    if (filters.types.size && !filters.types.has(r.className)) return false;
+    if (filters.types.size && !filters.types.has(classKey(r.className))) return false;
     if (filters.teachers.size && !filters.teachers.has(r.teacher)) return false;
     return true;
   });
@@ -583,7 +591,7 @@ function aggregate(records) {
   const hourGrid = Array.from({ length: 7 }, () => ({})); // hourGrid[weekday][hour] = count
   let earlyBird = 0, nightOwl = 0, minutesTotal = 0;
   attended.forEach(r => {
-    byType[r.className] = (byType[r.className] || 0) + 1;
+    byType[classKey(r.className)] = (byType[classKey(r.className)] || 0) + 1;
     if (r.teacher) byTeacher[r.teacher] = (byTeacher[r.teacher] || 0) + 1;
     byWeekday[r.weekday]++;
     byMonth[r.month] = (byMonth[r.month] || 0) + 1;
@@ -718,7 +726,7 @@ function computePersona(agg) {
 // person's own habits (no automation nudges, no action buttons). Pulls from
 // the same aggregate/badge data already computed for the rest of the page.
 // ---------------------------------------------------------------------------
-function slotKey(weekday, time, className) { return `${weekday}|${time}|${className}`; }
+function slotKey(weekday, time, className) { return `${weekday}|${time}|${classKey(className)}`; }
 
 function computeHighlights(records, agg, badges) {
   const attended = records.filter(r => r.status === "attended");
@@ -729,7 +737,7 @@ function computeHighlights(records, agg, badges) {
   const combos = {};
   attended.forEach(r => {
     const k = slotKey(r.weekday, r.time, r.className);
-    if (!combos[k]) combos[k] = { weekday: r.weekday, time: r.time, className: r.className, count: 0, teachers: {} };
+    if (!combos[k]) combos[k] = { weekday: r.weekday, time: r.time, className: classKey(r.className), count: 0, teachers: {} };
     combos[k].count++;
     if (r.teacher) combos[k].teachers[r.teacher] = (combos[k].teachers[r.teacher] || 0) + 1;
   });
@@ -1002,7 +1010,7 @@ function trendDelta(recent, allTime) {
 }
 
 function renderFilterBar(allRecords) {
-  const types = Array.from(new Set(allRecords.filter(r => r.status === "attended").map(r => r.className))).sort();
+  const types = Array.from(new Set(allRecords.filter(r => r.status === "attended").map(r => classKey(r.className)))).sort();
   const teachers = Array.from(new Set(allRecords.filter(r => r.status === "attended" && r.teacher).map(r => r.teacher))).sort();
   const rangeChip = (key, label) => `<button class="chip range-chip ${FILTERS.range === key ? "active" : ""}" data-range="${key}">${esc(label)}</button>`;
   const typeChip = (v) => `<button class="chip type-chip ${FILTERS.types.has(v) ? "active" : ""}" data-type="${esc(v)}">${esc(v)}</button>`;
@@ -1194,7 +1202,8 @@ function renderHealthBody() {
   lessons.forEach(r => {
     const h = map[healthKey(r)];
     if (!h || h.avg == null) return;
-    const b = byType[r.className] || (byType[r.className] = { n: 0, avgSum: 0, peak: null, zoneSum: 0, zoneN: 0, minSum: 0, minN: 0 });
+    const ck = classKey(r.className);
+    const b = byType[ck] || (byType[ck] = { n: 0, avgSum: 0, peak: null, zoneSum: 0, zoneN: 0, minSum: 0, minN: 0 });
     b.n++; b.avgSum += h.avg;
     if (h.max != null) b.peak = Math.max(b.peak || 0, h.max);
     if (h.azm != null) { b.zoneSum += h.azm; b.zoneN++; }

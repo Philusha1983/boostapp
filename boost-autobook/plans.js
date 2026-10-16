@@ -1,7 +1,7 @@
 /* Boost Auto-Book — lesson plan capture (data only, no UI yet).
  *
  * Saves the studio's written workout plan (getClassInfo → description) for
- * every Training Harmony / Calisapiens lesson you book or attend, so it can
+ * every studio lesson you book or attend (see classtypes.js), so it can
  * later be lined up with that lesson's heart-rate curve.
  *
  * Why it has to be captured, not fetched later:
@@ -20,13 +20,24 @@
  */
 
 const LP_KEY = "bsab_lesson_plans";
-const LP_CLASS_RE = /training\s*harmony|calisapiens/i;
+// Replaced the old /training harmony|calisapiens/ name test (Oct 2026 rename).
+// ClassTypes matches on classNameType first and keeps the old names as
+// aliases, so both live classes and already-stored lessons resolve.
+const lpIsStudioClass = (c) => ClassTypes.isStudio(c);
 const LP_ALARM_PREFIX = "planLesson:";
 const LP_BACKFILL_DAYS = 2;      // descriptions are overwritten daily → older plans are gone
 const LP_MAX_TRIES = 3;          // per lesson, for "class not found" / empty description
 const LP_MAX_PER_TICK = 6;
 
 function lpKey(date, time, className) { return `${date} ${time} ${className}`; }
+// A lesson stored before the Oct 2026 rename is keyed by its old class name
+// while the schedule now returns the new one, so every read tries both.
+// Writes always use the current name (lpKey above).
+function lpKeys(date, time, className) { return ClassTypes.keysFor(className).map(n => lpKey(date, time, n)); }
+function lpPick(store, date, time, className) {
+  for (const k of lpKeys(date, time, className)) { const v = (store || {})[k]; if (v) return v; }
+  return null;
+}
 
 function lpStudioDate(ms) {
   return new Date(ms + tzOffsetMs(STUDIO_TZ, new Date(ms))).toISOString().slice(0, 10);
@@ -84,7 +95,7 @@ async function capturePlan(lesson, phase) {
     if (!classId) {
       const classes = await fetchClassesForDate(cfg, lesson.date);
       const cls = classes.find(c => (c.startTime || "").slice(0, 5) === lesson.time &&
-        ((c.className || "").trim().toLowerCase() === lesson.className.trim().toLowerCase() || LP_CLASS_RE.test(c.className || "")));
+        (ClassTypes.canonical(c.className) === ClassTypes.canonical(lesson.className) || lpIsStudioClass(c)));
       if (!cls) throw new Error("class not found in schedule for " + lesson.date);
       classId = cls.id; coach = cls.guideName || null;
     }
@@ -132,12 +143,12 @@ async function capturePlan(lesson, phase) {
 }
 
 // Lessons worth a plan: booked (registrations cache) + attended (history),
-// Training Harmony / Calisapiens only.
+// Studio classes only (classtypes.js).
 async function lpCandidates() {
   const out = new Map();
   const { bsab_registrations } = await chrome.storage.local.get("bsab_registrations");
   ((bsab_registrations && bsab_registrations.items) || []).forEach(r => {
-    if (!r.startAt || !r.time || !LP_CLASS_RE.test(r.className || "")) return;
+    if (!r.startAt || !r.time || !lpIsStudioClass(r.className)) return;
     const date = lpStudioDate(r.startAt);
     out.set(lpKey(date, r.time, r.className), { date, time: r.time, className: r.className, startAt: r.startAt });
   });
@@ -146,7 +157,7 @@ async function lpCandidates() {
     const cutoff = lpStudioDate(Date.now() - LP_BACKFILL_DAYS * 864e5);
     Object.values(store.months || {}).forEach(m => (m.rows || []).forEach(rec => {
       if (rec.status !== "attended" || !rec.date || !rec.time || rec.date < cutoff) return;
-      if (!LP_CLASS_RE.test(rec.className || "")) return;
+      if (!lpIsStudioClass(rec.className)) return;
       const time = String(rec.time).slice(0, 5);
       const k = lpKey(rec.date, time, rec.className);
       if (!out.has(k)) out.set(k, { date: rec.date, time, className: rec.className, startAt: studioTimeMs(rec.date, time) });
@@ -200,7 +211,7 @@ async function schedulePlanAlarms() {
     const existing = new Set((await chrome.alarms.getAll()).filter(a => a.name.startsWith(LP_ALARM_PREFIX)).map(a => a.name));
     const now = Date.now();
     items.forEach(r => {
-      if (!r.startAt || !LP_CLASS_RE.test(r.className || "")) return;
+      if (!r.startAt || !lpIsStudioClass(r.className)) return;
       [r.startAt - 90 * 60 * 1000, r.startAt + 75 * 60 * 1000].forEach((when, i) => {
         const name = LP_ALARM_PREFIX + r.startAt + ":" + i;
         if (when > now && !existing.has(name)) chrome.alarms.create(name, { when });
@@ -214,7 +225,7 @@ async function schedulePlanAlarms() {
 // ===========================================================================
 // Day-level capture + look-ahead log (2026-09-27)
 // ===========================================================================
-// Every Training Harmony class on a day carries the same plan (verified Aug +
+// Every class of the same type on a day carries the same plan (verified Aug +
 // Sep 2026), so one capture per day × class type covers every lesson that day
 // — including lessons not booked through the extension. Philip's hypothesis:
 // the day's plan is ready by the morning (maybe the whole week ahead). The
@@ -229,13 +240,17 @@ const DP_KEY = "bsab_day_plans";
 const LA_KEY = "bsab_plan_lookahead";
 const LA_DAYS = 7;
 const LA_KEEP_DAYS = 45;
-const DP_TYPES = [
-  { type: "Training Harmony", re: /training\s*harmony/i },
-  { type: "Calisapiens", re: /calisapiens/i },
-];
+// One day-plan bucket per class type, straight from the shared table.
+const DP_TYPES = ClassTypes.all().map(t => ({ type: t.name, id: t.id }));
 
 function lpHash(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
-function lpDayType(className) { const t = DP_TYPES.find(t => t.re.test(className || "")); return t ? t.type : null; }
+function lpDayType(className) { const t = ClassTypes.byName(className); return t ? t.name : null; }
+// Day plans stored before the rename are keyed by the old type name, so a
+// read tries every name the class has gone by.
+function lpDayPlan(dayPlans, date, type) {
+  for (const k of ClassTypes.keysFor(type)) { const d = dayPlans[date + "|" + k]; if (d) return d; }
+  return null;
+}
 function lpAddDays(dateStr, n) { const d = new Date(dateStr + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
 
 async function dayPlanTick() {
@@ -249,7 +264,7 @@ async function dayPlanTick() {
       let classes = [];
       try { classes = await fetchClassesForDate(cfg, date); } catch (e) { continue; }
       for (const t of DP_TYPES) {
-        const cls = classes.filter(c => t.re.test(c.className || ""))
+        const cls = classes.filter(c => ClassTypes.of(c) && ClassTypes.of(c).name === t.type)
           .sort((a, b) => String(a.startTime).localeCompare(String(b.startTime)))[0];
         if (!cls) continue;
         let text = "";
