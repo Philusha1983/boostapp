@@ -154,7 +154,7 @@ async function checkForUpdate() {
 // survives extension updates, so any future change to a stored format must
 // bump SCHEMA_VERSION and add a migration step here — never reinterpret old
 // data in place.
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 async function migrateSchema() {
   const { bsab_schema } = await chrome.storage.local.get("bsab_schema");
   const from = bsab_schema || 1;
@@ -165,7 +165,13 @@ async function migrateSchema() {
   // silently stops booking, so rewrite those filters to the current name.
   // Only names in the ClassTypes table are touched; anything the user typed
   // themselves is left exactly as it is.
-  if (from < 2) {
+  // v2 -> v3 (Oct 2026): "Stretching" turned out to be FLEXIBILITY's former
+  // name too, and the weekly slot grid was cached by class name, so every
+  // renamed class appeared twice (old and new) until its 21-day TTL ran out.
+  // Re-run the rule rewrite with the fuller table and drop the stale cache;
+  // it rebuilds on the next refresh, now keyed by class type.
+  if (from < 3) {
+    await chrome.storage.local.remove("bsab_schedule");
     const targets = await getTargets();
     const renamed = [];
     const next = targets.map(t => {
@@ -562,7 +568,12 @@ async function getSchedule(cfg) {
     const wd = new Date((c.startDate || "") + "T00:00:00").getDay();
     const time = (c.startTime || "").slice(0, 5);
     if (!time || isNaN(wd)) return;
-    cache[wd + "|" + time + "|" + c.className] = { weekday: wd, time, className: c.className, teacher: c.guideName, lastSeen: now };
+    // Keyed by class TYPE, not name: a class the studio renames keeps one
+    // entry and the grid shows it once, under whatever it is called now.
+    // Classes with no type id (one-off events) still key by name.
+    const t = ClassTypes.of(c);
+    cache[wd + "|" + time + "|" + (t ? "#" + t.id : c.className)] =
+      { weekday: wd, time, className: t ? t.name : c.className, teacher: c.guideName, lastSeen: now };
   });
   const TTL = 21 * 864e5;
   Object.keys(cache).forEach(k => { if (!cache[k].lastSeen || now - cache[k].lastSeen > TTL) delete cache[k]; });

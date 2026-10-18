@@ -36,6 +36,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
   `classNameType`, which survives a rename; names are for display only. The
   next rename is a one-line change here.
 
+### Also in this release
+- `Stretching` was FLEXIBILITY's former name as well (same weekly slots,
+  Tue 19:00 and Sat 11:00) — added to the table, so rules and history that
+  still say "Stretching" follow the class instead of pointing nowhere.
+- **The weekly slot grid showed every renamed class twice** (once under each
+  name) because `bsab_schedule` is keyed by class name and entries live for 21
+  days after they were last seen. It is now keyed by class type, so a renamed
+  class keeps one row under whatever it is called now; the migration drops the
+  old cache and it rebuilds on the next refresh.
+
 ## [1.7.0] — 2026-10-14
 
 ### Added

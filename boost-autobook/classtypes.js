@@ -29,7 +29,7 @@
     { id: 16130, name: "FUNCTIONAL",   aliases: ["Training Harmony"], health: "CROSSFIT",          display: "Functional",   minutes: 55 },
     { id: 16120, name: "CALISTHENICS", aliases: ["Calisapiens"],      health: "CALISTHENICS",      display: "Calisthenics", minutes: 55 },
     { id: 19437, name: "STRENGTH",     aliases: [],                   health: "STRENGTH_TRAINING", display: "Strength",     minutes: 55 },
-    { id: 21954, name: "FLEXIBILITY",  aliases: [],                   health: "STRETCHING",        display: "Flexibility",  minutes: 45 },
+    { id: 21954, name: "FLEXIBILITY",  aliases: ["Stretching"],       health: "STRETCHING",        display: "Flexibility",  minutes: 45 },
   ];
 
   const norm = (s) => String(s == null ? "" : s).trim().toLowerCase();
