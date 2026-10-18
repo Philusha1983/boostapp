@@ -35,7 +35,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
   plan capture started show "No plan saved" and always will. A new user's
   Health tab fills in one lesson at a time; the first-run case says so.
 
-## [1.7.1] — 2026-10-16
+## [1.7.1] — 2026-10-18
 
 ### Fixed
 - **The studio renamed every class in BoostApp**, and the rename was applied to
