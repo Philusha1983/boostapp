@@ -1739,10 +1739,30 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           break;
         }
         case "getMuscleLessons": {
-          // Lessons (booked + recently attended) with their workout plan text, for the muscle map.
+          // Lessons with their workout plan text, for the muscle map.
+          // Default: booked + recently attended (what lpCandidates schedules
+          // captures for). With msg.since (ISO date), also every attended
+          // lesson back to that date — the Health tab needs the whole window,
+          // not just the capture one, to show muscles per past lesson.
           const o = await chrome.storage.local.get([LP_KEY, DP_KEY]);
           const lp = o[LP_KEY] || {}, dp = o[DP_KEY] || {}, now = Date.now();
-          const lessons = (await lpCandidates()).map(l => {
+          let cands = await lpCandidates();
+          if (msg.since) {
+            const seen = new Set(cands.map(l => lpKey(l.date, l.time, l.className)));
+            try {
+              const store = await getHistoryStore();
+              Object.values(store.months || {}).forEach(m => (m.rows || []).forEach(rec => {
+                if (rec.status !== "attended" || !rec.date || !rec.time) return;
+                if (rec.date < msg.since) return;
+                const time = String(rec.time).slice(0, 5);
+                const k = lpKey(rec.date, time, rec.className);
+                if (seen.has(k)) return;
+                seen.add(k);
+                cands.push({ date: rec.date, time, className: rec.className, startAt: studioTimeMs(rec.date, time) });
+              }));
+            } catch (e) {}
+          }
+          const lessons = cands.map(l => {
             const k = lpKey(l.date, l.time, l.className), e = lpPick(lp, l.date, l.time, l.className);
             const type = lpDayType(l.className), d = type && lpDayPlan(dp, l.date, type);
             const text = (e && e.text && e.dateMatches !== false && e.text) || (d && d.text) || null;

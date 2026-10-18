@@ -32,6 +32,7 @@ window opens — no more refreshing the page at midnight.
 - ⌚ **Fitbit & Health Connect sync** — attended lessons are logged to Fitbit automatically minutes after class, with your tracker's heart rate, zones and calories, and flow on to Health Connect for all your health apps
 - 📈 **Heart rate, lesson by lesson** — a Health tab with each lesson's heart-rate curve in your own Fitbit zones, with the workout plan laid on top: which part (and in timed parts, which exercise) you were doing at every minute
 - 💪 **Muscle map** — which muscles each lesson works, part by part, on a body figure (male, female or neutral) — before you book, after class, and for the whole week
+- 🧭 **No tracker needed** — the Health tab works without one: every lesson you attended with the muscles its workout plan worked, per class and lesson by lesson. Connect a tracker later and heart rate, zones and steps appear on top
 - 🎓 **Guided tour** — a walkthrough on first run, plus a "What's new" card after every update
 - 🌍 **5 languages** — English, Hebrew, Russian, Ukrainian, Arabic, with full RTL support and light/dark themes
 
@@ -47,6 +48,12 @@ window opens — no more refreshing the page at midnight.
   <img src="docs/assets/health-lesson.webp" width="720" alt="A lesson in the Health tab: the heart-rate curve with the workout plan's parts on top, and a body figure showing the muscles part C worked">
   <br>
   <em>A real lesson in the Health tab: the heart-rate curve with the plan's parts on top, and the muscles each part worked.</em>
+</p>
+
+<p align="center">
+  <img src="docs/assets/health-no-tracker.webp" width="720" alt="The Health tab with no tracker connected: a per-class table of lessons and the muscles each class works most, and a lesson opened to its muscle map and workout plan">
+  <br>
+  <em>The same tab with no tracker connected — lessons, muscles worked and the full workout plan, all from the studio's posted plan.</em>
 </p>
 
 Works out of the box with **Training Harmony** (`app.boostapp.co.il`) and is

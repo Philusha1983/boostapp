@@ -6,6 +6,35 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.8.0] — 2026-10-18
+
+### Added
+- **Past Events → Health works without a tracker.** The tab used to replace
+  itself with a "connect Fitbit" message, which hid the lesson list and the
+  muscle map behind a device neither of them needs. Now it always shows your
+  attended lessons, each with the muscles its workout plan worked:
+  - **Per class** — lessons attended, how many had a plan saved, and the
+    muscles that class works most (the heart-rate table when a tracker *is*
+    connected).
+  - **Lesson by lesson** — each row carries its top three muscles instead of
+    heart-rate chips, and opens to the full muscle map with the plan's parts.
+  - A single line under the list invites connecting a tracker, instead of the
+    full-page message that used to stand in for the page.
+- A lesson with a plan but **no heart rate now opens too** — for a connected
+  user as well. It used to say "no heart-rate data" and show nothing, even
+  when the workout plan was sitting right there.
+
+### Changed
+- `getMuscleLessons` takes an optional `since` date and then covers every
+  attended lesson back to it, not just the capture window (booked lessons plus
+  the last two days). The Health tab asks for its full 90 days.
+
+### Known limitation
+- Workout plans can only be captured from the day of a lesson onward — the
+  studio overwrites each class's description daily — so lessons from before
+  plan capture started show "No plan saved" and always will. A new user's
+  Health tab fills in one lesson at a time; the first-run case says so.
+
 ## [1.7.1] — 2026-10-18
 
 ### Fixed

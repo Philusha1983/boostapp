@@ -42,6 +42,10 @@ const I18N = {
     health_zoneMinTip: "Average minutes per lesson with your heart rate raised (Fitbit's fat-burn, cardio or peak zones).",
     health_azmTip: "Fitbit's Active Zone Minutes, averaged per lesson: 1 point per minute in fat-burn, 2 per minute in cardio or peak. The same number the Google Health app shows — it can be higher than the lesson length.",
     health_notConnected: "Heart rate per lesson comes from Fitbit sync.", health_notConnectedHint: "Connect it in the extension popup → Settings → Fitbit sync, then come back here.",
+    health_col_withPlan: "With a plan", health_col_worksMost: "Works most",
+    health_noPlan: "No plan saved", health_openHintPlan: "Open a lesson to see the muscles it worked.",
+    health_noPlansYet: "Workout plans are saved from the day of each lesson onward — the studio replaces them daily, so past ones can't be fetched. Muscles will appear here after your next lesson.",
+    health_connectInvite: "Connect a tracker in the extension popup → Settings to add heart rate, zones and steps to every lesson here.",
     health_loading: "Getting your tracker's numbers for recent lessons…", health_more: "Load {n} older lessons",
     health_noData: "Tracker wasn't recording", health_pending: "Not loaded yet", health_empty: "No attended lessons in the last 90 days.",
     health_avg: "♥ {n} bpm avg", health_peak: "▲ {n} bpm top", health_zone: "🔥 {n} min in the zone", health_steps: "👣 {n} steps",
@@ -134,6 +138,10 @@ const I18N = {
     health_zoneMinTip: "ממוצע הדקות בשיעור שבהן הדופק היה מוגבר (אזורי שריפת שומן, קרדיו או שיא של Fitbit).",
     health_azmTip: "דקות אזור פעיל של Fitbit, ממוצע לשיעור: נקודה לכל דקה בשריפת שומן, 2 לכל דקה בקרדיו או בשיא. אותו מספר שמופיע באפליקציית Google Health — הוא יכול להיות גבוה מאורך השיעור.",
     health_notConnected: "הדופק לכל שיעור מגיע מסנכרון Fitbit.", health_notConnectedHint: "חברו אותו בחלון התוסף ← הגדרות ← סנכרון Fitbit, וחזרו לכאן.",
+    health_col_withPlan: "עם תוכנית", health_col_worksMost: "הכי מפעיל",
+    health_noPlan: "לא נשמרה תוכנית", health_openHintPlan: "פתחו שיעור כדי לראות אילו שרירים הוא הפעיל.",
+    health_noPlansYet: "תוכניות אימון נשמרות מיום השיעור והלאה — הסטודיו מחליף אותן כל יום, ולכן אי אפשר למשוך תוכניות ישנות. השרירים יופיעו כאן אחרי השיעור הבא שלכם.",
+    health_connectInvite: "חברו מד כושר בחלון התוסף ← הגדרות כדי להוסיף כאן דופק, אזורי מאמץ וצעדים לכל שיעור.",
     health_loading: "מביא את נתוני הצמיד לשיעורים האחרונים…", health_more: "טען עוד {n} שיעורים קודמים",
     health_noData: "הצמיד לא מדד", health_pending: "עוד לא נטען", health_empty: "אין שיעורים שהשתתפתם בהם ב‑90 הימים האחרונים.",
     health_avg: "♥ {n} דופק ממוצע", health_peak: "▲ {n} דופק שיא", health_zone: "🔥 {n} דק׳ באזור המאמץ", health_steps: "👣 {n} צעדים",
@@ -226,6 +234,10 @@ const I18N = {
     health_zoneMinTip: "Сколько минут за занятие в среднем пульс был повышен (зоны Fitbit: жиросжигание, кардио, пик).",
     health_azmTip: "Минуты в активных зонах Fitbit в среднем за занятие: 1 балл за минуту жиросжигания, 2 — за минуту кардио или пика. То же число, что в приложении Google Health; может быть больше длительности занятия.",
     health_notConnected: "Пульс по занятиям берётся из синхронизации с Fitbit.", health_notConnectedHint: "Подключите её в окне расширения → Настройки → Синхронизация с Fitbit и вернитесь сюда.",
+    health_col_withPlan: "С планом", health_col_worksMost: "Больше всего работает",
+    health_noPlan: "План не сохранён", health_openHintPlan: "Откройте занятие, чтобы увидеть, какие мышцы оно нагрузило.",
+    health_noPlansYet: "Планы тренировок сохраняются начиная со дня занятия — студия заменяет их каждый день, поэтому прошлые получить нельзя. Мышцы появятся здесь после вашего следующего занятия.",
+    health_connectInvite: "Подключите трекер в окне расширения → Настройки, чтобы добавить сюда пульс, зоны и шаги для каждого занятия.",
     health_loading: "Получаем данные трекера для недавних занятий…", health_more: "Загрузить ещё {n} прошлых занятий",
     health_noData: "Трекер не записывал", health_pending: "Ещё не загружено", health_empty: "За последние 90 дней посещённых занятий нет.",
     health_avg: "♥ {n} уд/мин в среднем", health_peak: "▲ {n} уд/мин макс.", health_zone: "🔥 {n} мин в зоне", health_steps: "👣 {n} шагов",
@@ -318,6 +330,10 @@ const I18N = {
     health_zoneMinTip: "Скільки хвилин за заняття в середньому пульс був підвищений (зони Fitbit: спалювання жиру, кардіо, пік).",
     health_azmTip: "Хвилини в активних зонах Fitbit у середньому за заняття: 1 бал за хвилину спалювання жиру, 2 — за хвилину кардіо або піку. Те саме число, що в застосунку Google Health; може перевищувати тривалість заняття.",
     health_notConnected: "Пульс за заняттями береться із синхронізації з Fitbit.", health_notConnectedHint: "Підключіть її у вікні розширення → Налаштування → Синхронізація з Fitbit і поверніться сюди.",
+    health_col_withPlan: "З планом", health_col_worksMost: "Найбільше працює",
+    health_noPlan: "План не збережено", health_openHintPlan: "Відкрийте заняття, щоб побачити, які м'язи воно навантажило.",
+    health_noPlansYet: "Плани тренувань зберігаються починаючи з дня заняття — студія замінює їх щодня, тож минулі отримати не можна. М'язи з'являться тут після вашого наступного заняття.",
+    health_connectInvite: "Підключіть трекер у вікні розширення → Налаштування, щоб додати сюди пульс, зони та кроки для кожного заняття.",
     health_loading: "Отримуємо дані трекера для нещодавніх занять…", health_more: "Завантажити ще {n} минулих занять",
     health_noData: "Трекер не записував", health_pending: "Ще не завантажено", health_empty: "За останні 90 днів відвіданих занять немає.",
     health_avg: "♥ {n} уд/хв у середньому", health_peak: "▲ {n} уд/хв макс.", health_zone: "🔥 {n} хв у зоні", health_steps: "👣 {n} кроків",
@@ -410,6 +426,10 @@ const I18N = {
     health_zoneMinTip: "متوسط الدقائق في كل درس التي كان فيها نبضك مرتفعًا (مناطق Fitbit: حرق الدهون، القلب، الذروة).",
     health_azmTip: "دقائق المنطقة النشطة من Fitbit، بالمتوسط لكل درس: نقطة لكل دقيقة في حرق الدهون، ونقطتان لكل دقيقة في القلب أو الذروة. نفس الرقم في تطبيق Google Health — وقد يتجاوز مدة الدرس.",
     health_notConnected: "نبض القلب لكل درس يأتي من مزامنة Fitbit.", health_notConnectedHint: "فعّلها من نافذة الإضافة ← الإعدادات ← مزامنة Fitbit، ثم عد إلى هنا.",
+    health_col_withPlan: "مع خطة", health_col_worksMost: "الأكثر عملًا",
+    health_noPlan: "لم تُحفظ خطة", health_openHintPlan: "افتح درسًا لترى العضلات التي عمل عليها.",
+    health_noPlansYet: "تُحفظ خطط التمرين ابتداءً من يوم الدرس — النادي يستبدلها يوميًا، لذا لا يمكن جلب الخطط السابقة. ستظهر العضلات هنا بعد درسك القادم.",
+    health_connectInvite: "اربط جهاز تتبع من نافذة الإضافة ← الإعدادات لإضافة النبض والمناطق والخطوات لكل درس هنا.",
     health_loading: "جارٍ جلب بيانات السوار للدروس الأخيرة…", health_more: "تحميل {n} دروس سابقة",
     health_noData: "السوار لم يكن يسجّل", health_pending: "لم يُحمَّل بعد", health_empty: "لا دروس حضرتها في آخر 90 يومًا.",
     health_avg: "♥ {n} نبضة متوسط", health_peak: "▲ {n} نبضة أعلى", health_zone: "🔥 {n} دقيقة في المنطقة", health_steps: "👣 {n} خطوة",
@@ -1167,6 +1187,29 @@ function healthWhen(r) {
   const wd = (WDSHORT[LANG] || WDSHORT.en)[d.getDay()];
   return `<b>${esc(wd)} ${pad(d.getDate())}.${pad(d.getMonth() + 1)}</b>${esc(r.time || "")}`;
 }
+// Parsed plan for a lesson row, or null when none was captured. Memoised —
+// the list re-renders on every filter change and parsing is not free.
+const PLAN_CACHE = new Map();
+function lessonPlan(r) {
+  if (!self.MusclePanel || !MUSCLE || !MUSCLE.lessons) return null;
+  const k = healthKey(r);
+  if (PLAN_CACHE.has(k)) return PLAN_CACHE.get(k);
+  // Stored under whatever the class was called at the time (see classtypes.js).
+  const names = ClassTypes.keysFor(r.className);
+  const hit = MUSCLE.lessons.find(l => l.date === r.date && l.time === r.time && names.includes(l.className));
+  let parsed = null;
+  try { parsed = hit && hit.text ? MusclePanel.parse(hit.text, hit.date) : null; } catch (e) { parsed = null; }
+  PLAN_CACHE.set(k, parsed);
+  return parsed;
+}
+
+// Row chips when there is no heart rate to show: the muscles the lesson worked.
+function muscleChips(r) {
+  const L = lessonPlan(r);
+  if (!L) return `<span class="lh-chip none">${esc(t("health_noPlan"))}</span>`;
+  return MusclePanel.top(L, 3).map(m => `<span class="lh-chip">${esc(m)}</span>`).join("");
+}
+
 function healthChips(h) {
   if (!h) return `<span class="lh-chip none">${esc(t("health_pending"))}</span>`;
   if (h.avg == null) return `<span class="lh-chip none">${esc(t("health_noData"))}</span>`;
@@ -1185,17 +1228,17 @@ function renderHealthBody() {
   const app = document.getElementById("app");
   if (CURRENT_VIEW !== "health") return;
   if (!HEALTH) { app.innerHTML = `<div class="loading">${esc(t("health_loading"))}</div>`; return; }
-  if (!HEALTH.connected) {
-    app.innerHTML = weekCardHtml() + `<div class="empty">${esc(t("health_notConnected"))}<br><span style="font-size:12.5px;">${esc(t("health_notConnectedHint"))}</span></div>`;
-    wireWeekCard();
-    return;
-  }
+  const connected = !!HEALTH.connected;
   const cutoff = new Date(Date.now() - HEALTH_DAYS * 864e5);
   const cutoffStr = `${cutoff.getFullYear()}-${pad(cutoff.getMonth() + 1)}-${pad(cutoff.getDate())}`;
   const lessons = ALL_RECORDS
     .filter(r => r.status === "attended" && r.date >= cutoffStr && r.date <= todayStr())
     .sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
-  if (!lessons.length) { app.innerHTML = `<div class="empty">${esc(t("health_empty"))}</div>`; return; }
+  if (!lessons.length) {
+    app.innerHTML = weekCardHtml() + `<div class="empty">${esc(t("health_empty"))}</div>`;
+    wireWeekCard();
+    return;
+  }
 
   const map = HEALTH.health || {};
   const byType = {};
@@ -1210,7 +1253,7 @@ function renderHealthBody() {
     if (h.zoneMin != null) { b.minSum += h.zoneMin; b.minN++; }
   });
   const types = Object.entries(byType).sort((a, b) => b[1].n - a[1].n);
-  const typeTable = types.length ? `
+  const hrTable = types.length ? `
     <div class="card"><div class="lh-type">
       <div class="hd"></div><div class="hd">${esc(t("health_col_lessons"))}</div><div class="hd">${esc(t("health_col_avg"))}</div><div class="hd">${esc(t("health_col_peak"))}</div>
       <div class="hd tip" title="${esc(t("health_zoneMinTip"))}">${esc(t("health_col_zoneMin"))} ⓘ</div><div class="hd tip" title="${esc(t("health_azmTip"))}">${esc(t("health_col_azm"))} ⓘ</div>
@@ -1223,6 +1266,32 @@ function renderHealthBody() {
         <div class="v">${b.zoneN ? Math.round(b.zoneSum / b.zoneN) : "—"}</div>`).join("")}
     </div></div>` : `<div class="subnote">—</div>`;
 
+  // Without a tracker the same table carries what the plans know instead:
+  // how often each class came up, and the muscles it works most.
+  const planByType = {};
+  lessons.forEach(r => {
+    const ck = classKey(r.className);
+    const b = planByType[ck] || (planByType[ck] = { n: 0, planned: 0, score: {} });
+    b.n++;
+    const L = lessonPlan(r);
+    if (!L) return;
+    b.planned++;
+    MusclePanel.top(L, 4).forEach((m, i) => { b.score[m] = (b.score[m] || 0) + (4 - i); });
+  });
+  const planTypes = Object.entries(planByType).sort((a, b) => b[1].n - a[1].n);
+  const muscleTable = planTypes.length ? `
+    <div class="card"><div class="lh-type no-device">
+      <div class="hd"></div><div class="hd">${esc(t("health_col_lessons"))}</div><div class="hd">${esc(t("health_col_withPlan"))}</div><div class="hd">${esc(t("health_col_worksMost"))}</div>
+      ${planTypes.map(([name, b]) => {
+        const top = Object.entries(b.score).sort((x, y) => y[1] - x[1]).slice(0, 3).map(([m]) => m);
+        return `
+        <div class="nm" title="${esc(name)}">${esc(name)}</div>
+        <div class="v">${b.n}</div>
+        <div class="v">${b.planned || "—"}</div>
+        <div class="v muscles">${top.length ? esc(top.join(" · ")) : "—"}</div>`;
+      }).join("")}
+    </div></div>` : `<div class="subnote">—</div>`;
+
   const remaining = HEALTH.fill && HEALTH.fill.remaining || 0;
   const age = HEALTH.hrAge, cal = HEALTH.hrMaxCal;
   const ageBar = cal && cal.max
@@ -1230,24 +1299,31 @@ function renderHealthBody() {
     : age
     ? `<div class="lh-age">${esc(t("health_ageBasis", { a: age }))} <a href="#" id="lhAgeChange">${esc(t("health_ageChange"))}</a></div>`
     : `<div class="lh-age">${esc(t("health_agePrompt"))} <input id="lhAge" type="number" min="10" max="100" placeholder="${esc(t("health_agePh"))}"> <button id="lhAgeSave">${esc(t("health_ageSave"))}</button></div>`;
+  // A row opens if there is anything inside it: a heart-rate trace, a plan,
+  // or both. Without a tracker that means every lesson whose plan was saved.
+  const hasHr = r => !!(map[healthKey(r)] && map[healthKey(r)].avg != null);
+  const openable = r => (connected && hasHr(r)) || !!lessonPlan(r);
+  const planCount = lessons.filter(r => lessonPlan(r)).length;
+
   app.innerHTML = `
-    ${ageBar}
+    ${connected ? ageBar : ""}
     ${weekCardHtml()}
     <h2>${esc(t("health_type"))}</h2>
-    ${typeTable}
+    ${connected ? hrTable : muscleTable}
     <h2>${esc(t("health_recent"))}</h2>
-    <div class="subnote" style="margin-top:-4px;">${esc(t("health_openHint"))}</div>
+    <div class="subnote" style="margin-top:-4px;">${esc(connected ? t("health_openHint") : t("health_openHintPlan"))}</div>
+    ${!connected && !planCount ? `<div class="subnote nd-first">${esc(t("health_noPlansYet"))}</div>` : ""}
     <div class="lh-list">
       ${lessons.map(r => `
-        <div class="lh-row${map[healthKey(r)] && map[healthKey(r)].avg != null ? " openable" : ""}" data-key="${esc(healthKey(r))}" data-date="${esc(r.date)}" data-time="${esc(r.time)}" data-cls="${esc(r.className)}" tabindex="0" role="button" aria-expanded="false">
+        <div class="lh-row${openable(r) ? " openable" : ""}" data-key="${esc(healthKey(r))}" data-date="${esc(r.date)}" data-time="${esc(r.time)}" data-cls="${esc(r.className)}" tabindex="0" role="button" aria-expanded="false">
           <div class="lh-when">${healthWhen(r)}</div>
           <div class="lh-cls"><div class="c">${esc(r.className)}</div>${r.teacher ? `<div class="tch">${esc(r.teacher)}</div>` : ""}</div>
-          <div class="lh-chips">${healthChips(map[healthKey(r)])}</div>
+          <div class="lh-chips">${connected ? healthChips(map[healthKey(r)]) : muscleChips(r)}</div>
           <div class="lh-detail" hidden></div>
         </div>`).join("")}
     </div>
-    ${remaining ? `<button id="lhMore" class="lh-more">${esc(t("health_more", { n: Math.min(remaining, 15) }))}</button>` : ""}
-    <div class="subnote" style="margin-top:14px;">${esc(t("health_note", { m: HEALTH.durationMin || 60 }))}</div>
+    ${connected && remaining ? `<button id="lhMore" class="lh-more">${esc(t("health_more", { n: Math.min(remaining, 15) }))}</button>` : ""}
+    <div class="subnote" style="margin-top:14px;">${esc(connected ? t("health_note", { m: HEALTH.durationMin || 60 }) : t("health_connectInvite"))}</div>
   `;
   wireWeekCard();
   const more = document.getElementById("lhMore");
@@ -1333,12 +1409,39 @@ async function toggleTrace(row) {
   det.hidden = !open;
   row.setAttribute("aria-expanded", String(open));
   if (!open || det.dataset.loaded) return;
+
+  // No tracker: the plan is already in hand from getMuscleLessons, and asking
+  // for a trace would only hit a bridge that is not connected. Draw the
+  // muscle map straight away.
+  if (!HEALTH || !HEALTH.connected) {
+    const L = lessonPlan({ date: row.dataset.date, time: row.dataset.time, className: row.dataset.cls });
+    if (!L) { det.innerHTML = `<div class="subnote">${esc(t("health_noPlan"))}</div>`; return; }
+    det.dataset.loaded = "1";
+    renderPlanOnly(det, L);
+    return;
+  }
+
   det.innerHTML = `<div class="subnote">${esc(t("health_traceLoading"))}</div>`;
   const res = await send({ cmd: "getLessonTrace", date: row.dataset.date, time: row.dataset.time, className: row.dataset.cls });
   if (!res || !res.ok) { det.innerHTML = `<div class="subnote">${esc(t("health_traceErr", { e: (res && res.error) || "?" }))}</div>`; return; }
-  if (!res.pts || !res.pts.some(v => v != null)) { det.innerHTML = `<div class="subnote">${esc(t("health_traceNone"))}</div>`; return; }
+  // Connected, but this lesson has no heart rate (watch left at home, sync
+  // gap). The plan still does, so show the muscles rather than nothing.
+  if (!res.pts || !res.pts.some(v => v != null)) {
+    const L = self.MusclePanel && res.planText ? MusclePanel.parse(res.planText, res.planDate) : lessonPlan({ date: row.dataset.date, time: row.dataset.time, className: row.dataset.cls });
+    if (!L) { det.innerHTML = `<div class="subnote">${esc(t("health_traceNone"))}</div>`; return; }
+    det.dataset.loaded = "1";
+    renderPlanOnly(det, L, t("health_traceNone"));
+    return;
+  }
   det.dataset.loaded = "1";
   renderTrace(det, res, row.dataset.time, (HEALTH.health || {})[row.dataset.key], row.dataset.key);
+}
+
+// The expanded row without a heart-rate curve: just the lesson's muscle map.
+// Same MusclePanel the connected view puts under the chart.
+function renderPlanOnly(det, lesson, note) {
+  det.innerHTML = `${note ? `<div class="subnote">${esc(note)}</div>` : ""}<div class="mp-host"></div>`;
+  MusclePanel.panel(det.querySelector(".mp-host"), lesson, { sex: mmSex() });
 }
 
 function renderTrace(det, res, time, summary, key) {
@@ -1549,7 +1652,12 @@ window.addEventListener("pointerup", async () => {
 async function loadHealth(fill) {
   const btn = document.getElementById("lhMore");
   if (btn) { btn.disabled = true; btn.textContent = t("health_loading"); }
-  [HEALTH, MUSCLE] = await Promise.all([send({ cmd: "getLessonHealth", fill: !!fill }), send({ cmd: "getMuscleLessons" }).catch(() => null)]);
+  const since = new Date(Date.now() - HEALTH_DAYS * 864e5);
+  const sinceStr = `${since.getFullYear()}-${pad(since.getMonth() + 1)}-${pad(since.getDate())}`;
+  [HEALTH, MUSCLE] = await Promise.all([
+    send({ cmd: "getLessonHealth", fill: !!fill }),
+    send({ cmd: "getMuscleLessons", since: sinceStr }).catch(() => null)
+  ]);
   renderHealthBody();
 }
 

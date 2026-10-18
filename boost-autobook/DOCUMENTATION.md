@@ -112,6 +112,18 @@ any class, and the lesson description.
   their planned length and order and are placed where heart rate is highest,
   with priors for a ~10-min warm-up and short gaps); dragging an edge saves a
   per-lesson fix that overrides the estimate.
+- **Health tab without a tracker** (1.8.0) — the tab used to replace itself
+  with a "connect Fitbit" message, hiding the lesson list and the muscle map
+  behind a device neither needs (both come from the studio's posted plan).
+  It now always renders: a per-class table (lessons, how many had a plan, the
+  muscles that class works most) in place of the heart-rate table, muscle
+  chips on each row in place of the heart-rate chips, and one line under the
+  list inviting a tracker. A lesson with a plan but no heart-rate trace opens
+  too, for connected users as well — it used to show nothing. `getMuscleLessons`
+  takes an optional `since` date and then covers every attended lesson back to
+  it, not just the capture window; the Health tab asks for its full 90 days.
+  Plans are only captured from the lesson day onward (the studio overwrites
+  each description daily), so older lessons read "No plan saved" permanently.
 - **Muscle map** (1.7.0) — `muscles.js` maps each plan exercise to main /
   helping muscle groups (17 groups, ordered keyword rules; unknown names are
   reported, never dropped); `body.js` draws an original front/back SVG figure

@@ -43,6 +43,10 @@ BoostApp studio.
 - **Muscle map.** Which muscles each lesson works, part by part, on a body
   figure: on Upcoming lessons (Lesson info), under each Health-tab chart, and
   as a This-week view.
+- **No tracker needed.** The Health tab works without one: every lesson you
+  attended, with the muscles its workout plan worked — a per-class summary and
+  a lesson-by-lesson list that opens to the full map. Connect a tracker later
+  and heart rate, zones and steps appear on top of the same page.
 
 > ⚠️ It **cannot** beat the studio's 72-hour gate — the server rejects bookings
 > before the window opens. The extension simply fires the instant it legitimately
