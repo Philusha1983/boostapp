@@ -54,11 +54,11 @@ const GH_MAX_LOGS_PER_RUN = 100;
 // Class name → Google Health ExerciseType enum. First matching rule wins.
 // EXERCISE_CLASS is the fallback — it exists exactly for studio group lessons.
 const GH_CLASS_RULES = [
-  // Studio nicknames first (more specific than the generic keyword rules):
-  // "Training Harmony" = the studio's general CrossFit class, "Calisapiens"
-  // = its calisthenics class.
-  { re: /training\s*harmony/i, type: "CROSSFIT" },
-  { re: /calisapiens|calisthenic|קליסתניקה/i, type: "CALISTHENICS" },
+  // The studio's own classes resolve from the shared table (by name or by
+  // any name they used before the Oct 2026 rename), so FUNCTIONAL keeps
+  // logging as CROSSFIT exactly as "Training Harmony" did. The keyword rules
+  // below stay as the fallback for anything not in the table.
+  { re: /calisthenic|קליסתניקה/i, type: "CALISTHENICS" },
   { re: /crossfit|קרוספיט/i, type: "CROSSFIT" },
   { re: /pilates|פילאטיס/i, type: "PILATES" },
   { re: /yoga|יוגה/i, type: "YOGA" },
@@ -75,11 +75,11 @@ const GH_FALLBACK_TYPE = "EXERCISE_CLASS";
 
 // Studio nicknames → clear workout names for the title shown in health apps.
 // First matching rule wins; unmatched class names pass through unchanged.
-const GH_CLASS_DISPLAY_ALIASES = [
-  { re: /^training\s*harmony$/i, name: "CrossFit" },
-  { re: /^calisapiens$/i, name: "Calisthenics" },
-];
+const GH_CLASS_DISPLAY_ALIASES = [];
 function ghDisplayClassName(className) {
+  // Studio classes get their readable name ("FUNCTIONAL" -> "Functional").
+  const t = ClassTypes.byName(className);
+  if (t) return t.display;
   for (const a of GH_CLASS_DISPLAY_ALIASES) {
     if (a.re.test((className || "").trim())) return a.name;
   }
@@ -601,6 +601,8 @@ async function fitbitFillLessonHealth(historyStore, maxLessons) {
 function fitbitLessonKey(rec) { return `${rec.date} ${rec.time} ${rec.className}`; }
 
 function ghExerciseType(className) {
+  const t = ClassTypes.healthType(className);
+  if (t) return t;
   for (const rule of GH_CLASS_RULES) {
     if (rule.re.test(className || "")) return rule.type;
   }

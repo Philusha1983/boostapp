@@ -6,6 +6,46 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.7.1] — 2026-10-18
+
+### Fixed
+- **The studio renamed every class in BoostApp**, and the rename was applied to
+  lessons that already happened. `Training Harmony` is now `FUNCTIONAL` and
+  `Calisapiens` is now `CALISTHENICS` — the same classes under new names
+  (unchanged `classNameType` ids 16130 and 16120) — while `STRENGTH` (19437)
+  and `FLEXIBILITY` (21954) are new in the cycle starting 18.10.2026.
+  Everything that recognised a lesson by its name string broke at once:
+  - **Booking rules** whose class filter held an old name matched no class and
+    silently stopped booking. A schema migration (v1 → v2) rewrites those
+    filters to the current names and reports what it changed; filters the user
+    typed themselves are left alone.
+  - **Plan capture** skipped every lesson, so new lessons had no workout plan,
+    and therefore no part bands and no muscle map.
+  - **Day plans** (the 7-day look-ahead) stopped for both class types.
+  - **Health logging** fell back to `EXERCISE_CLASS`. `FUNCTIONAL` keeps
+    logging as `CROSSFIT`, exactly as `Training Harmony` did, so the history in
+    Google Health stays one continuous series.
+  - **History** counted one class as two: old records under the old name, new
+    ones under the new. Totals, the type filter, the signature-session
+    highlight and per-class heart-rate averages now group them together, while
+    each record still shows the name it was stored under.
+
+### Added
+- `classtypes.js` — one table of the studio's classes (type id, current name,
+  former names, health type, display name). Lessons are matched on
+  `classNameType`, which survives a rename; names are for display only. The
+  next rename is a one-line change here.
+
+### Also in this release
+- `Stretching` was FLEXIBILITY's former name as well (same weekly slots,
+  Tue 19:00 and Sat 11:00) — added to the table, so rules and history that
+  still say "Stretching" follow the class instead of pointing nowhere.
+- **The weekly slot grid showed every renamed class twice** (once under each
+  name) because `bsab_schedule` is keyed by class name and entries live for 21
+  days after they were last seen. It is now keyed by class type, so a renamed
+  class keeps one row under whatever it is called now; the migration drops the
+  old cache and it rebuilds on the next refresh.
+
 ## [1.7.0] — 2026-10-14
 
 ### Added

@@ -14,6 +14,7 @@
  * ==========================================================================*/
 
 // Fitbit bridge (OAuth + lesson→activity logging) — shares this global scope.
+importScripts("classtypes.js");
 importScripts("fitbit.js");
 importScripts("plans.js");
 // bsab_lesson_parts { "<date> <time> <className>": { savedAt, guess, segs:[{key,t0,t1}], auto } }
@@ -153,13 +154,38 @@ async function checkForUpdate() {
 // survives extension updates, so any future change to a stored format must
 // bump SCHEMA_VERSION and add a migration step here — never reinterpret old
 // data in place.
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 3;
 async function migrateSchema() {
   const { bsab_schema } = await chrome.storage.local.get("bsab_schema");
   const from = bsab_schema || 1;
-  // Future migrations, oldest first:
-  // if (from < 2) { ...transform stored data from v1 to v2... }
-  if (from !== SCHEMA_VERSION) { /* placeholder until the first real migration */ }
+  // Migrations, oldest first:
+  // v1 -> v2 (Oct 2026): the studio renamed every class in BoostApp
+  // ("Training Harmony" -> "FUNCTIONAL", "Calisapiens" -> "CALISTHENICS").
+  // A rule whose classFilter still holds an old name matches nothing and
+  // silently stops booking, so rewrite those filters to the current name.
+  // Only names in the ClassTypes table are touched; anything the user typed
+  // themselves is left exactly as it is.
+  // v2 -> v3 (Oct 2026): "Stretching" turned out to be FLEXIBILITY's former
+  // name too, and the weekly slot grid was cached by class name, so every
+  // renamed class appeared twice (old and new) until its 21-day TTL ran out.
+  // Re-run the rule rewrite with the fuller table and drop the stale cache;
+  // it rebuilds on the next refresh, now keyed by class type.
+  if (from < 3) {
+    await chrome.storage.local.remove("bsab_schedule");
+    const targets = await getTargets();
+    const renamed = [];
+    const next = targets.map(t => {
+      const now = ClassTypes.canonical(t.classFilter);
+      if (!t.classFilter || now === t.classFilter) return t;
+      renamed.push(`${t.classFilter} \u2192 ${now} (${t.time || "?"})`);
+      return Object.assign({}, t, { classFilter: now });
+    });
+    if (renamed.length) {
+      await setTargets(next);
+      notify("Class names changed at the studio",
+        `Updated ${renamed.length} rule${renamed.length > 1 ? "s" : ""} to the new names:\n` + renamed.join("\n"));
+    }
+  }
   await chrome.storage.local.set({ bsab_schema: SCHEMA_VERSION });
 }
 
@@ -542,7 +568,12 @@ async function getSchedule(cfg) {
     const wd = new Date((c.startDate || "") + "T00:00:00").getDay();
     const time = (c.startTime || "").slice(0, 5);
     if (!time || isNaN(wd)) return;
-    cache[wd + "|" + time + "|" + c.className] = { weekday: wd, time, className: c.className, teacher: c.guideName, lastSeen: now };
+    // Keyed by class TYPE, not name: a class the studio renames keeps one
+    // entry and the grid shows it once, under whatever it is called now.
+    // Classes with no type id (one-off events) still key by name.
+    const t = ClassTypes.of(c);
+    cache[wd + "|" + time + "|" + (t ? "#" + t.id : c.className)] =
+      { weekday: wd, time, className: t ? t.name : c.className, teacher: c.guideName, lastSeen: now };
   });
   const TTL = 21 * 864e5;
   Object.keys(cache).forEach(k => { if (!cache[k].lastSeen || now - cache[k].lastSeen > TTL) delete cache[k]; });
@@ -1712,7 +1743,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           const o = await chrome.storage.local.get([LP_KEY, DP_KEY]);
           const lp = o[LP_KEY] || {}, dp = o[DP_KEY] || {}, now = Date.now();
           const lessons = (await lpCandidates()).map(l => {
-            const k = lpKey(l.date, l.time, l.className), e = lp[k], type = lpDayType(l.className), d = type && dp[l.date + "|" + type];
+            const k = lpKey(l.date, l.time, l.className), e = lpPick(lp, l.date, l.time, l.className);
+            const type = lpDayType(l.className), d = type && lpDayPlan(dp, l.date, type);
             const text = (e && e.text && e.dateMatches !== false && e.text) || (d && d.text) || null;
             return { key: k, date: l.date, time: l.time, className: l.className, startAt: l.startAt, done: (l.startAt || 0) < now, text };
           }).filter(l => l.text);
@@ -1764,11 +1796,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             // Experimental part bands: the lesson's plan (own capture, else the
             // day plan for its class type) and any saved drag fix-ups.
             const o = await chrome.storage.local.get([LP_KEY, DP_KEY, LPARTS_KEY]);
-            const lp = (o[LP_KEY] || {})[key], type = lpDayType(msg.className);
-            const dp = type && (o[DP_KEY] || {})[msg.date + "|" + type];
+            const lp = lpPick(o[LP_KEY], msg.date, msg.time, msg.className), type = lpDayType(msg.className);
+            const dp = type && lpDayPlan(o[DP_KEY] || {}, msg.date, type);
             const planText = (lp && lp.text && lp.dateMatches !== false && lp.text) || (dp && dp.text) || null;
             sendResponse({ ok: true, pts: t.pts, rest: t.rest, step: t.step, hrAge: st.hrAge || null, hrMaxCal: st.hrMaxCal || null,
-              planText, planDate: msg.date, parts: (o[LPARTS_KEY] || {})[key] || null });
+              planText, planDate: msg.date, parts: lpPick(o[LPARTS_KEY], msg.date, msg.time, msg.className) || null });
           } catch (e) {
             sendResponse({ ok: false, error: String(e && e.message || e) });
           }
