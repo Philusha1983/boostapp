@@ -88,6 +88,12 @@ const I18N = {
     settings_note: "Daily limit only controls the local warning — the studio's server still enforces your real per-day allowance. You must be signed in to BoostApp in this Chrome profile. The extension cannot register before the studio's 72h window opens — it fires the instant it does.",
     status_open: "OPEN", status_waiting: "Scheduled", status_full: "FULL", status_passed: "Past",
     "status_not-found": "Not found", status_done: "Done", status_none: "No upcoming",
+    chgTitle: "The studio changed the timetable", chgGotIt: "Got it",
+    chgMoved: "{day} · {cls} moved {from} → {to}", chgAdded: "{day} · {cls} added at {time}",
+    chgRemoved: "{day} · {cls} at {time} is gone", chgRenamed: "{from} is now called {cls}",
+    chgTeacher: "{day} {time} · {cls}: {from} → {to}",
+    movedTo: "⏰ {cls} now runs at {time} on this day",
+    moveRule: "Move rule to {time}", moveRuleTip: "With {teacher}",
     every: "Every {day}", once: "Once {day}", anyClass: "Any class",
     bookNow: "Book now", booking: "Booking…", makeWeekly: "↻ Make weekly", onceOnly: "1× Make one-time",
     skip: "Skip {date}", pause: "Pause", resume: "Resume", remove: "Remove",
@@ -172,6 +178,12 @@ const I18N = {
     settings_note: "המגבלה היומית משפיעה רק על ההתראה המקומית — שרת הסטודיו עדיין אוכף את המכסה היומית האמיתית שלך. יש להיות מחובר ל-BoostApp בפרופיל Chrome הזה. התוסף אינו יכול להירשם לפני פתיחת חלון 72 השעות — הוא פועל ברגע שהוא נפתח.",
     status_open: "פתוח", status_waiting: "מתוזמן", status_full: "מלא", status_passed: "עבר",
     "status_not-found": "לא נמצא", status_done: "הושלם", status_none: "אין קרוב",
+    chgTitle: "הסטודיו שינה את מערכת השעות", chgGotIt: "הבנתי",
+    chgMoved: "{day} · {cls} עבר מ-{from} ל-{to}", chgAdded: "{day} · נוסף {cls} ב-{time}",
+    chgRemoved: "{day} · {cls} ב-{time} בוטל", chgRenamed: "{from} נקרא עכשיו {cls}",
+    chgTeacher: "{day} {time} · {cls}: {from} ← {to}",
+    movedTo: "⏰ {cls} מתקיים עכשיו ב-{time} ביום הזה",
+    moveRule: "העבר את הכלל ל-{time}", moveRuleTip: "עם {teacher}",
     every: "כל יום {day}", once: "פעם אחת — {day}", anyClass: "כל שיעור",
     bookNow: "הזמן עכשיו", booking: "מזמין…", makeWeekly: "↻ הפוך לשבועי", onceOnly: "1× הפוך לחד-פעמי",
     skip: "דלג {date}", pause: "השהה", resume: "המשך", remove: "הסר",
@@ -256,6 +268,12 @@ const I18N = {
     settings_note: "Дневной лимит влияет только на локальное предупреждение — сервер студии всё равно применяет ваш реальный дневной лимит. Нужно войти в BoostApp в этом профиле Chrome. Расширение не может записать до открытия окна 72 ч — оно срабатывает в момент открытия.",
     status_open: "ОТКРЫТО", status_waiting: "Запланировано", status_full: "ПОЛНО", status_passed: "Прошло",
     "status_not-found": "Не найдено", status_done: "Готово", status_none: "Нет ближайших",
+    chgTitle: "Студия изменила расписание", chgGotIt: "Понятно",
+    chgMoved: "{day} · {cls} перенесён с {from} на {to}", chgAdded: "{day} · добавлен {cls} в {time}",
+    chgRemoved: "{day} · {cls} в {time} больше нет", chgRenamed: "{from} теперь называется {cls}",
+    chgTeacher: "{day} {time} · {cls}: {from} → {to}",
+    movedTo: "⏰ {cls} теперь в {time} в этот день",
+    moveRule: "Перенести правило на {time}", moveRuleTip: "С {teacher}",
     every: "Каждый {day}", once: "Один раз — {day}", anyClass: "Любое занятие",
     bookNow: "Записаться", booking: "Запись…", makeWeekly: "↻ Сделать еженедельным", onceOnly: "1× Сделать разовым",
     skip: "Пропустить {date}", pause: "Пауза", resume: "Возобновить", remove: "Удалить",
@@ -340,6 +358,12 @@ const I18N = {
     settings_note: "Денний ліміт впливає лише на локальне попередження — сервер студії все одно застосовує ваш реальний денний ліміт. Потрібно увійти в BoostApp у цьому профілі Chrome. Розширення не може записати до відкриття вікна 72 год — воно спрацьовує в момент відкриття.",
     status_open: "ВІДКРИТО", status_waiting: "Заплановано", status_full: "ПОВНО", status_passed: "Минуло",
     "status_not-found": "Не знайдено", status_done: "Готово", status_none: "Немає найближчих",
+    chgTitle: "Студія змінила розклад", chgGotIt: "Зрозуміло",
+    chgMoved: "{day} · {cls} перенесено з {from} на {to}", chgAdded: "{day} · додано {cls} о {time}",
+    chgRemoved: "{day} · {cls} о {time} більше немає", chgRenamed: "{from} тепер називається {cls}",
+    chgTeacher: "{day} {time} · {cls}: {from} → {to}",
+    movedTo: "⏰ {cls} тепер о {time} цього дня",
+    moveRule: "Перенести правило на {time}", moveRuleTip: "З {teacher}",
     every: "Щотижня — {day}", once: "Один раз — {day}", anyClass: "Будь-яке заняття",
     bookNow: "Записатися", booking: "Запис…", makeWeekly: "↻ Зробити щотижневим", onceOnly: "1× Зробити одноразовим",
     skip: "Пропустити {date}", pause: "Пауза", resume: "Відновити", remove: "Видалити",
@@ -424,6 +448,12 @@ const I18N = {
     settings_note: "الحد اليومي يتحكّم فقط في التنبيه المحلي — خادم الاستوديو لا يزال يفرض الحد اليومي الفعلي. يجب تسجيل الدخول إلى BoostApp في ملف Chrome هذا. لا يمكن للإضافة التسجيل قبل فتح نافذة 72 ساعة — تعمل لحظة فتحها.",
     status_open: "مفتوح", status_waiting: "مجدول", status_full: "ممتلئ", status_passed: "انتهى",
     "status_not-found": "غير موجود", status_done: "تم", status_none: "لا حصص قادمة",
+    chgTitle: "النادي غيّر جدول الحصص", chgGotIt: "فهمت",
+    chgMoved: "{day} · {cls} انتقل من {from} إلى {to}", chgAdded: "{day} · أُضيف {cls} في {time}",
+    chgRemoved: "{day} · {cls} في {time} لم يعد موجودًا", chgRenamed: "{from} صار اسمه {cls}",
+    chgTeacher: "{day} {time} · {cls}: {from} ← {to}",
+    movedTo: "⏰ {cls} يُقام الآن في {time} بهذا اليوم",
+    moveRule: "انقل القاعدة إلى {time}", moveRuleTip: "مع {teacher}",
     every: "كل {day}", once: "مرة واحدة — {day}", anyClass: "أي حصة",
     bookNow: "احجز الآن", booking: "جارٍ الحجز…", makeWeekly: "↻ اجعلها أسبوعية", onceOnly: "1× اجعلها لمرة واحدة",
     skip: "تخطّ {date}", pause: "إيقاف مؤقت", resume: "استئناف", remove: "إزالة",
@@ -1088,6 +1118,7 @@ function toggleExpand(body, onOpen) {
 // Update everything EXCEPT the slots list (so an open month-plan stays open).
 async function softRefresh() {
   const state = await send({ cmd: "getState" });
+  if (self.ClassTypes) ClassTypes.setStudio(state && state.config && state.config.companyNum);
   if (!state) return;
   const { subscription, registrations, auth, client } = state;
   await loadMuscle();
@@ -1099,6 +1130,7 @@ async function softRefresh() {
 function renderTargets(targets, plan) {
   const list = $("list");
   list.innerHTML = "";
+  renderScheduleChanges(list);          // above the rules the change affects
   // Warn when auto-book is off — these slots won't be booked automatically.
   const warn = $("slotsAutoWarn");
   if (warn) warn.style.display = ($("autoBook") && !$("autoBook").checked) ? "flex" : "none";
@@ -1158,6 +1190,11 @@ function renderTargets(targets, plan) {
     else if (st === "waiting" && info.resolvedDate && info.openAt) meta.push(t("opensAt", { date: info.resolvedDate, clock: fmtClock(info.openAt), rel: relTime(info.openAt) }));
     else if (st === "open") meta.push(t("bookingNow"));
     else if (st === "full") meta.push(t("fullAtOpen"));
+    // The class did not vanish, it moved. Say where to, and offer the move.
+    else if (st === "not-found" && info.movedTo && info.movedTo.length) {
+      const m = info.movedTo[0];
+      meta.push(t("movedTo", { cls: title, time: m.time }));
+    }
     // last-attempt note only if it pertains to the CURRENT occurrence (drops stale skip/limit notes)
     if (st !== "booked" && tg.lastResult && tg.lastResult.date === info.resolvedDate) {
       const lr = tg.lastResult;
@@ -1185,6 +1222,22 @@ function renderTargets(targets, plan) {
       </div>
       <div class="t-actions"></div>`;
     const actions = card.querySelector(".t-actions");
+
+    // Accepting a move changes which hour of the day gets booked, so it is
+    // always an explicit click — never applied for the user.
+    if (st === "not-found" && info.movedTo && info.movedTo.length) {
+      info.movedTo.forEach((m, i) => {
+        const mv = btn(t("moveRule", { time: m.time }), i === 0 ? "small" : "ghost small");
+        mv.title = m.teacher ? t("moveRuleTip", { teacher: m.teacher }) : "";
+        mv.onclick = async () => {
+          mv.disabled = true;
+          await send({ cmd: "moveTarget", id: tg.id, time: m.time });
+          await renderSchedule();
+          refresh();
+        };
+        actions.appendChild(disableIfAutoOff(mv));
+      });
+    }
 
     if (st === "open" && tg.enabled) {
       const bk = btn(t("bookNow"), "small");
@@ -1283,6 +1336,35 @@ async function renderPlanBody(tg, body, card) {
 // ---------------------------------------------------------------------------
 // Weekly schedule grid
 // ---------------------------------------------------------------------------
+// What the studio changed since you last looked, above the grid it changed.
+function scheduleChangeLine(c) {
+  const day = dayName(c.weekday);
+  if (c.kind === "moved")   return t("chgMoved",   { day, cls: c.className, from: c.from, to: c.to });
+  if (c.kind === "added")   return t("chgAdded",   { day, cls: c.className, time: c.to });
+  if (c.kind === "removed") return t("chgRemoved", { day, cls: c.className, time: c.from });
+  if (c.kind === "renamed") return t("chgRenamed", { from: c.from, cls: c.className });
+  return t("chgTeacher", { day, cls: c.className, time: c.to, from: c.from, to: c.teacher });
+}
+
+async function renderScheduleChanges(host) {
+  const r = await send({ cmd: "getScheduleChanges" }).catch(() => null);
+  const changes = (r && r.changes) || [];
+  if (!changes.length) return;
+  // renderTargets can run more than once before this resolves, and each
+  // call would prepend another copy. Last one wins.
+  host.querySelectorAll(".autowarn.schedchg").forEach(e => e.remove());
+  const box = document.createElement("div");
+  box.className = "autowarn schedchg";
+  box.innerHTML = `<span><b>${escapeHtml(t("chgTitle"))}</b><br>` +
+    changes.slice(-6).map(c => escapeHtml(scheduleChangeLine(c))).join("<br>") + `</span>`;
+  const ok = document.createElement("button");
+  ok.className = "autowarn-btn";
+  ok.textContent = t("chgGotIt");
+  ok.onclick = async () => { await send({ cmd: "dismissScheduleChanges" }); box.remove(); };
+  box.appendChild(ok);
+  host.prepend(box);
+}
+
 async function renderSchedule() {
   const el = $("scheduleSection");
   const res = await send({ cmd: "getSchedule" });
@@ -1597,6 +1679,9 @@ async function refresh() {
   planCache = null;   // month plan re-fetches on next expand
   setTabsHeightVar();
   const state = await send({ cmd: "getState" });
+  // Keep the class-type table on the active studio — it decides which
+  // former names resolve, and must not apply one studio's to another.
+  if (self.ClassTypes) ClassTypes.setStudio(state && state.config && state.config.companyNum);
   if (!state) return;
   const { config, targets, auth, subscription, registrations, client } = state;
   lastRegistrations = registrations || null;   // used by the Period grid to overlay external bookings

@@ -112,6 +112,26 @@ any class, and the lesson description.
   their planned length and order and are placed where heart rate is highest,
   with priors for a ~10-min warm-up and short gaps); dragging an edge saves a
   per-lesson fix that overrides the estimate.
+- **Schedule awareness** (1.9.0) — two pieces, both keyed on `classNameType`
+  so they survive a rename. `diffSchedule()` (background.js) compares one
+  complete refresh of the weekly grid to the previous snapshot
+  (`bsab_schedule_snap`) and classifies moved / added / removed / renamed /
+  teacher-changed into `bsab_schedule_changes` (40 entries, 21 days), shown
+  as a dismissible banner above the rules and notified once per batch. A
+  refresh where either range fetch failed is never diffed. The 14-day fetch
+  window means a single cancelled instance reports nothing and a real removal
+  takes a week or two to surface — deliberate, to avoid false alarms.
+  `findMovedClass()` runs when a rule finds no class: same class, same
+  weekday, another hour, nearest first, offered on the card as "Move rule to
+  HH:MM" (`moveTarget`) and never applied automatically.
+- **Studio-scoped class types** (1.9.0) — `classtypes.js` holds Training
+  Harmony's table keyed by `companyNum`. Since 1.8.1 the extension follows
+  the user's own studio, so curated knowledge (former names, health type,
+  display, duration) applies only at a studio in the table; `setStudio()` is
+  called from `getConfig()` and from the popup/history on load. Identity by
+  `classNameType` is self-describing and works anywhere, so the slot grid,
+  the diff, moved-class detection and plan capture all function at studios
+  the table knows nothing about.
 - **Health tab without a tracker** (1.8.0) — the tab used to replace itself
   with a "connect Fitbit" message, hiding the lesson list and the muscle map
   behind a device neither needs (both come from the studio's posted plan).

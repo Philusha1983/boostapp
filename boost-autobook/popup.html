@@ -126,6 +126,10 @@
   .warn { display:none; background:var(--warn-bg); border:1px solid var(--warn-bd); color:var(--text); padding:8px; border-radius:8px; margin-bottom:10px; font-size:12px; }
   .autowarn { display:flex; align-items:center; gap:8px; background:var(--warn-bg); border:1px solid var(--warn-bd); color:var(--text); padding:8px 10px; border-radius:8px; margin-bottom:8px; font-size:12px; }
   .autowarn span { flex:1 1 auto; }
+  /* Schedule-change banner: a short list, so give the lines room to breathe
+     and keep the dismiss button aligned to the top of the stack. */
+  .autowarn.schedchg { align-items:flex-start; line-height:1.5; }
+  .autowarn.schedchg b { display:inline-block; margin-bottom:2px; }
   .autowarn-btn { flex:0 0 auto; background:var(--green); color:#06281c; font-weight:700; border:none; border-radius:7px; padding:5px 12px; font-size:12px; cursor:pointer; }
   .autowarn-btn:hover { background:var(--green-deep, #16b981); }
 
