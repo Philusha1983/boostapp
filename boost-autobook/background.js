@@ -243,19 +243,19 @@ async function verifyAuth(cfg) {
 }
 
 const TOOLTIP_I18N = {
-  en: { signin: "Sign in to BoostApp first", checking: "Checking BoostApp connection…",
+  en: { movedTitle: "{cls} moved to a new time", movedBody: "Your rule books {from}, but on {day} this class runs at {to}. Open the extension to move the rule.", signin: "Sign in to BoostApp first", checking: "Checking BoostApp connection…",
         today: "Today", at: "at", left: "{n} lessons left this month", none: "No upcoming lessons",
         wd: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] },
-  he: { signin: "התחבר תחילה ל-BoostApp", checking: "בודק חיבור ל-BoostApp…",
+  he: { movedTitle: "{cls} עבר לשעה אחרת", movedBody: "הכלל שלך מזמין {from}, אבל ב-{day} האימון מתקיים ב-{to}. פתחו את התוסף כדי להעביר את הכלל.", signin: "התחבר תחילה ל-BoostApp", checking: "בודק חיבור ל-BoostApp…",
         today: "היום", at: "בשעה", left: "נותרו {n} שיעורים החודש", none: "אין שיעורים קרובים",
         wd: ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"] },
-  ru: { signin: "Сначала войдите в BoostApp", checking: "Проверка подключения к BoostApp…",
+  ru: { movedTitle: "{cls} перенесён на другое время", movedBody: "Ваше правило бронирует {from}, но {day} занятие идёт в {to}. Откройте расширение, чтобы перенести правило.", signin: "Сначала войдите в BoostApp", checking: "Проверка подключения к BoostApp…",
         today: "Сегодня", at: "в", left: "осталось {n} занятий в этом месяце", none: "Нет ближайших занятий",
         wd: ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"] },
-  uk: { signin: "Спочатку увійдіть у BoostApp", checking: "Перевірка підключення до BoostApp…",
+  uk: { movedTitle: "{cls} перенесено на інший час", movedBody: "Ваше правило бронює {from}, але {day} заняття відбувається о {to}. Відкрийте розширення, щоб перенести правило.", signin: "Спочатку увійдіть у BoostApp", checking: "Перевірка підключення до BoostApp…",
         today: "Сьогодні", at: "о", left: "залишилось {n} занять цього місяця", none: "Немає найближчих занять",
         wd: ["Неділя", "Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота"] },
-  ar: { signin: "سجّل الدخول إلى BoostApp أولًا", checking: "جارٍ التحقّق من الاتصال بـ BoostApp…",
+  ar: { movedTitle: "{cls} انتقل إلى وقت آخر", movedBody: "قاعدتك تحجز {from}، لكن في {day} يُقام الدرس في {to}. افتح الإضافة لنقل القاعدة.", signin: "سجّل الدخول إلى BoostApp أولًا", checking: "جارٍ التحقّق من الاتصال بـ BoostApp…",
         today: "اليوم", at: "الساعة", left: "متبقٍ {n} حصص هذا الشهر", none: "لا حصص قادمة",
         wd: ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"] }
 };
@@ -458,6 +458,33 @@ function matchClass(classes, target) {
   }) || null;
 }
 
+// A rule found no class. The studio moves classes between hours (Oct 2026:
+// Sunday STRENGTH 07:00 -> 08:00, FUNCTIONAL 08:00 -> 07:00), and nothing in
+// the data links the old slot to the new one — the rule just goes quiet. So
+// look for the SAME CLASS TYPE on the same day at another hour and report the
+// candidates, nearest first. classNameType is what makes this safe: it holds
+// through renames as well as moves.
+//
+// Suggestion only. Moving a rule books a different hour of the day, which is
+// the user's call, never ours.
+function findMovedClass(classes, target) {
+  const type = ClassTypes.byName(target.classFilter);
+  if (!type) return [];            // free-text filter, or no filter: nothing to match on
+  const want = String(target.time || "").slice(0, 5);
+  const mins = t => { const [h, m] = String(t || "0:0").split(":").map(Number); return h * 60 + m; };
+  return classes
+    .filter(c => { const ct = ClassTypes.of(c); return ct && ct.id === type.id; })
+    .map(c => ({
+      time: (c.startTime || "").slice(0, 5),
+      teacher: c.guideName || null,
+      className: (c.className || "").trim(),
+      delta: Math.abs(mins((c.startTime || "").slice(0, 5)) - mins(want))
+    }))
+    .filter(c => c.time && c.time !== want)
+    .sort((a, b) => a.delta - b.delta)
+    .slice(0, 4);
+}
+
 // Registration-open timestamp (ms). openOrderTime is in hours (default 72).
 // Computed in the STUDIO's timezone so it stays correct when the device travels.
 function openTimeMs(cls, date) {
@@ -538,9 +565,26 @@ async function enrichTarget(cfg, target) {
     info.notPublished = true;
   } else {
     status = "not-found";                                   // genuinely missing this week
+    const moved = findMovedClass(classes, target);
+    if (moved.length) info.movedTo = moved;
   }
+  if (status !== "not-found") info.movedTo = null;
   info.status = status;
-  await updateTarget(target.id, { info });
+
+  // Tell the user once per destination. The popup shows it whenever the rule
+  // is on screen; this is for the weeks nobody opens it.
+  const patch = { info };
+  const top = info.movedTo && info.movedTo[0];
+  if (top && target.movedNotifiedFor !== top.time) {
+    patch.movedNotifiedFor = top.time;
+    const L = TOOLTIP_I18N[cfg.lang] || TOOLTIP_I18N.en;
+    const fill = (str, v) => String(str).replace(/\{(\w+)\}/g, (m, k) => v[k] != null ? v[k] : m);
+    notify(fill(L.movedTitle, { cls: target.classFilter || top.className }),
+      fill(L.movedBody, { from: target.time, to: top.time, day: date }));
+  } else if (!top && target.movedNotifiedFor) {
+    patch.movedNotifiedFor = null;      // rule matches again, or the class is gone
+  }
+  await updateTarget(target.id, patch);
   return info;
 }
 
@@ -1795,6 +1839,18 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           targets = targets.filter(t => !(t.mode === "weekly" && Number(t.weekday) === Number(s.weekday) && t.time === s.time && (t.classFilter || "") === (s.className || "")));
           await setTargets(targets);
           sendResponse({ targets });
+          break;
+        }
+        case "moveTarget": {
+          // User accepted a suggested time. Only the hour changes; the class
+          // filter, weekday and everything else stay as they were.
+          const time = String(msg.time || "").slice(0, 5);
+          if (!/^\d{2}:\d{2}$/.test(time)) { sendResponse({ ok: false, error: "bad time" }); break; }
+          await updateTarget(msg.id, { time, movedNotifiedFor: null, info: null });
+          const cfg2 = await getConfig();
+          const tg = (await getTargets()).find(t => t.id === msg.id);
+          if (tg) { try { await enrichTarget(cfg2, tg); } catch (e) {} }
+          sendResponse({ ok: true, targets: await getTargets() });
           break;
         }
         case "setRecurrence": {
