@@ -33,6 +33,7 @@ window opens — no more refreshing the page at midnight.
 - 📈 **Heart rate, lesson by lesson** — a Health tab with each lesson's heart-rate curve in your own Fitbit zones, with the workout plan laid on top: which part (and in timed parts, which exercise) you were doing at every minute
 - 💪 **Muscle map** — which muscles each lesson works, part by part, on a body figure (male, female or neutral) — before you book, after class, and for the whole week
 - 🧭 **No tracker needed** — the Health tab works without one: every lesson you attended with the muscles its workout plan worked, per class and lesson by lesson. Connect a tracker later and heart rate, zones and steps appear on top
+- 🔔 **Keeps up when the studio changes** — classes get renamed, moved to another hour, added and dropped; the extension compares the weekly schedule to the last one it saw and tells you what changed, and offers to move a weekly slot whose class shifted hour
 - 🎓 **Guided tour** — a walkthrough on first run, plus a "What's new" card after every update
 - 🌍 **5 languages** — English, Hebrew, Russian, Ukrainian, Arabic, with full RTL support and light/dark themes
 

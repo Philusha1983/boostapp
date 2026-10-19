@@ -6,6 +6,59 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.9.0] — 2026-10-19
+
+The studio changed its timetable twice in one week — every class renamed with
+no announcement, then two classes trading hours. Both times the extension
+went quiet instead of saying anything. This release is about noticing.
+
+### Added
+- **The extension watches the timetable and tells you what changed.** Each
+  refresh compares the weekly grid to the last one and reports classes that
+  moved hour, were added or dropped, were renamed in place, or changed
+  teacher — as a dismissible banner above your rules, plus one notification
+  per batch. It reads the schedule rather than the studio's announcements,
+  because the October rename that broke bookings was never announced: their
+  email described a class being *added*.
+  - Keyed by weekday + time + `classNameType`, so a rename reads as a rename
+    rather than a class vanishing, and two classes trading hours read as two
+    moves rather than four unrelated events.
+  - A refresh where either range fetch failed is never compared — a flaky
+    network would otherwise look like the studio deleting half the timetable.
+  - The fetch window spans 14 days, so a weekly class appears about twice:
+    one cancelled instance reports nothing, and a real removal surfaces
+    within a week or two. Slower, but it does not invent changes.
+- **A rule whose class moved now says so, and offers to follow it.** When a
+  rule finds no class, the extension looks for the same class on the same
+  weekday at another hour and offers "Move rule to 08:00" on the card, with a
+  notification once per destination. Applying is always a click — moving a
+  rule changes which hour of the day gets booked.
+
+### Fixed
+- **A lesson with a plan but no heart rate now opens** in Past Events →
+  Health. It used to say "no heart-rate data" and show nothing, even with the
+  workout plan sitting right there.
+
+### Changed
+- **The class-type table is scoped to the studio it describes.** Since v1.8.1
+  the extension follows the user's own studio, and this table is Training
+  Harmony's. Applied everywhere, it would have rewritten another studio's
+  rule for a class called "Stretching" into "FLEXIBILITY" — a class that does
+  not exist there. Curated knowledge (former names, health type, display
+  casing, duration) now applies only at a studio in the table; identity by
+  `classNameType` is self-describing and works at any studio.
+  - Consequence, in the right direction: plan capture used to be gated on a
+    Training-Harmony-only check, so **workout plans, muscle maps and part
+    bands now work at other studios** rather than being skipped. The weekly
+    slot grid, the schedule diff and moved-class detection do too.
+
+### Known gaps
+- A slot the studio has dropped stays tickable for up to 21 days, and ticking
+  it creates a rule that will never match. The change banner now tells you it
+  moved, but the trap is still there.
+- None of this has watched a real timetable change yet; the first one due is
+  the Thursday 29.10 class, when that week publishes.
+
 ## [1.8.1] — 2026-10-19
 
 ### Fixed

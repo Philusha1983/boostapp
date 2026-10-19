@@ -47,6 +47,10 @@ BoostApp studio.
   attended, with the muscles its workout plan worked — a per-class summary and
   a lesson-by-lesson list that opens to the full map. Connect a tracker later
   and heart rate, zones and steps appear on top of the same page.
+- **Keeps up when the studio changes.** Each refresh compares the weekly
+  schedule to the last one and reports what moved hour, was added or dropped,
+  was renamed, or changed teacher — above your weekly slots. A rule whose
+  class moved to another hour offers to follow it.
 
 > ⚠️ It **cannot** beat the studio's 72-hour gate — the server rejects bookings
 > before the window opens. The extension simply fires the instant it legitimately
