@@ -1118,6 +1118,7 @@ function toggleExpand(body, onOpen) {
 // Update everything EXCEPT the slots list (so an open month-plan stays open).
 async function softRefresh() {
   const state = await send({ cmd: "getState" });
+  if (self.ClassTypes) ClassTypes.setStudio(state && state.config && state.config.companyNum);
   if (!state) return;
   const { subscription, registrations, auth, client } = state;
   await loadMuscle();
@@ -1678,6 +1679,9 @@ async function refresh() {
   planCache = null;   // month plan re-fetches on next expand
   setTabsHeightVar();
   const state = await send({ cmd: "getState" });
+  // Keep the class-type table on the active studio — it decides which
+  // former names resolve, and must not apply one studio's to another.
+  if (self.ClassTypes) ClassTypes.setStudio(state && state.config && state.config.companyNum);
   if (!state) return;
   const { config, targets, auth, subscription, registrations, client } = state;
   lastRegistrations = registrations || null;   // used by the Period grid to overlay external bookings

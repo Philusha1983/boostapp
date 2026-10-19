@@ -87,7 +87,12 @@ const DEFAULT_CONFIG = {
 // ---------------------------------------------------------------------------
 async function getConfig() {
   const { bsab_config } = await chrome.storage.local.get("bsab_config");
-  return Object.assign({}, DEFAULT_CONFIG, bsab_config || {});
+  const cfg = Object.assign({}, DEFAULT_CONFIG, bsab_config || {});
+  // Point the class-type table at whatever studio is active. A studio we
+  // hold no curated knowledge about gets identity by class id only — no
+  // former names, no health mapping, and nothing that rewrites a rule.
+  ClassTypes.setStudio(cfg.companyNum);
+  return cfg;
 }
 async function setConfig(patch) {
   const cfg = await getConfig();
@@ -173,6 +178,9 @@ async function migrateSchema() {
   // it rebuilds on the next refresh, now keyed by class type.
   if (from < 3) {
     await chrome.storage.local.remove("bsab_schedule");
+    // getConfig() points ClassTypes at the active studio; at one we do not
+    // know, canonical() is the identity and this loop rewrites nothing.
+    await getConfig();
     const targets = await getTargets();
     const renamed = [];
     const next = targets.map(t => {
@@ -468,12 +476,20 @@ function matchClass(classes, target) {
 // Suggestion only. Moving a rule books a different hour of the day, which is
 // the user's call, never ours.
 function findMovedClass(classes, target) {
-  const type = ClassTypes.byName(target.classFilter);
-  if (!type) return [];            // free-text filter, or no filter: nothing to match on
   const want = String(target.time || "").slice(0, 5);
+  const filter = String(target.classFilter || "").trim();
+  if (!filter) return [];          // no class filter: nothing to match on
+  // At a studio we know, match on the type id, so a rule still carrying a
+  // former class name resolves. Anywhere else there is no curated table,
+  // so fall back to the name the rule was saved with — which is how the
+  // user wrote it and how that studio spells it.
+  const type = ClassTypes.byName(filter);
+  const same = type
+    ? (c => { const ct = ClassTypes.of(c); return !!ct && ct.id === type.id; })
+    : (c => String(c.className || "").trim().toLowerCase() === filter.toLowerCase());
   const mins = t => { const [h, m] = String(t || "0:0").split(":").map(Number); return h * 60 + m; };
   return classes
-    .filter(c => { const ct = ClassTypes.of(c); return ct && ct.id === type.id; })
+    .filter(same)
     .map(c => ({
       time: (c.startTime || "").slice(0, 5),
       teacher: c.guideName || null,

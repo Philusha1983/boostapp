@@ -2050,6 +2050,8 @@ async function boot() {
   try {
     const state = await send({ cmd: "getState" });
     CFG = (state && state.config) || CFG;
+    // Same table, same studio — see classtypes.js.
+    if (self.ClassTypes) ClassTypes.setStudio(CFG.companyNum);
     STATE = state || {};
   } catch (e) {}
   applyLang(CFG.lang || "en");
