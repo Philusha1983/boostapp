@@ -6,6 +6,34 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.8.1] — 2026-10-19
+
+### Fixed
+- **The extension stayed on the studio it was packaged for.** Reported by a
+  user outside that studio: the schedule showed a club he had left years ago
+  and nothing in Settings would switch it. `companyNum` had always healed
+  itself from the signed-in page, but the studio token (`GetUrl`) — which
+  decides whose schedule is fetched — never did, so lessons came from one
+  studio while bookings went to the account's own. The extension now learns
+  the studio from BoostApp itself and switches to it, clearing the caches that
+  are scoped to a studio (weekly slot grid, upcoming registrations,
+  subscription) so the change actually takes effect. Captured workout plans are
+  kept across a switch — they cannot be re-captured, and their keys cannot
+  collide between studios.
+- **Sign-in no longer routes a new user into the packaged studio.** Until a
+  studio has been confirmed, the Sign in button opens BoostApp's main login
+  page (`indexnew.php`) instead of one studio's home page, so BoostApp routes
+  you to your own. Installs whose studio is already confirmed are unaffected
+  and still go straight there.
+
+### Note for implementers
+- A `GetUrl` read off a BoostApp page cannot be trusted blindly: BoostApp
+  echoes whatever token it was handed back into the page's own links, so a
+  token read from a page the extension navigated is the extension's own value
+  coming back. Adoption is gated on the token differing from the one we
+  navigated with. See `notes/knowledge-base/07-gotchas.md` § I-6.
+
+
 ## [1.8.0] — 2026-10-18
 
 ### Added

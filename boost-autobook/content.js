@@ -142,6 +142,24 @@
     } catch (e) {}
   }
 
+  // Which studio was this page actually served for? Only location.search is a
+  // strong answer: BoostApp echoes whatever GetUrl it was handed back into the
+  // page's own links, so a link-derived token is worthless on any page the
+  // extension navigated. Both are reported; background.js knows which tabs it
+  // navigated (and with what) and decides which — if either — to trust.
+  function readGetUrl() {
+    try { return new URLSearchParams(location.search).get("GetUrl") || null; } catch (e) { return null; }
+  }
+  function readLinkGetUrl() {
+    try {
+      for (const a of document.querySelectorAll('a[href*="GetUrl="]')) {
+        const v = new URL(a.href, location.origin).searchParams.get("GetUrl");
+        if (v) return v;
+      }
+    } catch (e) {}
+    return null;
+  }
+
   // The events widget renders only AFTER its XHR returns, so its container is
   // absent until then. We only trust an events read once the container exists.
   function eventsRendered() { return !!document.querySelector(".client-booked__events__container"); }
@@ -159,6 +177,8 @@
       // background must NOT overwrite the cached list with a premature empty.
       events: eventsReady ? readEvents() : null,
       eventsReady: !!eventsReady,
+      pageGetUrl: readGetUrl(),
+      linkGetUrl: readLinkGetUrl(),
       syncedAt: Date.now()
     };
     try { chrome.runtime.sendMessage({ cmd: "syncFromPage", payload }); } catch (e) {}

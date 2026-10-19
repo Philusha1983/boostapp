@@ -77,6 +77,7 @@ const DEFAULT_CONFIG = {
   autoBook: true,                // master switch for automatic registration
   snipeWindowMin: 5,             // start tight fast-retry this many minutes before open
   dailyLimitOverride: 0,         // 0 = auto-detect from subscription; >0 overrides the local warning
+  studioConfirmed: false,        // true once the studio token came from BoostApp, not from our packaged default
   lang: "en",                    // popup UI language: en / he / ru / uk / ar
   theme: "system"                // popup theme: system / light / dark
 };
@@ -1062,6 +1063,112 @@ async function authGate(tabId, waitMs) {
   return null;
 }
 
+// ---------------------------------------------------------------------------
+// Studio self-heal
+//
+// `companyNum` has always healed itself from `#clientHeaderId`'s
+// data-companynum. The studio token (`getUrl`) never did — it only ever came
+// from DEFAULT_CONFIG or from somebody typing it into Settings. For anyone
+// outside the studio this extension was packaged for, that means the schedule
+// is fetched for OUR studio while bookings go to THEIR account: the "it shows
+// me a club I left years ago, and I can't switch" report.
+//
+// The catch found while probing the site: BoostApp echoes whatever `GetUrl` it
+// is handed straight back into the page's own links (`/lessons.php` with no
+// token renders its nav as `/Home.php?GetUrl=`). So a token read off a page we
+// navigated is just our own value coming back, and adopting it would lock the
+// wrong studio in permanently. Only a token that differs from the one we
+// navigated with can have come from BoostApp's own routing.
+//
+// NAV_KEY remembers, per tab, the token this extension put in that tab's URL
+// ("" for a studio-agnostic URL like indexnew.php, where nothing can echo).
+//
+// It lives in chrome.storage.session, NOT in a module-level Map: an MV3 service
+// worker unloads when idle, and a worker that restarted between navigating a
+// hidden tab and that tab's sync arriving would have no record of the token it
+// sent. The echo guard would not fire, the echoed token would be adopted, and
+// `studioConfirmed` would flip to true without a real studio ever having been
+// seen — permanently closing the indexnew.php escape hatch for exactly the
+// users (wrong token, cannot switch) this whole fix exists for.
+// ---------------------------------------------------------------------------
+const NAV_KEY = "bsab_navtokens";        // { "<tabId>": "<token we navigated with>" }
+const navFallback = new Map();           // used only if storage.session is unavailable
+function hasSession() { try { return !!(chrome.storage && chrome.storage.session); } catch (e) { return false; } }
+
+async function markNav(tabId, token) {
+  if (tabId == null) return;
+  const tok = String(token || "");
+  if (!hasSession()) { navFallback.set(String(tabId), tok); return; }
+  try {
+    const o = await chrome.storage.session.get(NAV_KEY);
+    let m = o[NAV_KEY] || {};
+    // Tabs are normally forgotten on close; cap anyway so a missed onRemoved
+    // can't grow this without bound.
+    if (Object.keys(m).length > 50) m = {};
+    m[String(tabId)] = tok;
+    await chrome.storage.session.set({ [NAV_KEY]: m });
+  } catch (e) { navFallback.set(String(tabId), tok); }
+}
+
+// undefined = we have no record of navigating this tab (so the user did).
+async function navTokenFor(tabId) {
+  if (tabId == null) return undefined;
+  const k = String(tabId);
+  if (!hasSession()) return navFallback.get(k);
+  try {
+    const m = (await chrome.storage.session.get(NAV_KEY))[NAV_KEY] || {};
+    if (Object.prototype.hasOwnProperty.call(m, k)) return m[k];
+  } catch (e) {}
+  return navFallback.get(k);
+}
+
+async function forgetNav(tabId) {
+  const k = String(tabId);
+  navFallback.delete(k);
+  if (!hasSession()) return;
+  try {
+    const m = (await chrome.storage.session.get(NAV_KEY))[NAV_KEY] || {};
+    if (Object.prototype.hasOwnProperty.call(m, k)) { delete m[k]; await chrome.storage.session.set({ [NAV_KEY]: m }); }
+  } catch (e) {}
+}
+try { chrome.tabs.onRemoved.addListener(id => { forgetNav(id); }); } catch (e) {}
+
+// Adopt the studio token from a page sync, when it can be trusted.
+async function adoptStudio(p, tabId) {
+  if (!p || !p.loggedIn) return;                       // signed-out pages prove nothing
+  const echoed = await navTokenFor(tabId);
+  // location.search is the strong source. Links are a fallback for the case
+  // where BoostApp routes the user to their studio without putting the token
+  // in the URL — safe only when we did not supply a token for it to echo.
+  let tok = String(p.pageGetUrl || "").trim();
+  if (!tok && !echoed) tok = String(p.linkGetUrl || "").trim();
+  if (!/^[A-Za-z0-9]{6,32}$/.test(tok)) return;
+  if (echoed === tok) return;                          // our own value, echoed back
+
+  const cfg = await getConfig();
+  if (cfg.getUrl === tok) {
+    if (!cfg.studioConfirmed) await setConfig({ studioConfirmed: true });
+    return;
+  }
+  await setConfig({ getUrl: tok, studioConfirmed: true });
+  // Every cache below is scoped to one studio — the slot grid is keyed by class
+  // type, registrations and subscription come from that studio's Home page — and
+  // carrying any of it across a studio change is precisely what makes a switch
+  // look like it never took. All three rebuild on the next refresh.
+  // (bsab_history guards itself on clientId.)
+  //
+  // bsab_lesson_parts is deliberately NOT cleared. It is studio-scoped too, but
+  // it is the one cache that cannot be rebuilt: the studio overwrites each
+  // class's description daily, so a captured plan is unrecoverable once dropped.
+  // Its keys are "<date> <time> <className>", so another studio's entries sit
+  // alongside rather than collide. Keeping stale rows is cheap; losing real ones
+  // is permanent.
+  try {
+    await chrome.storage.local.remove(["bsab_schedule", "bsab_registrations", "bsab_subscription"]);
+  } catch (e) {}
+  logRunTab("studio changed -> GetUrl", tok, "— studio-scoped caches cleared");
+}
+
 async function runInBoostTab(func, args) {
   const cfg = await getConfig();
   let tab;
@@ -1090,6 +1197,7 @@ async function runInBoostTab(func, args) {
     }
     try {
       tab = await chrome.tabs.create({ url: `https://app.boostapp.co.il/lessons.php?GetUrl=${cfg.getUrl}`, active: false });
+      await markNav(tab && tab.id, cfg.getUrl);   // ours — anything it reports back is an echo
       created = true;
       logRunTab("created hidden tab", tab && tab.id);
       await waitForTabComplete(tab.id);
@@ -1126,6 +1234,7 @@ async function runInBoostTab(func, args) {
       let freshTab;
       try {
         freshTab = await chrome.tabs.create({ url: `https://app.boostapp.co.il/lessons.php?GetUrl=${cfg.getUrl}`, active: false });
+        await markNav(freshTab && freshTab.id, cfg.getUrl);
         await waitForTabComplete(freshTab.id);
         const deniedFresh = await authGate(freshTab.id, 25000);
         if (deniedFresh) return deniedFresh;
@@ -1150,6 +1259,7 @@ async function syncHome() {
   let tab;
   try {
     tab = await chrome.tabs.create({ url: `https://app.boostapp.co.il/Home.php?GetUrl=${cfg.getUrl}`, active: false });
+    await markNav(tab && tab.id, cfg.getUrl);
   } catch (e) { return false; }
   await new Promise(resolve => {
     let done = false;
@@ -1466,6 +1576,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         }
         case "syncFromPage": {
           const p = msg.payload || {};
+          await adoptStudio(p, sender && sender.tab ? sender.tab.id : null);
           if (p.client && p.client.clientId) {
             await chrome.storage.local.set({ bsab_client: { clientId: p.client.clientId, companyNum: p.client.companyNum, name: p.client.name || null, photo: p.client.photo || null, syncedAt: p.syncedAt } });
             if (p.client.companyNum) await setConfig({ companyNum: p.client.companyNum });
@@ -1588,7 +1699,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         }
         case "openLogin": {
           const cfg = await getConfig();
-          chrome.tabs.create({ url: `${SITE}/Home.php?GetUrl=${cfg.getUrl}` });
+          // Until a studio has been confirmed, the stored token is still the
+          // packaged default — sending sign-in there puts a user of another
+          // studio into ours. indexnew.php is BoostApp's own studio-agnostic
+          // landing (phone+OTP or user/password), so BoostApp routes them to
+          // their own studio and the token on the page they land on is real.
+          const fresh = !cfg.studioConfirmed;
+          const tab = await chrome.tabs.create({
+            url: fresh ? `${SITE}/indexnew.php` : `${SITE}/Home.php?GetUrl=${cfg.getUrl}`
+          });
+          await markNav(tab && tab.id, fresh ? "" : cfg.getUrl);
           sendResponse({ ok: true });
           break;
         }
