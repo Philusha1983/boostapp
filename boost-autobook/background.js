@@ -243,19 +243,19 @@ async function verifyAuth(cfg) {
 }
 
 const TOOLTIP_I18N = {
-  en: { movedTitle: "{cls} moved to a new time", movedBody: "Your rule books {from}, but on {day} this class runs at {to}. Open the extension to move the rule.", signin: "Sign in to BoostApp first", checking: "Checking BoostApp connection…",
+  en: { schedTitle: "The studio changed the timetable", schedMore: "+{n} more changes", movedTitle: "{cls} moved to a new time", movedBody: "Your rule books {from}, but on {day} this class runs at {to}. Open the extension to move the rule.", signin: "Sign in to BoostApp first", checking: "Checking BoostApp connection…",
         today: "Today", at: "at", left: "{n} lessons left this month", none: "No upcoming lessons",
         wd: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] },
-  he: { movedTitle: "{cls} עבר לשעה אחרת", movedBody: "הכלל שלך מזמין {from}, אבל ב-{day} האימון מתקיים ב-{to}. פתחו את התוסף כדי להעביר את הכלל.", signin: "התחבר תחילה ל-BoostApp", checking: "בודק חיבור ל-BoostApp…",
+  he: { schedTitle: "הסטודיו שינה את מערכת השעות", schedMore: "ועוד {n} שינויים", movedTitle: "{cls} עבר לשעה אחרת", movedBody: "הכלל שלך מזמין {from}, אבל ב-{day} האימון מתקיים ב-{to}. פתחו את התוסף כדי להעביר את הכלל.", signin: "התחבר תחילה ל-BoostApp", checking: "בודק חיבור ל-BoostApp…",
         today: "היום", at: "בשעה", left: "נותרו {n} שיעורים החודש", none: "אין שיעורים קרובים",
         wd: ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"] },
-  ru: { movedTitle: "{cls} перенесён на другое время", movedBody: "Ваше правило бронирует {from}, но {day} занятие идёт в {to}. Откройте расширение, чтобы перенести правило.", signin: "Сначала войдите в BoostApp", checking: "Проверка подключения к BoostApp…",
+  ru: { schedTitle: "Студия изменила расписание", schedMore: "ещё {n} изменений", movedTitle: "{cls} перенесён на другое время", movedBody: "Ваше правило бронирует {from}, но {day} занятие идёт в {to}. Откройте расширение, чтобы перенести правило.", signin: "Сначала войдите в BoostApp", checking: "Проверка подключения к BoostApp…",
         today: "Сегодня", at: "в", left: "осталось {n} занятий в этом месяце", none: "Нет ближайших занятий",
         wd: ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"] },
-  uk: { movedTitle: "{cls} перенесено на інший час", movedBody: "Ваше правило бронює {from}, але {day} заняття відбувається о {to}. Відкрийте розширення, щоб перенести правило.", signin: "Спочатку увійдіть у BoostApp", checking: "Перевірка підключення до BoostApp…",
+  uk: { schedTitle: "Студія змінила розклад", schedMore: "ще {n} змін", movedTitle: "{cls} перенесено на інший час", movedBody: "Ваше правило бронює {from}, але {day} заняття відбувається о {to}. Відкрийте розширення, щоб перенести правило.", signin: "Спочатку увійдіть у BoostApp", checking: "Перевірка підключення до BoostApp…",
         today: "Сьогодні", at: "о", left: "залишилось {n} занять цього місяця", none: "Немає найближчих занять",
         wd: ["Неділя", "Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота"] },
-  ar: { movedTitle: "{cls} انتقل إلى وقت آخر", movedBody: "قاعدتك تحجز {from}، لكن في {day} يُقام الدرس في {to}. افتح الإضافة لنقل القاعدة.", signin: "سجّل الدخول إلى BoostApp أولًا", checking: "جارٍ التحقّق من الاتصال بـ BoostApp…",
+  ar: { schedTitle: "النادي غيّر جدول الحصص", schedMore: "و{n} تغييرات أخرى", movedTitle: "{cls} انتقل إلى وقت آخر", movedBody: "قاعدتك تحجز {from}، لكن في {day} يُقام الدرس في {to}. افتح الإضافة لنقل القاعدة.", signin: "سجّل الدخول إلى BoostApp أولًا", checking: "جارٍ التحقّق من الاتصال بـ BoostApp…",
         today: "اليوم", at: "الساعة", left: "متبقٍ {n} حصص هذا الشهر", none: "لا حصص قادمة",
         wd: ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"] }
 };
@@ -601,14 +601,90 @@ async function fetchClassesRange(cfg, fromOffset, toOffset) {
 // passed and next week's aren't published yet). We therefore union a forward AND
 // a backward window, and cache the pattern (pruning slots unseen for 21 days) so
 // the grid stays complete and stable across refreshes.
+// What the studio did to the weekly grid between two refreshes.
+//
+// Why diff the schedule rather than read the studio's announcements: the
+// October rename — every class renamed, which broke booking rules, plan
+// capture, day plans and health logging — was never announced. Their email
+// described a class being ADDED. Structured data catches what nobody says.
+//
+// Keyed by weekday + time + class TYPE over a 14-day fetch window, so a
+// weekly class appears about twice per refresh. That is deliberate: one
+// cancelled instance (a holiday) leaves the other, so the key survives and
+// no change is reported. A real removal clears both and shows up within a
+// week or two — slower, but it does not cry wolf.
+function diffSchedule(prev, now) {
+  const changes = [];
+  if (!prev || !Object.keys(prev).length) return changes;   // first run: nothing to compare
+  const gone = [], fresh = [];
+  Object.keys(prev).forEach(k => { if (!now[k]) gone.push(prev[k]); });
+  Object.keys(now).forEach(k => { if (!prev[k]) fresh.push(now[k]); });
+
+  // Same class type, same weekday, different hour = a move, not a pair of
+  // unrelated events. Pair them up before reporting either side alone.
+  const used = new Set();
+  gone.forEach(g => {
+    const i = fresh.findIndex((f, idx) =>
+      !used.has(idx) && f.typeId && f.typeId === g.typeId && f.weekday === g.weekday);
+    if (i >= 0) {
+      used.add(i);
+      const hit = fresh[i];
+      changes.push({ kind: "moved", weekday: g.weekday, from: g.time, to: hit.time,
+                     className: hit.className, teacher: hit.teacher });
+    } else {
+      changes.push({ kind: "removed", weekday: g.weekday, from: g.time, className: g.className });
+    }
+  });
+  fresh.forEach((f, i) => { if (!used.has(i)) changes.push({ kind: "added", weekday: f.weekday, to: f.time,
+                                                             className: f.className, teacher: f.teacher }); });
+
+  // Slots that stayed put but changed underneath.
+  Object.keys(now).forEach(k => {
+    const a = prev[k], b = now[k];
+    if (!a) return;
+    if (a.className !== b.className)
+      changes.push({ kind: "renamed", weekday: b.weekday, to: b.time, from: a.className, className: b.className });
+    else if (a.teacher && b.teacher && a.teacher !== b.teacher)
+      changes.push({ kind: "teacher", weekday: b.weekday, to: b.time, className: b.className,
+                     from: a.teacher, teacher: b.teacher });
+  });
+  return changes;
+}
+
+// One notification per batch. A whole week being reshuffled should not mean
+// fifteen notifications, so past a handful it just says how many.
+function notifyScheduleChanges(cfg, changes) {
+  const L = TOOLTIP_I18N[cfg.lang] || TOOLTIP_I18N.en;
+  const wd = n => (L.wd || TOOLTIP_I18N.en.wd)[n] || "";
+  const line = c => {
+    if (c.kind === "moved")   return `${wd(c.weekday)} ${c.className}: ${c.from} \u2192 ${c.to}`;
+    if (c.kind === "added")   return `${wd(c.weekday)} ${c.to} ${c.className} +`;
+    if (c.kind === "removed") return `${wd(c.weekday)} ${c.from} ${c.className} \u2212`;
+    if (c.kind === "renamed") return `${c.from} \u2192 ${c.className}`;
+    return `${wd(c.weekday)} ${c.to} ${c.className}: ${c.from} \u2192 ${c.teacher}`;
+  };
+  const body = changes.length <= 4
+    ? changes.map(line).join("\n")
+    : changes.slice(0, 3).map(line).join("\n") + "\n" + String(L.schedMore || "+{n} more").replace("{n}", changes.length - 3);
+  notify(L.schedTitle || "The studio changed the timetable", body);
+}
+
+const SCHED_SNAP_KEY = "bsab_schedule_snap";     // last complete refresh, for the diff
+const SCHED_CHANGES_KEY = "bsab_schedule_changes";
+const SCHED_CHANGES_KEEP = 40;
+const SCHED_CHANGES_DAYS = 21;
+
 async function getSchedule(cfg) {
   const now = Date.now();
-  let classes = [];
-  try { classes = classes.concat(await fetchClassesRange(cfg, 0, 6)); } catch (e) {}
-  try { classes = classes.concat(await fetchClassesRange(cfg, -7, -1)); } catch (e) {}
+  let classes = [], complete = true;
+  try { classes = classes.concat(await fetchClassesRange(cfg, 0, 6)); } catch (e) { complete = false; }
+  try { classes = classes.concat(await fetchClassesRange(cfg, -7, -1)); } catch (e) { complete = false; }
 
-  const store = await chrome.storage.local.get("bsab_schedule");
+  const store = await chrome.storage.local.get(["bsab_schedule", SCHED_SNAP_KEY, SCHED_CHANGES_KEY]);
   const cache = store.bsab_schedule || {};
+  // This refresh's view of the grid, on its own — the cache is a 21-day
+  // union and can't tell you what disappeared.
+  const snap = {};
   classes.forEach(c => {
     const wd = new Date((c.startDate || "") + "T00:00:00").getDay();
     const time = (c.startTime || "").slice(0, 5);
@@ -617,12 +693,31 @@ async function getSchedule(cfg) {
     // entry and the grid shows it once, under whatever it is called now.
     // Classes with no type id (one-off events) still key by name.
     const t = ClassTypes.of(c);
-    cache[wd + "|" + time + "|" + (t ? "#" + t.id : c.className)] =
-      { weekday: wd, time, className: t ? t.name : c.className, teacher: c.guideName, lastSeen: now };
+    const key = wd + "|" + time + "|" + (t ? "#" + t.id : c.className);
+    const entry = { weekday: wd, time, className: t ? t.name : c.className, teacher: c.guideName || null };
+    cache[key] = Object.assign({}, entry, { lastSeen: now });
+    snap[key] = Object.assign({}, entry, { typeId: t ? t.id : null });
   });
   const TTL = 21 * 864e5;
   Object.keys(cache).forEach(k => { if (!cache[k].lastSeen || now - cache[k].lastSeen > TTL) delete cache[k]; });
-  await chrome.storage.local.set({ bsab_schedule: cache });
+
+  // Only diff a refresh that saw the whole window. A half-failed fetch would
+  // read as the studio deleting half the timetable.
+  const out = { bsab_schedule: cache };
+  if (complete && Object.keys(snap).length) {
+    const prevSnap = store[SCHED_SNAP_KEY] || null;
+    const changes = diffSchedule(prevSnap, snap);
+    if (changes.length) {
+      const log = (store[SCHED_CHANGES_KEY] || [])
+        .filter(c => now - (c.at || 0) < SCHED_CHANGES_DAYS * 864e5)
+        .concat(changes.map(c => Object.assign({ at: now, seen: false }, c)))
+        .slice(-SCHED_CHANGES_KEEP);
+      out[SCHED_CHANGES_KEY] = log;
+      notifyScheduleChanges(cfg, changes);
+    }
+    out[SCHED_SNAP_KEY] = snap;
+  }
+  await chrome.storage.local.set(out);
 
   const slots = Object.values(cache).map(s => ({ weekday: s.weekday, time: s.time, className: s.className, teacher: s.teacher }));
   slots.sort((a, b) => a.weekday - b.weekday || a.time.localeCompare(b.time));
@@ -1839,6 +1934,20 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           targets = targets.filter(t => !(t.mode === "weekly" && Number(t.weekday) === Number(s.weekday) && t.time === s.time && (t.classFilter || "") === (s.className || "")));
           await setTargets(targets);
           sendResponse({ targets });
+          break;
+        }
+        case "getScheduleChanges": {
+          const o = await chrome.storage.local.get(SCHED_CHANGES_KEY);
+          sendResponse({ ok: true, changes: (o[SCHED_CHANGES_KEY] || []).filter(c => !c.seen) });
+          break;
+        }
+        case "dismissScheduleChanges": {
+          // Keep the entries, just stop showing them — the log is the record
+          // of what the studio did, not a notification queue.
+          const o = await chrome.storage.local.get(SCHED_CHANGES_KEY);
+          const log = (o[SCHED_CHANGES_KEY] || []).map(c => Object.assign({}, c, { seen: true }));
+          await chrome.storage.local.set({ [SCHED_CHANGES_KEY]: log });
+          sendResponse({ ok: true });
           break;
         }
         case "moveTarget": {
