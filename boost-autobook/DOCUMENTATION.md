@@ -1,4 +1,4 @@
-# Boost Auto-Book — Documentation
+# Auto-Book — Documentation
 
 A Chrome extension (Manifest V3) that watches the **Training Harmony** studio on
 BoostApp and automatically registers you for group fitness lessons the instant

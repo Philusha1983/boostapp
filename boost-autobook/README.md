@@ -1,4 +1,4 @@
-# Boost Auto-Book
+# Auto-Book
 
 A Chrome extension (Manifest V3) that watches BoostApp group lessons and
 **automatically registers you the instant the studio's registration window

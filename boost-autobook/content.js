@@ -1,5 +1,5 @@
 /*
- * Boost Auto-Book - automatic registration for BoostApp group lessons.
+ * Auto-Book - automatic registration for BoostApp group lessons.
  * Copyright (C) 2026 Philip Lesarev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/* Boost Auto-Book — content script (runs on the BoostApp Home page)
+/* Auto-Book — content script (runs on the BoostApp Home page)
  *
  * This is the source of truth for sign-in + your data. While you're on the
  * Home page (where you're definitely authenticated), it:

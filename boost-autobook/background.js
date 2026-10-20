@@ -1,5 +1,5 @@
 /*
- * Boost Auto-Book - automatic registration for BoostApp group lessons.
+ * Auto-Book - automatic registration for BoostApp group lessons.
  * Copyright (C) 2026 Philip Lesarev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  */
 
 /* ============================================================================
- * Boost Auto-Book — background service worker
+ * Auto-Book — background service worker
  * ----------------------------------------------------------------------------
  * Polls the BoostApp lesson API on a schedule, enriches each watch-list target
  * with live info (class name, teacher, registered/capacity), and — when the
@@ -1165,8 +1165,8 @@ function waitForTabComplete(tabId) {
 // Logs to the service worker console (visible via chrome://extensions ->
 // "service worker" -> Console) so failures here are diagnosable without
 // having to catch a hidden tab that closes itself right after use.
-function logRunTab(...args) { try { console.log("[Boost Auto-Book]", ...args); } catch (e) {} }
-function errRunTab(...args) { try { console.error("[Boost Auto-Book]", ...args); } catch (e) {} }
+function logRunTab(...args) { try { console.log("[Auto-Book]", ...args); } catch (e) {} }
+function errRunTab(...args) { try { console.error("[Auto-Book]", ...args); } catch (e) {} }
 
 // Runs `chrome.scripting.executeScript` in one specific tab, normalizing every
 // outcome (thrown error, empty results, or a per-frame injection error) into
@@ -1756,7 +1756,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   initOnLoad();
   if (details && details.reason === "update") {
     const v = chrome.runtime.getManifest().version;
-    notify("Boost Auto-Book updated", `Now running v${v}. See the changelog for what's new.`);
+    notify("Auto-Book updated", `Now running v${v}. See the changelog for what's new.`);
   }
 });
 chrome.runtime.onStartup.addListener(initOnLoad);

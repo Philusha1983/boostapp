@@ -1,5 +1,5 @@
 /*
- * Boost Auto-Book - automatic registration for BoostApp group lessons.
+ * Auto-Book - automatic registration for BoostApp group lessons.
  * Copyright (C) 2026 Philip Lesarev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/* Boost Auto-Book — History dashboard (past events analytics + "Wrapped" story) */
+/* Auto-Book — History dashboard (past events analytics + "Wrapped" story) */
 
 function send(msg) { return new Promise(res => chrome.runtime.sendMessage(msg, res)); }
 function pad(n) { return String(n).padStart(2, "0"); }
@@ -1904,7 +1904,7 @@ function shareCardBase(name) {
 
   ctx.fillStyle = "#00e0a0";
   ctx.font = "700 40px Rubik, sans-serif";
-  ctx.fillText("Boost Auto-Book", c.width / 2, 100);
+  ctx.fillText("Auto-Book", c.width / 2, 100);
   ctx.font = "400 30px Rubik, sans-serif";
   ctx.fillStyle = "#eafff5";
   ctx.fillText(name || "", c.width / 2, 148);

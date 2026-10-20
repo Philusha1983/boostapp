@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Something in Boost Auto-Book isn't working
+about: Something in Auto-Book isn't working
 title: "[bug] "
 labels: bug
 ---

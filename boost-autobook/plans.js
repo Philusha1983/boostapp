@@ -1,5 +1,5 @@
 /*
- * Boost Auto-Book - automatic registration for BoostApp group lessons.
+ * Auto-Book - automatic registration for BoostApp group lessons.
  * Copyright (C) 2026 Philip Lesarev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/* Boost Auto-Book — lesson plan capture (data only, no UI yet).
+/* Auto-Book — lesson plan capture (data only, no UI yet).
  *
  * Saves the studio's written workout plan (getClassInfo → description) for
  * every studio lesson you book or attend (see classtypes.js), so it can
@@ -156,7 +156,7 @@ async function capturePlan(lesson, phase) {
   const latest = await getLessonPlans();   // re-read: other writes may have landed
   latest[key] = entry;
   await chrome.storage.local.set({ [LP_KEY]: latest });
-  console.log("[Boost Auto-Book] plan capture", phase, key, entry.error ? "ERROR " + entry.error : (entry.dateMatches === false ? "STALE header " + entry.headerDate : "ok"));
+  console.log("[Auto-Book] plan capture", phase, key, entry.error ? "ERROR " + entry.error : (entry.dateMatches === false ? "STALE header " + entry.headerDate : "ok"));
   return entry;
 }
 
@@ -216,7 +216,7 @@ async function planCaptureTick() {
     todo.sort((a, b) => b[0].startAt - a[0].startAt);
     for (const [l, phase] of todo.slice(0, LP_MAX_PER_TICK)) await capturePlan(l, phase);
   } catch (e) {
-    console.log("[Boost Auto-Book] planCaptureTick failed:", String(e && e.message || e));
+    console.log("[Auto-Book] planCaptureTick failed:", String(e && e.message || e));
   }
 }
 
@@ -236,7 +236,7 @@ async function schedulePlanAlarms() {
       });
     });
   } catch (e) {
-    console.log("[Boost Auto-Book] schedulePlanAlarms failed:", String(e && e.message || e));
+    console.log("[Auto-Book] schedulePlanAlarms failed:", String(e && e.message || e));
   }
 }
 
@@ -326,7 +326,7 @@ async function dayPlanTick() {
     await chrome.storage.local.set({ [DP_KEY]: dayPlans, [LA_KEY]: log });
     await applyDayPlansToLessons(dayPlans);
   } catch (e) {
-    console.log("[Boost Auto-Book] dayPlanTick failed:", String(e && e.message || e));
+    console.log("[Auto-Book] dayPlanTick failed:", String(e && e.message || e));
   }
 }
 

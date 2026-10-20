@@ -1,5 +1,5 @@
 /*
- * Boost Auto-Book - automatic registration for BoostApp group lessons.
+ * Auto-Book - automatic registration for BoostApp group lessons.
  * Copyright (C) 2026 Philip Lesarev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/* Boost Auto-Book — popup UI controller (with EN/HE i18n + RTL) */
+/* Auto-Book — popup UI controller (with EN/HE i18n + RTL) */
 
 // Mobile layout: apply full-width styling only on phones (reliable UA check).
 // A CSS media query is unreliable here because an extension popup's viewport width

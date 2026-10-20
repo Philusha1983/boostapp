@@ -1,5 +1,5 @@
 /*
- * Boost Auto-Book - automatic registration for BoostApp group lessons.
+ * Auto-Book - automatic registration for BoostApp group lessons.
  * Copyright (C) 2026 Philip Lesarev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  */
 
 /* ============================================================================
- * Boost Auto-Book — Fitbit bridge (via the Google Health API)
+ * Auto-Book — Fitbit bridge (via the Google Health API)
  * ----------------------------------------------------------------------------
  * Logs attended lessons (from the ClassHistory cache) as exercise sessions in
  * the user's Fitbit data, using the **Google Health API v4**
@@ -308,7 +308,7 @@ async function ghRollupValue(dataType, startMs, endMs) {
       })
     });
     if (!res.ok) {
-      if (res.status === 403) console.log("[Boost Auto-Book] rollUp 403 — readonly scopes not granted yet (reconnect after adding them)");
+      if (res.status === 403) console.log("[Auto-Book] rollUp 403 — readonly scopes not granted yet (reconnect after adding them)");
       return null;
     }
     const data = await res.json().catch(() => ({}));
@@ -347,7 +347,7 @@ async function fitbitFetchLessonMetrics(startMs, endMs) {
     ghRollupValue("steps", startMs, endMs),
     ghRollupValue("active-zone-minutes", startMs, endMs)
   ]);
-  console.log("[Boost Auto-Book] lesson rollups:", JSON.stringify({ hr, cal, steps, azm }));
+  console.log("[Auto-Book] lesson rollups:", JSON.stringify({ hr, cal, steps, azm }));
   const avg = ghFirstNumber(hr, ["beatsPerMinuteAvg"]);
   if (avg) { out.metrics.averageHeartRateBeatsPerMinute = String(Math.round(avg)); out.hasHeartRate = true; }
   const kcal = ghFirstNumber(cal, ["caloriesKcalSum", "caloriesKcal"]);
@@ -551,7 +551,7 @@ async function fitbitCalibrateMaxHr() {
   }
   const cal = { max: best.max, lessons: samples.length, avgErrMin: Math.round(best.err / samples.length * 10) / 10, at: Date.now() };
   await setFitbitState({ hrMaxCal: cal });
-  console.log("[Boost Auto-Book] zone calibration:", JSON.stringify(cal));
+  console.log("[Auto-Book] zone calibration:", JSON.stringify(cal));
   return cal;
 }
 
@@ -602,13 +602,13 @@ async function fitbitFillLessonHealth(historyStore, maxLessons) {
     // The curve is stored alongside, so opening a lesson never calls the API.
     if (lhNeedsTrace(map[key], traces[key], t.endMs, Date.now())) {
       try { traces[key] = await getLessonTraceCached(key, t.startMs, t.endMs, t.rec.date, true); }
-      catch (err) { console.log("[Boost Auto-Book] curve fetch failed:", String(err && err.message || err)); }
+      catch (err) { console.log("[Auto-Book] curve fetch failed:", String(err && err.message || err)); }
     }
     filled++;
   }
   if (filled || !st.hrMaxCal) {
     try { await fitbitCalibrateMaxHr(); }
-    catch (err) { console.log("[Boost Auto-Book] zone calibration failed:", String(err && err.message || err)); }
+    catch (err) { console.log("[Auto-Book] zone calibration failed:", String(err && err.message || err)); }
   }
   return { ok: true, filled, remaining: Math.max(0, todo.length - filled) };
 }
@@ -671,7 +671,7 @@ async function fitbitLogLesson(rec, durationMin, metricsSummary) {
     body: JSON.stringify(body)
   });
   if (res.status === 409) {
-    console.log("[Boost Auto-Book] Fitbit: ALREADY_EXISTS (server already has it):", fitbitLessonKey(rec));
+    console.log("[Auto-Book] Fitbit: ALREADY_EXISTS (server already has it):", fitbitLessonKey(rec));
     return { alreadyExists: true }; // idempotent retry
   }
   if (res.status === 429) throw Object.assign(new Error("Google Health API rate limit hit"), { rateLimited: true });
@@ -683,7 +683,7 @@ async function fitbitLogLesson(rec, durationMin, metricsSummary) {
   // failure inside. Log the full payload (visible in the service-worker
   // console) and surface any embedded error instead of counting it as synced.
   const op = await res.json().catch(() => ({}));
-  console.log("[Boost Auto-Book] Fitbit create response for", fitbitLessonKey(rec), JSON.stringify(op));
+  console.log("[Auto-Book] Fitbit create response for", fitbitLessonKey(rec), JSON.stringify(op));
   if (op && op.error) {
     throw new Error(`Exercise create operation failed for ${fitbitLessonKey(rec)}: ${JSON.stringify(op.error).slice(0, 200)}`);
   }
@@ -696,9 +696,9 @@ async function fitbitLogLesson(rec, durationMin, metricsSummary) {
   if (serverName && metricsSummary && metricsSummary.averageHeartRateBeatsPerMinute) {
     try {
       const ok = await ghPatchExerciseMetrics(serverName, body.exercise, metricsSummary);
-      console.log("[Boost Auto-Book] metrics PATCH after create", fitbitLessonKey(rec), ok ? "kept HR" : "HR NOT kept — repair pass will retry");
+      console.log("[Auto-Book] metrics PATCH after create", fitbitLessonKey(rec), ok ? "kept HR" : "HR NOT kept — repair pass will retry");
     } catch (e) {
-      console.log("[Boost Auto-Book] metrics PATCH after create failed (repair pass will retry):", String(e && e.message || e));
+      console.log("[Auto-Book] metrics PATCH after create failed (repair pass will retry):", String(e && e.message || e));
     }
   }
   return op;
@@ -760,7 +760,7 @@ async function fitbitRepairMetrics(st) {
   let pageToken = null, pages = 0, reachedCutoff = false;
   do {
     const res = await ghApi("/v4/users/me/dataTypes/exercise/dataPoints?pageSize=100" + (pageToken ? "&pageToken=" + encodeURIComponent(pageToken) : ""));
-    if (!res.ok) { console.log("[Boost Auto-Book] repair: list failed", res.status); break; }
+    if (!res.ok) { console.log("[Auto-Book] repair: list failed", res.status); break; }
     const data = await res.json().catch(() => ({}));
     for (const p of (data.dataPoints || [])) {
       const ex = p.exercise || {};
@@ -796,7 +796,7 @@ async function fitbitRepairMetrics(st) {
     }
   }
   await chrome.storage.local.set({ bsab_fitbit_repair_tries: tries });
-  console.log("[Boost Auto-Book] repair pass:", JSON.stringify({ candidates: candidates.length, repaired, failed }));
+  console.log("[Auto-Book] repair pass:", JSON.stringify({ candidates: candidates.length, repaired, failed }));
   return { repaired, failed };
 }
 
@@ -864,9 +864,9 @@ async function fitbitSyncLessons(historyStore) {
   // Heal records whose heart rate the server dropped (see ghPatchExerciseMetrics).
   let repaired = 0;
   try { repaired = (await fitbitRepairMetrics(st)).repaired; }
-  catch (e) { console.log("[Boost Auto-Book] repair pass failed:", String(e && e.message || e)); }
+  catch (e) { console.log("[Auto-Book] repair pass failed:", String(e && e.message || e)); }
   try { await fitbitFillLessonHealth(store); }
-  catch (e) { console.log("[Boost Auto-Book] lesson health fill failed:", String(e && e.message || e)); }
+  catch (e) { console.log("[Auto-Book] lesson health fill failed:", String(e && e.message || e)); }
 
   await setFitbitState({ lastSync: { at: Date.now(), added, skipped, deferred, repaired, error } });
   if (added) {

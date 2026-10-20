@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="boost-autobook/icons/icon128.png" width="80" alt="Boost Auto-Book logo">
+<img src="boost-autobook/icons/icon128.png" width="80" alt="Auto-Book logo">
 
-# Boost Auto-Book
+# Auto-Book
 
 **Your BoostApp classes, booked the second registration opens.**
 
@@ -22,7 +22,7 @@ window opens — no more refreshing the page at midnight.
 </div>
 
 <p align="center">
-  <img src="docs/assets/popup.png" width="860" alt="The Boost Auto-Book popup on My weekly slots: three weekly classes, one already booked and two counting down to the moment their registration opens">
+  <img src="docs/assets/popup.png" width="860" alt="The Auto-Book popup on My weekly slots: three weekly classes, one already booked and two counting down to the moment their registration opens">
   <br>
   <em>Three weekly slots: one already booked, two waiting — each showing the exact moment its registration opens, and how long until then.</em>
 </p>
@@ -93,7 +93,7 @@ version is out.
 
 ## ⚠️ Disclaimer
 
-Boost Auto-Book is an **independent, unofficial project**. It is not made by,
+Auto-Book is an **independent, unofficial project**. It is not made by,
 affiliated with, or endorsed by Boost / BoostApp (Training Harmony) or any
 studio.
 
