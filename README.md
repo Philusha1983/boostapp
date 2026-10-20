@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/social-preview.png" width="640" alt="Boost Auto-Book — your BoostApp classes, booked the second registration opens">
+<img src="boost-autobook/icons/icon128.png" width="80" alt="Boost Auto-Book logo">
 
 # Boost Auto-Book
 
@@ -21,13 +21,22 @@ window opens — no more refreshing the page at midnight.
 
 </div>
 
+<p align="center">
+  <img src="docs/assets/popup.png" width="860" alt="The Boost Auto-Book popup: auto-book switched on, a booked lesson under Upcoming, and tabs for weekly slots, subscription and settings">
+  <br>
+  <em>The popup — auto-book running, three weekly slots armed, 5 of 13 entries left this period.</em>
+</p>
+
 <!-- HERO SCREENSHOT SLOT ---------------------------------------------------
-     The banner above is a brand card, not the product. Replace it with a real
-     screenshot of the popup as soon as you have one:
-       - weekly slots visible, one of them counting down to its registration window
-       - light theme, ~1200px wide, saved as docs/assets/popup.png
-     It would be the only image in this README that shows the thing people
-     actually install, and it belongs above the feature list.
+     This is the Upcoming tab: it shows the result of a booking, not the
+     booking. Every other image in this README is a health/analytics view, so
+     nothing here yet pictures the feature the tagline actually promises.
+     Replace this with "My weekly slots" when you can capture it:
+       - three slots ticked, one visibly counting down to its open moment
+       - dark theme, English, saved over docs/assets/popup.png
+       - capture generously: the Chrome Web Store wants exactly 1280x800
+     The header identity here is redrawn, not masked - it shows the no-photo
+     account state. Keep any replacement free of a real name or avatar.
 -------------------------------------------------------------------------- -->
 
 ---
