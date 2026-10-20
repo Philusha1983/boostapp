@@ -20,6 +20,9 @@ const HERE = __dirname;
 const REPO = path.resolve(HERE, "..", "..");
 const EXT = path.join(REPO, "boost-autobook");
 const OUTDIR = path.join(REPO, "docs", "assets");
+// Read from the real manifest: a hard-coded version here silently rots the
+// footer in every screenshot one release after someone bumps it.
+const MANIFEST = JSON.parse(fs.readFileSync(path.join(EXT, "manifest.json"), "utf8"));
 
 // Pinned so a view renders identically on every run, and so the countdowns
 // agree with the dates beside them. Must match DEMO_NOW in fixtures.js.
@@ -95,7 +98,7 @@ ${fs.readFileSync(path.join(HERE, "fixtures.js"), "utf8")}
   window.chrome = {
     runtime: {
       sendMessage: (msg, cb) => cbOrPromise(RESP(msg), cb),
-      getManifest: () => ({ version: "1.9.1", name: "Auto-Book for group fitness classes" }),
+      getManifest: () => ({ version: ${JSON.stringify(MANIFEST.version)}, name: ${JSON.stringify(MANIFEST.name)} }),
       getURL: (p) => p,
       lastError: null,
     },

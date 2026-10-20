@@ -6,13 +6,26 @@ and the Chrome Web Store listing use.
 ```bash
 node scripts/screenshots/render.js              # all views, README size
 node scripts/screenshots/render.js slots        # one view
-node scripts/screenshots/render.js all store    # 1280x800, for the store listing
+node scripts/screenshots/store.js               # 1280x800 captioned, for the store listing
 ```
 
 Views: `slots`, `upcoming`, `subscription`, `settings` →
 `docs/assets/popup.png`, `popup-upcoming.png`, `popup-subscription.png`,
-`popup-settings.png` (and `-store.png` in store mode, which is gitignored —
-regenerate it when you submit).
+`popup-settings.png`.
+
+`store.js` calls `render.js` for the popups themselves and then frames each one
+on a captioned 1280x800 card → `docs/assets/store-1-slots.png` … `store-4-…`.
+Gitignored; regenerate when you submit.
+
+### SUPERSEDED — crops the popup — `render.js all store`
+
+`render.js`'s own `store` mode still exists and still runs, but do not submit
+what it produces. It renders into a 640x400 viewport at `deviceScaleFactor: 2`
+to hit 1280x800, and the popup needs 660x610 CSS px — so the output is a 2x
+zoom crop of the popup's top-left corner, missing the toolbar toggle and the
+entire lower half. Kept rather than removed because the viewport constants in
+that code path are the same ones the README images depend on, and because the
+cropping is easy to reintroduce by "simplifying" `store.js` back into it.
 
 Requires `playwright` with Chromium (`npx playwright install chromium`).
 

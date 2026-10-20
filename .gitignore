@@ -26,5 +26,6 @@ Claude outputs/
 zieArqzr
 CLAUDE.md
 
-# Store-listing renders (regenerate: node scripts/screenshots/render.js all store)
+# Store-listing renders (regenerate: node scripts/screenshots/store.js)
+docs/assets/store-*.png
 docs/assets/*-store.png
