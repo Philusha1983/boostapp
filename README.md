@@ -32,9 +32,10 @@ window opens — no more refreshing the page at midnight.
      Superseded, kept on purpose: popup-upcoming.png is the Upcoming tab this
      replaced (a booked lesson + cancel). Unreferenced today; drop it in here as
      a second image if the booked-and-cancellable state is worth showing too.
-     Identity is redrawn, not masked: the header is the no-photo account state
-     and the two instructor names are placeholders. Keep any replacement free of
-     a real name or avatar, including other people's.
+     Identity is redrawn, not masked, in BOTH files: the header shows the
+     no-photo account state, and every coach name is a placeholder - the
+     instructor lines here and the "with <coach>" line on the Upcoming card.
+     Check any replacement for both, including other people's names.
      The Chrome Web Store wants exactly 1280x800 — crop to it, don't rescale
      until the countdowns stop being legible. -->
 
