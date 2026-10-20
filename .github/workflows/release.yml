@@ -38,8 +38,26 @@ jobs:
           ' CHANGELOG.md > release-notes.md
           [ -s release-notes.md ] || echo "See CHANGELOG.md" > release-notes.md
 
+      - name: Build the release title
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          # An optional headline on the CHANGELOG heading becomes the release
+          # title:  "## [1.9.0] — 2026-10-19 — Schedule awareness"
+          TITLE=$(awk -v ver="$TAG" '
+            $0 ~ "^## \\[" ver "\\]" {
+              n = split($0, a, / — /)
+              if (n >= 3) { s = a[3]; for (i = 4; i <= n; i++) s = s " — " a[i]; print s }
+              exit
+            }' CHANGELOG.md)
+          if [ -n "$TITLE" ]; then
+            echo "RELEASE_NAME=v$TAG — $TITLE" >> "$GITHUB_ENV"
+          else
+            echo "RELEASE_NAME=v$TAG" >> "$GITHUB_ENV"
+          fi
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          name: ${{ env.RELEASE_NAME }}
           files: dist/boost-autobook-v*.zip
           body_path: release-notes.md

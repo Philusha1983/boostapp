@@ -8,7 +8,7 @@ monthly balance, participant lists, and lesson descriptions.
 
 - **Studio:** Training Harmony (`companyNum` 256826, `getUrl` 6284d298e4b18)
 - **Platform:** Chrome / Chromium, Manifest V3
-- **Version:** 1.0.0
+- **Version:** see `manifest.json` — the single source of truth (SemVer)
 - **Languages:** English, Hebrew, Russian, Ukrainian, Arabic (RTL for Hebrew & Arabic)
 
 ---

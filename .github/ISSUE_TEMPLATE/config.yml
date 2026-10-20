@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📘 Install guide, screenshots and FAQ
+    url: https://philusha1983.github.io/boostapp/
+    about: Step-by-step install and answers to the common questions, in 5 languages. Start here before opening an issue.
+  - name: 📝 Changelog
+    url: https://github.com/Philusha1983/boostapp/blob/main/CHANGELOG.md
+    about: What changed in each version, and which version fixed what.

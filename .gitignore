@@ -5,6 +5,10 @@
 *.zip
 dist/
 
+# Python
+__pycache__/
+*.pyc
+
 # Editors
 .vscode/
 .idea/
@@ -18,5 +22,6 @@ dist/
 !/README.md
 !/CHANGELOG.md
 notes/
+Claude outputs/
 zieArqzr
 CLAUDE.md

@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="boost-autobook/icons/icon128.png" width="80" alt="Boost Auto-Book logo">
+<img src="docs/assets/social-preview.png" width="640" alt="Boost Auto-Book — your BoostApp classes, booked the second registration opens">
 
 # Boost Auto-Book
 
@@ -11,7 +11,8 @@ lessons and registers you automatically the instant your studio's registration
 window opens — no more refreshing the page at midnight.
 
 [![Latest release](https://img.shields.io/github/v/release/Philusha1983/boostapp?label=latest&color=00a87a)](https://github.com/Philusha1983/boostapp/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/Philusha1983/boostapp/total?color=00a87a)](https://github.com/Philusha1983/boostapp/releases)
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-00a87a)](LICENSE)
+[![Chrome - Manifest V3](https://img.shields.io/badge/Chrome-Manifest%20V3-00a87a)](boost-autobook/manifest.json)
 
 **[🌐 Website & easy install guide](https://philusha1983.github.io/boostapp/)** ·
 **[⬇ Download](https://github.com/Philusha1983/boostapp/releases/latest)** ·
@@ -19,6 +20,15 @@ window opens — no more refreshing the page at midnight.
 **[💬 Feedback](https://github.com/Philusha1983/boostapp/issues/new)**
 
 </div>
+
+<!-- HERO SCREENSHOT SLOT ---------------------------------------------------
+     The banner above is a brand card, not the product. Replace it with a real
+     screenshot of the popup as soon as you have one:
+       - weekly slots visible, one of them counting down to its registration window
+       - light theme, ~1200px wide, saved as docs/assets/popup.png
+     It would be the only image in this README that shows the thing people
+     actually install, and it belongs above the feature list.
+-------------------------------------------------------------------------- -->
 
 ---
 
@@ -94,6 +104,11 @@ including your class history, which is fetched from your own profile — lives
 **only in your browser's local storage on your computer**. It is never
 uploaded, shared, or sent anywhere. The code is open source, so anyone can
 verify this.
+
+## 📄 License
+
+[GPL-3.0](LICENSE). You are free to use, study, modify and share it. If you
+distribute a modified version, it has to stay open under the same license.
 
 ---
 

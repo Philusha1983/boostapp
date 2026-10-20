@@ -6,6 +6,32 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+### Changed
+- **The repository now presents itself like a real project.** GPL-3.0 licence
+  (`LICENSE`, plus a notice at the top of every source file) — the README
+  called this open source in three places while GitHub said "No license",
+  which legally meant all rights reserved. README leads with a brand card and
+  a licence / Manifest V3 badge row. The GitHub About panel finally carries a
+  description, the website link and ten topics, and links to the repo render
+  with a real preview card instead of a grey placeholder.
+- **The public site emits real Open Graph and Twitter tags.** `og:image` was a
+  relative path, which scrapers cannot resolve, so every shared link previewed
+  blank. Absolute URLs now, plus `og:url`, `og:type`, image dimensions, alt
+  text, `summary_large_image` and a canonical link.
+- **Releases get a title.** `release.yml` reads an optional headline off the
+  changelog heading — `## [1.9.0] — 2026-10-19 — Schedule awareness` becomes
+  the release name. Headings without one keep the plain tag, as before.
+- **Opening an issue now offers the install guide and changelog first**
+  (`.github/ISSUE_TEMPLATE/config.yml`).
+
+### Fixed
+- **The manifest's own description still promised a "72h registration
+  window"** — the one user-facing string v1.9.1 missed, and the most visible
+  of them: it sits under the extension name in `chrome://extensions` on every
+  install. It now says "your studio's registration window".
+- **`DOCUMENTATION.md` claimed Version 1.0.0** nine releases on. It points at
+  `manifest.json` instead of restating a number that goes stale.
+
 ## [1.9.1] — 2026-10-20
 
 A user at another studio asked how to improve his odds on a class that fills
