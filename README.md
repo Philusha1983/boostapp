@@ -22,22 +22,21 @@ window opens — no more refreshing the page at midnight.
 </div>
 
 <p align="center">
-  <img src="docs/assets/popup.png" width="860" alt="The Boost Auto-Book popup: auto-book switched on, a booked lesson under Upcoming, and tabs for weekly slots, subscription and settings">
+  <img src="docs/assets/popup.png" width="860" alt="The Boost Auto-Book popup on My weekly slots: three weekly classes, one already booked and two counting down to the moment their registration opens">
   <br>
-  <em>The popup — auto-book running, three weekly slots armed, 5 of 13 entries left this period.</em>
+  <em>Three weekly slots: one already booked, two waiting — each showing the exact moment its registration opens, and how long until then.</em>
 </p>
 
-<!-- HERO SCREENSHOT SLOT ---------------------------------------------------
-     This is the Upcoming tab: it shows the result of a booking, not the
-     booking. Every other image in this README is a health/analytics view, so
-     nothing here yet pictures the feature the tagline actually promises.
-     Replace this with "My weekly slots" when you can capture it:
-       - three slots ticked, one visibly counting down to its open moment
-       - dark theme, English, saved over docs/assets/popup.png
-       - capture generously: the Chrome Web Store wants exactly 1280x800
-     The header identity here is redrawn, not masked - it shows the no-photo
-     account state. Keep any replacement free of a real name or avatar.
--------------------------------------------------------------------------- -->
+<!-- docs/assets/popup.png is the "My weekly slots" tab — the one view that
+     shows the feature the tagline promises, rather than its aftermath.
+     Superseded, kept on purpose: popup-upcoming.png is the Upcoming tab this
+     replaced (a booked lesson + cancel). Unreferenced today; drop it in here as
+     a second image if the booked-and-cancellable state is worth showing too.
+     Identity is redrawn, not masked: the header is the no-photo account state
+     and the two instructor names are placeholders. Keep any replacement free of
+     a real name or avatar, including other people's.
+     The Chrome Web Store wants exactly 1280x800 — crop to it, don't rescale
+     until the countdowns stop being legible. -->
 
 ---
 
