@@ -1,19 +1,43 @@
 # Changelog
 
-All notable changes to Boost Auto-Book are documented here.
+All notable changes to Auto-Book are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](https://semver.org/)
 (patch = fixes · minor = features · major = changes to stored data or breaking behavior)
 
 ## [Unreleased]
 
+## [1.9.2] — 2026-10-20 — A mark of its own
+
 ### Changed
+- **New icon.** The old one was a stylised *B* in BoostApp's green, in
+  BoostApp's rounded square — their letterform, their colour, their
+  silhouette. This project started as a companion to their app and the icon
+  was never meant as a claim, but an icon is a stronger identifier than a
+  name, and the name has already been changed. It is now a bolt in mint on a
+  dark tile: the colour stays, because a colour is nobody's to keep, and the
+  form is the project's own. Drawn once in `assets-src/icon.svg` and rendered
+  to every size by `scripts/icons/build-icons.js`, so the nine PNGs cannot
+  drift apart again.
+- **The Chrome Web Store summary now leads with what the extension does for
+  you.** The manifest `description` is what the store displays as the item's
+  summary — the listing offers no editable summary field of its own — and it
+  still read "Watchlist + automatic registration for BoostApp group lessons",
+  naming the platform in the single line shown on the item card. Changing it
+  is the whole reason this version exists: the store reads it from the
+  package, so it cannot be corrected without a release.
 - **The extension is now called "Auto-Book for group fitness classes".** It was
   "Boost Auto-Book (Training Harmony)", which names a studio this project has
   nothing to do with and reads as official. The Chrome Web Store rejects a
   listing whose *name* implies affiliation with another product, and a
   trademark complaint can pull a published one without warning. Naming BoostApp
-  and the studio in the description is nominative use and stays. The repo, this
-  changelog and the site keep "Boost Auto-Book" as the project's own name.
+  and the studio in the description is nominative use and stays. The name is
+  now **Auto-Book** everywhere it is read: in-product, in this changelog, in
+  both READMEs, in the documentation and across the site. Only the GitHub
+  repository and the Pages URL keep `boostapp`, so that links people already
+  have, and the README's badge URLs, do not break. (An earlier draft of this
+  release kept "Boost Auto-Book" as the project's own name in the repo and on
+  the site; that half-measure left the borrowed word on every page, which is
+  the thing the rename exists to remove.)
   In-product: the popup header, its title, the toolbar tooltip and
   `app.webmanifest` (whose `short_name` was literally "Boost").
 

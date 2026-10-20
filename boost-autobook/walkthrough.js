@@ -1,5 +1,5 @@
 /*
- * Boost Auto-Book - automatic registration for BoostApp group lessons.
+ * Auto-Book - automatic registration for BoostApp group lessons.
  * Copyright (C) 2026 Philip Lesarev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/* Boost Auto-Book — onboarding walkthrough + "What's new" intro
+/* Auto-Book — onboarding walkthrough + "What's new" intro
  *
  * Loaded AFTER popup.js (relies on its globals: I18N, t(), applyLang-compatible
  * keys, $(), showTab()). Self-contained otherwise: injects its own styles and
@@ -52,7 +52,7 @@
       tour_replay: "🎓 Tour",
       tour_skip: "Skip", tour_back: "Back", tour_next: "Next", tour_done: "Done",
       tour_of: "{i}/{n}",
-      tour_welcome_t: "Welcome to Boost Auto-Book! 👋",
+      tour_welcome_t: "Welcome to Auto-Book! 👋",
       tour_welcome_b: "A 30-second tour of what the extension can do. You can replay it anytime with the 🎓 Tour link in the footer.",
       tour_signin_t: "First: sign in",
       tour_signin_b: "The extension works with your BoostApp account. Click here to open BoostApp and sign in — then open this popup again for the full tour.",
@@ -78,6 +78,8 @@
       tour_fullpage_b: "This opens the whole dashboard as a full browser page — same features, roomier layout with multi-column lists and a bigger calendar.",
       wn_130_1: "⛶ Full-page mode — open the dashboard as a browser tab with a wide, multi-column layout (button in the header)",
       wn_190_1: "\ud83d\udd14 When the studio changes the timetable, the extension says so. It compares the weekly schedule to the last one it saw and tells you what moved, what was added or dropped, what was renamed, and where the teacher changed \u2014 above your weekly slots. And if one of your rules points at a class that has moved to another hour, the rule now offers to follow it.",
+      wn_192_1: "🏷️ The extension is now called “Auto-Book for group fitness classes”. Same extension, same settings — it simply no longer carries the name of a studio it has nothing to do with. Your watchlist, weekly slots and history are untouched.",
+      wn_192_2: "⚡ A new icon. The old one borrowed the booking platform's letter and colours; this one is the project's own — same mint, new mark. Nothing about how the extension works has changed.",
       wn_191_1: "⏱ Settings now shows your own studio's registration window — read from its schedule, not assumed. Every message that used to say “72 hours” (this project's home studio) now reflects yours, and when classes differ it says so instead of inventing one answer.",
       wn_181_1: "🏷️ The extension now follows your own studio. It works out which BoostApp studio you're signed in to and switches to it by itself — schedule, bookings and history — instead of staying on the one it was packaged with. Until your studio is known, Sign in opens BoostApp's main login page.",
       wn_180_1: "\ud83d\udcaa Past Events \u2192 Health now works without a fitness tracker: every lesson you attended, with the muscles its workout plan worked \u2014 per class and lesson by lesson. Connect a tracker to add heart rate, zones and steps on top. A lesson with a plan but no heart rate opens now too.",
@@ -99,7 +101,7 @@
       tour_replay: "🎓 סיור",
       tour_skip: "דלג", tour_back: "חזרה", tour_next: "הבא", tour_done: "סיום",
       tour_of: "{i}/{n}",
-      tour_welcome_t: "ברוכים הבאים ל‑Boost Auto-Book!‏ 👋",
+      tour_welcome_t: "ברוכים הבאים ל‑Auto-Book!‏ 👋",
       tour_welcome_b: "סיור של 30 שניות על מה שהתוסף יודע לעשות. אפשר להפעיל אותו שוב בכל רגע דרך קישור 🎓 סיור בתחתית.",
       tour_signin_t: "קודם כול: התחברות",
       tour_signin_b: "התוסף עובד עם חשבון BoostApp שלך. לחצו כאן כדי לפתוח את BoostApp ולהתחבר — ואז פתחו שוב את החלון לסיור המלא.",
@@ -125,6 +127,8 @@
       tour_fullpage_b: "פותח את כל הדשבורד כעמוד דפדפן מלא — אותן יכולות, פריסה מרווחת עם רשימות במספר עמודות ולוח שנה גדול יותר.",
       wn_130_1: "⛶ מצב מסך מלא — פתחו את הדשבורד כלשונית דפדפן עם פריסה רחבה במספר עמודות (כפתור בכותרת)",
       wn_190_1: "\ud83d\udd14 \u05db\u05e9\u05d4\u05e1\u05d8\u05d5\u05d3\u05d9\u05d5 \u05de\u05e9\u05e0\u05d4 \u05d0\u05ea \u05de\u05e2\u05e8\u05db\u05ea \u05d4\u05e9\u05e2\u05d5\u05ea, \u05d4\u05ea\u05d5\u05e1\u05e3 \u05de\u05d3\u05d5\u05d5\u05d7 \u05e2\u05dc \u05db\u05da. \u05d4\u05d5\u05d0 \u05de\u05e9\u05d5\u05d5\u05d4 \u05d0\u05ea \u05dc\u05d5\u05d7 \u05d4\u05e9\u05d9\u05e2\u05d5\u05e8\u05d9\u05dd \u05dc\u05d6\u05d4 \u05e9\u05e8\u05d0\u05d4 \u05e7\u05d5\u05d3\u05dd \u05d5\u05de\u05e8\u05d0\u05d4 \u05de\u05d4 \u05e2\u05d1\u05e8 \u05e9\u05e2\u05d4, \u05de\u05d4 \u05e0\u05d5\u05e1\u05e3 \u05d0\u05d5 \u05d1\u05d5\u05d8\u05dc, \u05de\u05d4 \u05e9\u05d9\u05e0\u05d4 \u05e9\u05dd \u05d5\u05d0\u05d9\u05e4\u05d4 \u05d4\u05d7\u05dc\u05d9\u05e3 \u05d4\u05de\u05d0\u05de\u05df \u2014 \u05de\u05e2\u05dc \u05d4\u05e9\u05d9\u05e2\u05d5\u05e8\u05d9\u05dd \u05d4\u05e9\u05d1\u05d5\u05e2\u05d9\u05d9\u05dd \u05e9\u05dc\u05db\u05dd. \u05d5\u05d0\u05dd \u05db\u05dc\u05dc \u05e9\u05dc\u05db\u05dd \u05de\u05e6\u05d1\u05d9\u05e2 \u05e2\u05dc \u05e9\u05d9\u05e2\u05d5\u05e8 \u05e9\u05e2\u05d1\u05e8 \u05dc\u05e9\u05e2\u05d4 \u05d0\u05d7\u05e8\u05ea, \u05d4\u05db\u05dc\u05dc \u05de\u05e6\u05d9\u05e2 \u05dc\u05e2\u05e7\u05d5\u05d1 \u05d0\u05d7\u05e8\u05d9\u05d5.",
+      wn_192_1: "🏷️ התוסף נקרא עכשיו “Auto-Book for group fitness classes”. אותו תוסף, אותן הגדרות — הוא פשוט כבר לא נושא שם של מועדון שאין לו שום קשר אליו. רשימת המעקב, השיעורים הקבועים וההיסטוריה שלכם לא השתנו.",
+      wn_192_2: "⚡ אייקון חדש. הקודם שאל את האות והצבעים של פלטפורמת ההרשמה; החדש שייך לתוסף עצמו — אותו ירוק, סמל חדש. שום דבר באופן הפעולה של התוסף לא השתנה.",
       wn_191_1: "⏱ ההגדרות מציגות עכשיו את חלון ההרשמה של המועדון שלכם — נקרא מלוח השיעורים שלו, לא מנוחש. כל מקום שכתב “72 שעות” (המועדון של מפתח התוסף) מציג עכשיו את הנתון שלכם, ואם הוא שונה בין שיעורים — זה נאמר במפורש.",
       wn_181_1: "🏷️ התוסף עוקב עכשיו אחרי הסטודיו שלכם. הוא מזהה לאיזה סטודיו ב‎BoostApp אתם מחוברים ועובר אליו לבד — לוח השיעורים, ההרשמות וההיסטוריה — במקום להישאר על זה שהגיע עם ההתקנה. עד שהסטודיו מזוהה, כפתור ההתחברות פותח את דף הכניסה הראשי של BoostApp.",
       wn_180_1: "\ud83d\udcaa \u05d0\u05d9\u05e8\u05d5\u05e2\u05d9\u05dd \u05e7\u05d5\u05d3\u05de\u05d9\u05dd \u2190 \u05d1\u05e8\u05d9\u05d0\u05d5\u05ea \u05e2\u05d5\u05d1\u05d3 \u05e2\u05db\u05e9\u05d9\u05d5 \u05d2\u05dd \u05d1\u05dc\u05d9 \u05de\u05d3 \u05db\u05d5\u05e9\u05e8: \u05db\u05dc \u05d4\u05e9\u05d9\u05e2\u05d5\u05e8\u05d9\u05dd \u05e9\u05d4\u05d9\u05d9\u05ea\u05dd \u05d1\u05d4\u05dd, \u05e2\u05dd \u05d4\u05e9\u05e8\u05d9\u05e8\u05d9\u05dd \u05e9\u05ea\u05d5\u05db\u05e0\u05d9\u05ea \u05d4\u05d0\u05d9\u05de\u05d5\u05df \u05d4\u05e4\u05e2\u05d9\u05dc\u05d4 \u2014 \u05dc\u05e4\u05d9 \u05e1\u05d5\u05d2 \u05d0\u05d9\u05de\u05d5\u05df \u05d5\u05dc\u05e4\u05d9 \u05e9\u05d9\u05e2\u05d5\u05e8. \u05d7\u05d9\u05d1\u05d5\u05e8 \u05de\u05d3 \u05db\u05d5\u05e9\u05e8 \u05de\u05d5\u05e1\u05d9\u05e3 \u05dc\u05d6\u05d4 \u05d3\u05d5\u05e4\u05e7, \u05d0\u05d6\u05d5\u05e8\u05d9\u05dd \u05d5\u05e6\u05e2\u05d3\u05d9\u05dd. \u05d2\u05dd \u05e9\u05d9\u05e2\u05d5\u05e8 \u05e2\u05dd \u05ea\u05d5\u05db\u05e0\u05d9\u05ea \u05d5\u05d1\u05dc\u05d9 \u05d3\u05d5\u05e4\u05e7 \u05e0\u05e4\u05ea\u05d7 \u05e2\u05db\u05e9\u05d9\u05d5.",
@@ -146,7 +150,7 @@
       tour_replay: "🎓 Тур",
       tour_skip: "Пропустить", tour_back: "Назад", tour_next: "Далее", tour_done: "Готово",
       tour_of: "{i}/{n}",
-      tour_welcome_t: "Добро пожаловать в Boost Auto-Book! 👋",
+      tour_welcome_t: "Добро пожаловать в Auto-Book! 👋",
       tour_welcome_b: "30-секундный тур по возможностям расширения. Его можно запустить снова в любой момент — ссылка 🎓 Тур внизу.",
       tour_signin_t: "Сначала войдите",
       tour_signin_b: "Расширение работает с вашим аккаунтом BoostApp. Нажмите здесь, чтобы открыть BoostApp и войти, — затем откройте окно снова для полного тура.",
@@ -172,6 +176,8 @@
       tour_fullpage_b: "Открывает весь дашборд как полноценную страницу браузера — те же функции, просторная раскладка с многоколоночными списками и большим календарём.",
       wn_130_1: "⛶ Полноэкранный режим — откройте дашборд как вкладку браузера с широкой многоколоночной раскладкой (кнопка в шапке)",
       wn_190_1: "\ud83d\udd14 \u041a\u043e\u0433\u0434\u0430 \u0441\u0442\u0443\u0434\u0438\u044f \u043c\u0435\u043d\u044f\u0435\u0442 \u0440\u0430\u0441\u043f\u0438\u0441\u0430\u043d\u0438\u0435, \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043d\u0438\u0435 \u0441\u043e\u043e\u0431\u0449\u0430\u0435\u0442 \u043e\u0431 \u044d\u0442\u043e\u043c. \u041e\u043d\u043e \u0441\u0440\u0430\u0432\u043d\u0438\u0432\u0430\u0435\u0442 \u043d\u0435\u0434\u0435\u043b\u044c\u043d\u0443\u044e \u0441\u0435\u0442\u043a\u0443 \u0441 \u043f\u0440\u0435\u0434\u044b\u0434\u0443\u0449\u0435\u0439 \u0438 \u043f\u043e\u043a\u0430\u0437\u044b\u0432\u0430\u0435\u0442, \u0447\u0442\u043e \u043f\u0435\u0440\u0435\u043d\u0435\u0441\u0435\u043d\u043e, \u0434\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u043e \u0438\u043b\u0438 \u0443\u0431\u0440\u0430\u043d\u043e, \u043f\u0435\u0440\u0435\u0438\u043c\u0435\u043d\u043e\u0432\u0430\u043d\u043e \u0438 \u0433\u0434\u0435 \u0441\u043c\u0435\u043d\u0438\u043b\u0441\u044f \u0442\u0440\u0435\u043d\u0435\u0440. \u0415\u0441\u043b\u0438 \u0432\u0430\u0448\u0435 \u043f\u0440\u0430\u0432\u0438\u043b\u043e \u0443\u043a\u0430\u0437\u044b\u0432\u0430\u0435\u0442 \u043d\u0430 \u0437\u0430\u043d\u044f\u0442\u0438\u0435, \u043a\u043e\u0442\u043e\u0440\u043e\u0435 \u043f\u0435\u0440\u0435\u0435\u0445\u0430\u043b\u043e, \u043e\u043d\u043e \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0438\u0442 \u043f\u0435\u0440\u0435\u043d\u0435\u0441\u0442\u0438\u0441\u044c \u0441\u043b\u0435\u0434\u043e\u043c.",
+      wn_192_1: "🏷️ Расширение теперь называется «Auto-Book for group fitness classes». То же расширение и те же настройки — просто оно больше не носит имя студии, к которой не имеет отношения. Ваш список отслеживания, слоты и история не затронуты.",
+      wn_192_2: "⚡ Новый значок. Прежний заимствовал букву и цвета платформы бронирования; этот — собственный знак расширения: тот же мятный цвет, новая форма. В работе расширения ничего не изменилось.",
       wn_191_1: "⏱ В настройках теперь видно окно регистрации именно вашей студии — из её расписания, а не по догадке. Везде, где раньше стояло «72 часа», теперь ваше значение; если у занятий оно разное — об этом сказано прямо.",
       wn_181_1: "🏷️ Расширение теперь следует за вашей студией. Оно определяет, в какую студию BoostApp вы вошли, и переключается на неё само — расписание, записи и история — вместо той, что была в сборке. Пока студия не определена, вход открывает главную страницу входа BoostApp.",
       wn_180_1: "\ud83d\udcaa \u041f\u0440\u043e\u0448\u0435\u0434\u0448\u0438\u0435 \u0441\u043e\u0431\u044b\u0442\u0438\u044f \u2192 \u0417\u0434\u043e\u0440\u043e\u0432\u044c\u0435 \u0442\u0435\u043f\u0435\u0440\u044c \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442 \u0438 \u0431\u0435\u0437 \u0442\u0440\u0435\u043a\u0435\u0440\u0430: \u0432\u0441\u0435 \u043f\u043e\u0441\u0435\u0449\u0451\u043d\u043d\u044b\u0435 \u0437\u0430\u043d\u044f\u0442\u0438\u044f \u0441 \u043c\u044b\u0448\u0446\u0430\u043c\u0438, \u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u043d\u0430\u0433\u0440\u0443\u0437\u0438\u043b \u043f\u043b\u0430\u043d \u0442\u0440\u0435\u043d\u0438\u0440\u043e\u0432\u043a\u0438 \u2014 \u043f\u043e \u0442\u0438\u043f\u0443 \u0438 \u043f\u043e \u043a\u0430\u0436\u0434\u043e\u043c\u0443 \u0437\u0430\u043d\u044f\u0442\u0438\u044e. \u0422\u0440\u0435\u043a\u0435\u0440 \u0434\u043e\u0431\u0430\u0432\u043b\u044f\u0435\u0442 \u043f\u0443\u043b\u044c\u0441, \u0437\u043e\u043d\u044b \u0438 \u0448\u0430\u0433\u0438.",
@@ -193,7 +199,7 @@
       tour_replay: "🎓 Тур",
       tour_skip: "Пропустити", tour_back: "Назад", tour_next: "Далі", tour_done: "Готово",
       tour_of: "{i}/{n}",
-      tour_welcome_t: "Вітаємо в Boost Auto-Book! 👋",
+      tour_welcome_t: "Вітаємо в Auto-Book! 👋",
       tour_welcome_b: "30-секундний тур можливостями розширення. Його можна запустити знову будь-коли — посилання 🎓 Тур унизу.",
       tour_signin_t: "Спершу ввійдіть",
       tour_signin_b: "Розширення працює з вашим акаунтом BoostApp. Натисніть тут, щоб відкрити BoostApp і ввійти, — потім відкрийте вікно знову для повного туру.",
@@ -219,6 +225,8 @@
       tour_fullpage_b: "Відкриває весь дашборд як повноцінну сторінку браузера — ті самі функції, просторе компонування з багатоколонковими списками та більшим календарем.",
       wn_130_1: "⛶ Повноекранний режим — відкрийте дашборд як вкладку браузера з широким багатоколонковим компонуванням (кнопка в шапці)",
       wn_190_1: "\ud83d\udd14 \u041a\u043e\u043b\u0438 \u0441\u0442\u0443\u0434\u0456\u044f \u0437\u043c\u0456\u043d\u044e\u0454 \u0440\u043e\u0437\u043a\u043b\u0430\u0434, \u0440\u043e\u0437\u0448\u0438\u0440\u0435\u043d\u043d\u044f \u043f\u043e\u0432\u0456\u0434\u043e\u043c\u043b\u044f\u0454 \u043f\u0440\u043e \u0446\u0435. \u0412\u043e\u043d\u043e \u043f\u043e\u0440\u0456\u0432\u043d\u044e\u0454 \u0442\u0438\u0436\u043d\u0435\u0432\u0443 \u0441\u0456\u0442\u043a\u0443 \u0437 \u043f\u043e\u043f\u0435\u0440\u0435\u0434\u043d\u044c\u043e\u044e \u0439 \u043f\u043e\u043a\u0430\u0437\u0443\u0454, \u0449\u043e \u043f\u0435\u0440\u0435\u043d\u0435\u0441\u0435\u043d\u043e, \u0434\u043e\u0434\u0430\u043d\u043e \u0430\u0431\u043e \u0437\u043d\u044f\u0442\u043e, \u043f\u0435\u0440\u0435\u0439\u043c\u0435\u043d\u043e\u0432\u0430\u043d\u043e \u0456 \u0434\u0435 \u0437\u043c\u0456\u043d\u0438\u0432\u0441\u044f \u0442\u0440\u0435\u043d\u0435\u0440. \u042f\u043a\u0449\u043e \u0432\u0430\u0448\u0435 \u043f\u0440\u0430\u0432\u0438\u043b\u043e \u0432\u043a\u0430\u0437\u0443\u0454 \u043d\u0430 \u0437\u0430\u043d\u044f\u0442\u0442\u044f, \u044f\u043a\u0435 \u043f\u0435\u0440\u0435\u0457\u0445\u0430\u043b\u043e, \u0432\u043e\u043d\u043e \u0437\u0430\u043f\u0440\u043e\u043f\u043e\u043d\u0443\u0454 \u043f\u0435\u0440\u0435\u043d\u0435\u0441\u0442\u0438\u0441\u044f \u0441\u043b\u0456\u0434\u043e\u043c.",
+      wn_192_1: "🏷️ Розширення тепер називається «Auto-Book for group fitness classes». Те саме розширення й ті самі налаштування — воно просто більше не має в назві студії, до якої не має стосунку. Ваш список стеження, слоти та історія не змінилися.",
+      wn_192_2: "⚡ Нова піктограма. Попередня запозичувала літеру й кольори платформи бронювання; ця — власний знак розширення: той самий м'ятний колір, нова форма. У роботі розширення нічого не змінилося.",
       wn_191_1: "⏱ У налаштуваннях тепер видно вікно реєстрації саме вашої студії — з її розкладу, а не навмання. Скрізь, де раніше було «72 години», тепер ваше значення; якщо у занять воно різне — про це сказано прямо.",
       wn_181_1: "🏷️ Розширення тепер слідує за вашою студією. Воно визначає, у яку студію BoostApp ви увійшли, і перемикається на неї саме — розклад, записи та історія — замість тієї, що була у збірці. Доки студію не визначено, вхід відкриває головну сторінку входу BoostApp.",
       wn_180_1: "\ud83d\udcaa \u041c\u0438\u043d\u0443\u043b\u0456 \u043f\u043e\u0434\u0456\u0457 \u2192 \u0417\u0434\u043e\u0440\u043e\u0432\u02bc\u044f \u0442\u0435\u043f\u0435\u0440 \u043f\u0440\u0430\u0446\u044e\u0454 \u0439 \u0431\u0435\u0437 \u0442\u0440\u0435\u043a\u0435\u0440\u0430: \u0443\u0441\u0456 \u0432\u0456\u0434\u0432\u0456\u0434\u0430\u043d\u0456 \u0437\u0430\u043d\u044f\u0442\u0442\u044f \u0437 \u043c\u02bc\u044f\u0437\u0430\u043c\u0438, \u044f\u043a\u0456 \u043d\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0432 \u043f\u043b\u0430\u043d \u2014 \u0437\u0430 \u0442\u0438\u043f\u043e\u043c \u0456 \u0437\u0430 \u043a\u043e\u0436\u043d\u0438\u043c \u0437\u0430\u043d\u044f\u0442\u0442\u044f\u043c. \u0422\u0440\u0435\u043a\u0435\u0440 \u0434\u043e\u0434\u0430\u0454 \u043f\u0443\u043b\u044c\u0441, \u0437\u043e\u043d\u0438 \u0442\u0430 \u043a\u0440\u043e\u043a\u0438.",
@@ -240,7 +248,7 @@
       tour_replay: "🎓 جولة",
       tour_skip: "تخطٍّ", tour_back: "رجوع", tour_next: "التالي", tour_done: "تم",
       tour_of: "{i}/{n}",
-      tour_welcome_t: "مرحبًا بك في Boost Auto-Book!‏ 👋",
+      tour_welcome_t: "مرحبًا بك في Auto-Book!‏ 👋",
       tour_welcome_b: "جولة مدتها 30 ثانية على إمكانيات الإضافة. يمكنك إعادتها في أي وقت عبر رابط 🎓 جولة في الأسفل.",
       tour_signin_t: "أولًا: تسجيل الدخول",
       tour_signin_b: "تعمل الإضافة مع حسابك في BoostApp. انقر هنا لفتح BoostApp وتسجيل الدخول — ثم افتح النافذة مجددًا للجولة الكاملة.",
@@ -266,6 +274,8 @@
       tour_fullpage_b: "يفتح لوحة التحكم كاملة كصفحة متصفح — الميزات نفسها بتخطيط أرحب مع قوائم متعددة الأعمدة وتقويم أكبر.",
       wn_130_1: "⛶ وضع الصفحة الكاملة — افتح لوحة التحكم كتبويب متصفح بتخطيط عريض متعدد الأعمدة (الزر في الأعلى)",
       wn_190_1: "\ud83d\udd14 \u0639\u0646\u062f\u0645\u0627 \u064a\u063a\u064a\u0651\u0631 \u0627\u0644\u0646\u0627\u062f\u064a \u062c\u062f\u0648\u0644 \u0627\u0644\u062d\u0635\u0635\u060c \u062a\u062e\u0628\u0631\u0643 \u0627\u0644\u0625\u0636\u0627\u0641\u0629 \u0628\u0630\u0644\u0643. \u062a\u0642\u0627\u0631\u0646 \u0627\u0644\u062c\u062f\u0648\u0644 \u0627\u0644\u0623\u0633\u0628\u0648\u0639\u064a \u0628\u0627\u0644\u0630\u064a \u0631\u0623\u062a\u0647 \u0633\u0627\u0628\u0642\u064b\u0627 \u0648\u062a\u0639\u0631\u0636 \u0645\u0627 \u0627\u0646\u062a\u0642\u0644 \u0648\u0645\u0627 \u0623\u064f\u0636\u064a\u0641 \u0623\u0648 \u0623\u064f\u0644\u063a\u064a \u0648\u0645\u0627 \u062a\u063a\u064a\u0651\u0631 \u0627\u0633\u0645\u0647 \u0648\u0623\u064a\u0646 \u062a\u0628\u062f\u0651\u0644 \u0627\u0644\u0645\u062f\u0631\u0628. \u0648\u0625\u0630\u0627 \u0643\u0627\u0646\u062a \u0625\u062d\u062f\u0649 \u0642\u0648\u0627\u0639\u062f\u0643 \u062a\u0634\u064a\u0631 \u0625\u0644\u0649 \u062f\u0631\u0633 \u0627\u0646\u062a\u0642\u0644 \u0625\u0644\u0649 \u0648\u0642\u062a \u0622\u062e\u0631\u060c \u062a\u0639\u0631\u0636 \u0627\u0644\u0642\u0627\u0639\u062f\u0629 \u0646\u0642\u0644\u0647\u0627 \u0645\u0639\u0647.",
+      wn_192_1: "🏷️ صار اسم الإضافة الآن “Auto-Book for group fitness classes”. الإضافة نفسها والإعدادات نفسها — لكنها لم تعد تحمل اسم استوديو لا علاقة لها به. قائمة المتابعة والحصص الأسبوعية والسجل كما هي.",
+      wn_192_2: "⚡ أيقونة جديدة. كانت السابقة تستعير حرف منصة الحجز وألوانها؛ أما هذه فهي علامة المشروع نفسه — الأخضر ذاته بشكل جديد. ولم يتغيّر شيء في طريقة عمل الإضافة.",
       wn_191_1: "⏱ تعرض الإعدادات الآن نافذة التسجيل الخاصة باستوديوك — مقروءة من جدوله لا مفترضة. وكل موضع كان يقول «72 ساعة» يعرض الآن قيمتك، وإن اختلفت بين الدروس فهو يقول ذلك صراحة.",
       wn_181_1: "🏷️ أصبحت الإضافة تتبع الاستوديو الخاص بك. فهي تتعرّف على الاستوديو الذي سجّلت الدخول إليه في BoostApp وتنتقل إليه تلقائيًا — الجدول والحجوزات والسجل — بدل البقاء على الاستوديو المضمّن. وإلى أن يُعرف استوديوك، يفتح تسجيل الدخول صفحة الدخول الرئيسية في BoostApp.",
       wn_180_1: "\ud83d\udcaa \u0627\u0644\u0623\u062d\u062f\u0627\u062b \u0627\u0644\u0633\u0627\u0628\u0642\u0629 \u2190 \u0627\u0644\u0635\u062d\u0629 \u062a\u0639\u0645\u0644 \u0627\u0644\u0622\u0646 \u062f\u0648\u0646 \u062c\u0647\u0627\u0632 \u062a\u062a\u0628\u0639: \u0643\u0644 \u0627\u0644\u062f\u0631\u0648\u0633 \u0627\u0644\u062a\u064a \u062d\u0636\u0631\u062a\u0647\u0627 \u0645\u0639 \u0627\u0644\u0639\u0636\u0644\u0627\u062a \u0627\u0644\u062a\u064a \u0639\u0645\u0644\u062a \u0639\u0644\u064a\u0647\u0627 \u062e\u0637\u0629 \u0627\u0644\u062a\u0645\u0631\u064a\u0646 \u2014 \u062d\u0633\u0628 \u0646\u0648\u0639 \u0627\u0644\u062f\u0631\u0633 \u0648\u062f\u0631\u0633\u064b\u0627 \u062f\u0631\u0633\u064b\u0627. \u0631\u0628\u0637 \u062c\u0647\u0627\u0632 \u064a\u0636\u064a\u0641 \u0627\u0644\u0646\u0628\u0636 \u0648\u0627\u0644\u0645\u0646\u0627\u0637\u0642 \u0648\u0627\u0644\u062e\u0637\u0648\u0627\u062a.",
@@ -312,6 +322,7 @@
   // items: i18n keys listed on the update card.
   // tourKeys: keys of TOUR steps to spotlight via the "Show me" button.
   const WHATS_NEW = {
+    "1.9.2": { items: ["wn_192_2", "wn_192_1"], tourKeys: [] },
     "1.9.1": { items: ["wn_191_1"], tourKeys: [] },
     "1.9.0": { items: ["wn_190_1"], tourKeys: [] },
     "1.8.1": { items: ["wn_181_1"], tourKeys: [] },

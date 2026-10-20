@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Auto-Book for group fitness classes",
-  "version": "1.9.1",
-  "description": "Watchlist + automatic registration for BoostApp group lessons. Books the instant your studio's registration window opens.",
+  "version": "1.9.2",
+  "description": "Books your group fitness classes the second your studio's registration window opens, and tracks the classes you attended.",
   "permissions": ["storage", "alarms", "notifications", "cookies", "scripting", "tabs", "identity"],
   "host_permissions": [
     "https://app.boostapp.co.il/*",
