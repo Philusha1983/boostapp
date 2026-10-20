@@ -6,6 +6,39 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.9.1] — 2026-10-20
+
+A user at another studio asked how to improve his odds on a class that fills
+in seconds. The honest answer needed his studio's registration window — and
+every string in the extension told him 72 hours, which is this project's home
+studio's number, not his.
+
+### Fixed
+- **`openOrderTime: 0` was read as "missing" and became 72 hours.**
+  `Number(cls.openOrderTime || 72)` swallows a real zero, so a studio that
+  opens registration with no advance window would have had its open moment
+  pushed three days out and the snipe scheduled for a time already past. The
+  test is now "is there a usable number", not "is it truthy".
+- **Ten user-facing strings stated 72 hours as fact** — `settings_note` and
+  the Auto-book tour step, in all five languages — along with both READMEs,
+  DOCUMENTATION.md and the public site's feature card. The engine has always
+  used the per-class value; only the copy was wrong. It no longer names a
+  number it cannot know.
+
+### Added
+- **Settings states your studio's actual registration window**, derived from
+  the schedule already fetched for the weekly grid — no extra request. One
+  line: "Your studio opens registration 72 hours (3 days) before each lesson."
+  - `openOrderTime` is per **class**, not per studio, so when classes disagree
+    the line says so and points at the per-rule opening time instead of
+    inventing a single answer.
+  - Ties go to the smaller window, so a mixed studio is never described as
+    more generous than it is. A failed fetch leaves the last known answer
+    alone rather than blanking it.
+  - Cleared on a studio switch, like the other studio-scoped caches; it
+    rebuilds on the next refresh.
+
+
 ## [1.9.0] — 2026-10-19
 
 The studio changed its timetable twice in one week — every class renamed with

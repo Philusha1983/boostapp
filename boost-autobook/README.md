@@ -2,7 +2,7 @@
 
 A Chrome extension (Manifest V3) that watches BoostApp group lessons and
 **automatically registers you the instant the studio's registration window
-opens** — by default 72 hours before the lesson starts.
+opens** — however many hours ahead your studio sets, read from its own schedule.
 
 It works for **Training Harmony** (`app.boostapp.co.il`, studio token
 `6284d298e4b18`, company `256826`) out of the box, and is configurable for any
@@ -52,7 +52,7 @@ BoostApp studio.
   was renamed, or changed teacher — above your weekly slots. A rule whose
   class moved to another hour offers to follow it.
 
-> ⚠️ It **cannot** beat the studio's 72-hour gate — the server rejects bookings
+> ⚠️ It **cannot** beat the studio's gate — the server rejects bookings
 > before the window opens. The extension simply fires the instant it legitimately
 > can, far faster and more reliably than by hand.
 
@@ -76,7 +76,7 @@ Chrome must be running for background polling to occur.
 2. Under **Add a lesson to watch**, choose a date (or weekday) + time, optional
    class/teacher filter, and click **Add to watchlist**.
 3. Each card shows live status:
-   - `Opens later` — within the 72h gate; shows the exact open time + countdown.
+   - `Opens later` — before the window opens; shows the exact open time + countdown.
    - `OPEN` — bookable now (auto-books if the master switch is on).
    - `FULL` — open but no spots.
    - `BOOKED` — registered; offers **Cancel booking**.
@@ -115,7 +115,9 @@ Notes on ids:
   `.item--date`, `.item-note` (cancellation policy), `data-classid`, and a
   `.js--class-cancel-with-new-model` cancel button carrying the canonical booking id.
 
-Open time = lesson start − `openOrderTime` hours (data-driven; defaults to 72).
+Open time = lesson start − `openOrderTime` hours, per class, from the studio's
+own data. 72 is a fallback for a class that carries no value — never a rule.
+Settings shows the studio's actual window, and says so when classes differ.
 `classStudioActId` is generated per `getPurchaseOptions` call, so the extension
 always fetches options immediately before registering.
 

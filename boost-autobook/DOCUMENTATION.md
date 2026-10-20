@@ -2,7 +2,7 @@
 
 A Chrome extension (Manifest V3) that watches the **Training Harmony** studio on
 BoostApp and automatically registers you for group fitness lessons the instant
-the studio's 72-hour registration window opens. It also mirrors your BoostApp
+your studio's registration window opens. It also mirrors your BoostApp
 home page inside a popup: upcoming registrations, active subscription and its
 monthly balance, participant lists, and lesson descriptions.
 
@@ -16,7 +16,7 @@ monthly balance, participant lists, and lesson descriptions.
 ## What it does
 
 At its core the extension keeps a **watchlist of weekly slots** — for example
-"every Tuesday at 19:00, Stretching." BoostApp only opens registration 72 hours
+"every Tuesday at 19:00, Stretching." BoostApp only opens registration a set number of hours
 before a class starts, so the extension polls each watched slot and, the moment
 its window opens, submits the booking on your behalf. It respects your
 subscription limits (monthly quota and the one-lesson-per-day rule, including
@@ -35,7 +35,7 @@ any class, and the lesson description.
 
 - Weekly recurring slots or one-time slots for a specific date.
 - Polls `getPurchaseOptions` and fires `registerToClassWithClientActivity` the
-  instant the 72h window opens ("sniping").
+  instant your studio's window opens ("sniping").
 - A global **Auto-book** toggle in the header with a coloured **On/Off** label
   and a toast explaining the effect. When off, the *My weekly slots* tab shows a
   warning banner with a one-tap **Turn on**, and the scheduling buttons
@@ -314,7 +314,9 @@ All calls are `POST` JSON with `credentials: "include"`.
 
 ### Registration timing
 
-Registration opens **72 hours** (`openOrderTime`, data-driven) before class start.
+Registration opens `openOrderTime` hours before class start — a **per-class**
+value from the studio's own schedule, not a fixed 72. Settings states your
+studio's window, and each waiting rule shows its own opening time.
 The snipe loop polls `getPurchaseOptions` until it succeeds, then registers
 immediately.
 
@@ -377,5 +379,5 @@ extension as the realistic option. The full analysis is in
 `backend-scheduler-research.md`.
 
 *This automates only your own membership, booking classes you're entitled to at
-the earliest legitimate moment — it does not bypass the 72h rule (the server
+the earliest legitimate moment — it does not bypass the studio's rule (the server
 still enforces it). Check the studio's terms before relying on it.*

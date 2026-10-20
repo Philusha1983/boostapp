@@ -84,8 +84,12 @@ const I18N = {
     export: "Export", import: "Import", download: "Download file",
     exportedToast: "Exported — copied to clipboard", importedToast: "Imported {n} slots", importFail: "Couldn't read that backup",
     lbl_company: "Company #", lbl_token: "Studio token (GetUrl)",
+    sw_hours: "{h} hours", sw_hours_days: "{h} hours ({d} days)", sw_now: "with no advance window",
+    sw_known: "⏱ Your studio opens registration {h} before each lesson.",
+    sw_mixed: "⏱ Your studio opens registration between {min} and {max} hours before a lesson, depending on the class — every rule shows its own opening time.",
+    sw_unknown: "⏱ The opening time comes from your studio. Each rule shows its own once the schedule has been fetched.",
     lbl_poll: "Poll every (minutes)", lbl_snipe: "Snipe lead (minutes)", lbl_daily: "Daily limit (0 = auto from plan)",
-    settings_note: "Daily limit only controls the local warning — the studio's server still enforces your real per-day allowance. You must be signed in to BoostApp in this Chrome profile. The extension cannot register before the studio's 72h window opens — it fires the instant it does.",
+    settings_note: "Daily limit only controls the local warning — the studio's server still enforces your real per-day allowance. You must be signed in to BoostApp in this Chrome profile. The extension cannot register before your studio's window opens — it fires the instant it does.",
     status_open: "OPEN", status_waiting: "Scheduled", status_full: "FULL", status_passed: "Past",
     "status_not-found": "Not found", status_done: "Done", status_none: "No upcoming",
     chgTitle: "The studio changed the timetable", chgGotIt: "Got it",
@@ -174,8 +178,12 @@ const I18N = {
     export: "ייצוא", import: "ייבוא", download: "הורדת קובץ",
     exportedToast: "יוצא — הועתק ללוח", importedToast: "יובאו {n} משבצות", importFail: "לא ניתן לקרוא את הגיבוי",
     lbl_company: "מספר חברה", lbl_token: "מזהה סטודיו (GetUrl)",
+    sw_hours: "{h} שעות", sw_hours_days: "{h} שעות ({d} ימים)", sw_now: "ללא חלון מוקדם",
+    sw_known: "⏱ ההרשמה במועדון שלך נפתחת {h} לפני כל שיעור.",
+    sw_mixed: "⏱ ההרשמה במועדון שלך נפתחת בין {min} ל־{max} שעות לפני השיעור, תלוי בשיעור — כל כלל מציג את זמן הפתיחה שלו.",
+    sw_unknown: "⏱ זמן הפתיחה מגיע מהמועדון שלך. כל כלל יציג את הזמן שלו אחרי שלוח השיעורים ייטען.",
     lbl_poll: "תדירות בדיקה (דקות)", lbl_snipe: "מרווח לפני פתיחה (דקות)", lbl_daily: "מגבלה יומית (0 = אוטומטי מהמנוי)",
-    settings_note: "המגבלה היומית משפיעה רק על ההתראה המקומית — שרת הסטודיו עדיין אוכף את המכסה היומית האמיתית שלך. יש להיות מחובר ל-BoostApp בפרופיל Chrome הזה. התוסף אינו יכול להירשם לפני פתיחת חלון 72 השעות — הוא פועל ברגע שהוא נפתח.",
+    settings_note: "המגבלה היומית משפיעה רק על ההתראה המקומית — שרת הסטודיו עדיין אוכף את המכסה היומית האמיתית שלך. יש להיות מחובר ל-BoostApp בפרופיל Chrome הזה. התוסף אינו יכול להירשם לפני פתיחת חלון ההרשמה של המועדון שלך — הוא פועל ברגע שהוא נפתח.",
     status_open: "פתוח", status_waiting: "מתוזמן", status_full: "מלא", status_passed: "עבר",
     "status_not-found": "לא נמצא", status_done: "הושלם", status_none: "אין קרוב",
     chgTitle: "הסטודיו שינה את מערכת השעות", chgGotIt: "הבנתי",
@@ -264,8 +272,12 @@ const I18N = {
     export: "Экспорт", import: "Импорт", download: "Скачать файл",
     exportedToast: "Экспортировано — скопировано в буфер", importedToast: "Импортировано слотов: {n}", importFail: "Не удалось прочитать резервную копию",
     lbl_company: "Номер компании", lbl_token: "Токен студии (GetUrl)",
+    sw_hours: "{h} ч.", sw_hours_days: "{h} ч. ({d} дн.)", sw_now: "без предварительного окна",
+    sw_known: "⏱ Запись в вашей студии открывается за {h} до каждого занятия.",
+    sw_mixed: "⏱ Запись в вашей студии открывается за {min}–{max} ч. до занятия, в зависимости от класса — каждое правило показывает своё время открытия.",
+    sw_unknown: "⏱ Время открытия берётся из вашей студии. Каждое правило покажет своё, как только расписание загрузится.",
     lbl_poll: "Проверять каждые (мин)", lbl_snipe: "Запас перед открытием (мин)", lbl_daily: "Дневной лимит (0 = из абонемента)",
-    settings_note: "Дневной лимит влияет только на локальное предупреждение — сервер студии всё равно применяет ваш реальный дневной лимит. Нужно войти в BoostApp в этом профиле Chrome. Расширение не может записать до открытия окна 72 ч — оно срабатывает в момент открытия.",
+    settings_note: "Дневной лимит влияет только на локальное предупреждение — сервер студии всё равно применяет ваш реальный дневной лимит. Нужно войти в BoostApp в этом профиле Chrome. Расширение не может записать до открытия окна регистрации вашей студии — оно срабатывает в момент открытия.",
     status_open: "ОТКРЫТО", status_waiting: "Запланировано", status_full: "ПОЛНО", status_passed: "Прошло",
     "status_not-found": "Не найдено", status_done: "Готово", status_none: "Нет ближайших",
     chgTitle: "Студия изменила расписание", chgGotIt: "Понятно",
@@ -354,8 +366,12 @@ const I18N = {
     export: "Експорт", import: "Імпорт", download: "Завантажити файл",
     exportedToast: "Експортовано — скопійовано в буфер", importedToast: "Імпортовано слотів: {n}", importFail: "Не вдалося прочитати резервну копію",
     lbl_company: "Номер компанії", lbl_token: "Токен студії (GetUrl)",
+    sw_hours: "{h} год.", sw_hours_days: "{h} год. ({d} дн.)", sw_now: "без попереднього вікна",
+    sw_known: "⏱ Запис у вашій студії відкривається за {h} до кожного заняття.",
+    sw_mixed: "⏱ Запис у вашій студії відкривається за {min}–{max} год. до заняття, залежно від заняття — кожне правило показує свій час відкриття.",
+    sw_unknown: "⏱ Час відкриття береться з вашої студії. Кожне правило покаже свій, щойно розклад завантажиться.",
     lbl_poll: "Перевіряти кожні (хв)", lbl_snipe: "Запас перед відкриттям (хв)", lbl_daily: "Денний ліміт (0 = з абонемента)",
-    settings_note: "Денний ліміт впливає лише на локальне попередження — сервер студії все одно застосовує ваш реальний денний ліміт. Потрібно увійти в BoostApp у цьому профілі Chrome. Розширення не може записати до відкриття вікна 72 год — воно спрацьовує в момент відкриття.",
+    settings_note: "Денний ліміт впливає лише на локальне попередження — сервер студії все одно застосовує ваш реальний денний ліміт. Потрібно увійти в BoostApp у цьому профілі Chrome. Розширення не може записати до відкриття вікна реєстрації вашої студії — воно спрацьовує в момент відкриття.",
     status_open: "ВІДКРИТО", status_waiting: "Заплановано", status_full: "ПОВНО", status_passed: "Минуло",
     "status_not-found": "Не знайдено", status_done: "Готово", status_none: "Немає найближчих",
     chgTitle: "Студія змінила розклад", chgGotIt: "Зрозуміло",
@@ -444,8 +460,12 @@ const I18N = {
     export: "تصدير", import: "استيراد", download: "تنزيل ملف",
     exportedToast: "تم التصدير — نُسخ إلى الحافظة", importedToast: "تم استيراد {n} مواعيد", importFail: "تعذّرت قراءة النسخة الاحتياطية",
     lbl_company: "رقم الشركة", lbl_token: "رمز الاستوديو (GetUrl)",
+    sw_hours: "{h} ساعة", sw_hours_days: "{h} ساعة ({d} أيام)", sw_now: "بدون نافذة مسبقة",
+    sw_known: "⏱ يفتح التسجيل في الاستوديو الخاص بك قبل {h} من كل درس.",
+    sw_mixed: "⏱ يفتح التسجيل في الاستوديو الخاص بك قبل {min} إلى {max} ساعة من الدرس، حسب الصف — كل قاعدة تعرض وقت فتحها.",
+    sw_unknown: "⏱ وقت الفتح يأتي من الاستوديو الخاص بك. ستعرض كل قاعدة وقتها بعد تحميل الجدول.",
     lbl_poll: "التحقّق كل (دقائق)", lbl_snipe: "الفارق قبل الفتح (دقائق)", lbl_daily: "الحد اليومي (0 = تلقائي من الاشتراك)",
-    settings_note: "الحد اليومي يتحكّم فقط في التنبيه المحلي — خادم الاستوديو لا يزال يفرض الحد اليومي الفعلي. يجب تسجيل الدخول إلى BoostApp في ملف Chrome هذا. لا يمكن للإضافة التسجيل قبل فتح نافذة 72 ساعة — تعمل لحظة فتحها.",
+    settings_note: "الحد اليومي يتحكّم فقط في التنبيه المحلي — خادم الاستوديو لا يزال يفرض الحد اليومي الفعلي. يجب تسجيل الدخول إلى BoostApp في ملف Chrome هذا. لا يمكن للإضافة التسجيل قبل فتح نافذة التسجيل في الاستوديو الخاص بك — تعمل لحظة فتحها.",
     status_open: "مفتوح", status_waiting: "مجدول", status_full: "ممتلئ", status_passed: "انتهى",
     "status_not-found": "غير موجود", status_done: "تم", status_none: "لا حصص قادمة",
     chgTitle: "النادي غيّر جدول الحصص", chgGotIt: "فهمت",
@@ -1433,6 +1453,25 @@ function initials(name) {
   return parts.map(p => p[0]).join("");
 }
 // Unified header status row: avatar + name + connection dot + state + action.
+// The studio's own registration window, stated in the user's terms.
+// Hours are formatted with the day count because "72 hours" is how the API
+// says it and "3 days" is how a person thinks about it.
+function fmtWindowHours(h) {
+  if (h === 0) return t("sw_now");
+  // The day count only earns its place from two days up: "24 hours (1 day)"
+  // is noise, "72 hours (3 days)" is the number people actually plan around.
+  if (h >= 48 && h % 24 === 0) return t("sw_hours_days", { h, d: h / 24 });
+  return t("sw_hours", { h });
+}
+function renderStudioWindow(w) {
+  const el = $("studioWindowNote");
+  if (!el) return;
+  if (!w || w.hours == null) { el.textContent = t("sw_unknown"); return; }
+  el.textContent = w.mixed
+    ? t("sw_mixed", { min: w.min, max: w.max })
+    : t("sw_known", { h: fmtWindowHours(w.hours) });
+}
+
 function renderAuth(auth, client) {
   const name = client && client.name;
   const photo = client && client.photo;
@@ -1683,10 +1722,11 @@ async function refresh() {
   // former names resolve, and must not apply one studio's to another.
   if (self.ClassTypes) ClassTypes.setStudio(state && state.config && state.config.companyNum);
   if (!state) return;
-  const { config, targets, auth, subscription, registrations, client } = state;
+  const { config, targets, auth, subscription, registrations, client, studioWindow } = state;
   lastRegistrations = registrations || null;   // used by the Period grid to overlay external bookings
   if (config && config.lang && config.lang !== LANG) applyLang(config.lang);
   renderAuth(auth, client);
+  renderStudioWindow(studioWindow);
   renderSubscription(subscription);
   await loadMuscle(); renderBodyPref();
   renderRegistrations(registrations);

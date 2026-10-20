@@ -3,7 +3,7 @@
  * ----------------------------------------------------------------------------
  * Polls the BoostApp lesson API on a schedule, enriches each watch-list target
  * with live info (class name, teacher, registered/capacity), and — when the
- * studio's registration window opens (default 72h before the lesson) —
+ * studio's registration window opens (per class; 72h only as a fallback) —
  * automatically registers the user.
  *
  * All requests reuse the user's logged-in session cookie (credentials:include),
@@ -501,10 +501,17 @@ function findMovedClass(classes, target) {
     .slice(0, 4);
 }
 
-// Registration-open timestamp (ms). openOrderTime is in hours (default 72).
+// Registration-open timestamp (ms). openOrderTime is in hours, per CLASS.
 // Computed in the STUDIO's timezone so it stays correct when the device travels.
+//
+// 72 is only a fallback for a class that carries no value — it is this
+// project's home studio's number, not a rule. `|| 72` used to swallow a real
+// 0 (a studio with no advance window) and push registration three days out,
+// so the test is explicitly "is there a usable number" rather than "is it
+// truthy".
 function openTimeMs(cls, date) {
-  const hours = Number(cls.openOrderTime || 72);
+  const raw = (cls && cls.openOrderTime != null && cls.openOrderTime !== "") ? Number(cls.openOrderTime) : NaN;
+  const hours = (Number.isFinite(raw) && raw >= 0) ? raw : 72;
   return studioTimeMs(date, cls.startTime || "00:00:00") - hours * 3600 * 1000;
 }
 
@@ -571,7 +578,7 @@ async function enrichTarget(cfg, target) {
     const now = Date.now();
     const full = info.registered >= info.capacity;
     if (info.startAt && now > info.startAt) status = "passed";
-    else if (now < info.openAt) status = "waiting";        // before the 72h window
+    else if (now < info.openAt) status = "waiting";        // before this class's window
     else if (full) status = "full";                         // open but no spots
     else status = "open";                                   // bookable now
   } else if (daysAhead(date) > 6) {
@@ -602,6 +609,51 @@ async function enrichTarget(cfg, target) {
   }
   await updateTarget(target.id, patch);
   return info;
+}
+
+// ---------------------------------------------------------------------------
+// Studio registration window
+//
+// `openOrderTime` is per CLASS, not per studio — a box can gate its 06:00 WOD
+// differently from a weekend class — and `openTimeMs` has always used the
+// per-class value. What was missing is a way to TELL the user their number:
+// every user-facing string said "72h", which is this project's home studio,
+// not theirs. This summarises what was actually fetched so the UI can state
+// the user's own window, and say so plainly when classes disagree.
+//
+// Note `!= null` rather than `||`: openOrderTime 0 is a real answer (open
+// immediately), and `|| 72` silently turned it into three days.
+// ---------------------------------------------------------------------------
+const WINDOW_KEY = "bsab_studio_window";   // { hours, mixed, min, max, samples, checkedAt }
+
+function studioWindowFrom(classes) {
+  const tally = new Map();
+  (classes || []).forEach(c => {
+    if (!c || c.openOrderTime == null || c.openOrderTime === "") return;
+    const h = Number(c.openOrderTime);
+    if (!Number.isFinite(h) || h < 0) return;
+    tally.set(h, (tally.get(h) || 0) + 1);
+  });
+  if (!tally.size) return null;
+  const values = [...tally.keys()].sort((a, b) => a - b);
+  // Most common wins; ties go to the smaller window, so a mixed studio is
+  // never described as more generous than it is.
+  let hours = values[0], best = -1;
+  values.forEach(h => { const n = tally.get(h); if (n > best) { best = n; hours = h; } });
+  return {
+    hours, mixed: values.length > 1,
+    min: values[0], max: values[values.length - 1],
+    samples: values.reduce((a, h) => a + tally.get(h), 0),
+    checkedAt: Date.now()
+  };
+}
+
+// Never overwrite a known answer with nothing: a failed fetch must not make
+// the UI forget the studio's window.
+async function recordStudioWindow(classes) {
+  const w = studioWindowFrom(classes);
+  if (!w) return;
+  try { await chrome.storage.local.set({ [WINDOW_KEY]: w }); } catch (e) {}
 }
 
 async function fetchClassesRange(cfg, fromOffset, toOffset) {
@@ -695,6 +747,7 @@ async function getSchedule(cfg) {
   let classes = [], complete = true;
   try { classes = classes.concat(await fetchClassesRange(cfg, 0, 6)); } catch (e) { complete = false; }
   try { classes = classes.concat(await fetchClassesRange(cfg, -7, -1)); } catch (e) { complete = false; }
+  await recordStudioWindow(classes);
 
   const store = await chrome.storage.local.get(["bsab_schedule", SCHED_SNAP_KEY, SCHED_CHANGES_KEY]);
   const cache = store.bsab_schedule || {};
@@ -1319,7 +1372,7 @@ async function adoptStudio(p, tabId) {
   // alongside rather than collide. Keeping stale rows is cheap; losing real ones
   // is permanent.
   try {
-    await chrome.storage.local.remove(["bsab_schedule", "bsab_registrations", "bsab_subscription"]);
+    await chrome.storage.local.remove(["bsab_schedule", "bsab_registrations", "bsab_subscription", WINDOW_KEY]);
   } catch (e) {}
   logRunTab("studio changed -> GetUrl", tok, "— studio-scoped caches cleared");
 }
@@ -1718,14 +1771,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       switch (msg.cmd) {
         case "getState": {
           await ensurePollAlarm();
-          const store = await chrome.storage.local.get(["bsab_auth", "bsab_subscription", "bsab_registrations", "bsab_client"]);
+          const store = await chrome.storage.local.get(["bsab_auth", "bsab_subscription", "bsab_registrations", "bsab_client", WINDOW_KEY]);
           sendResponse({
             config: await getConfig(),
             targets: await getTargets(),
             auth: store.bsab_auth || { loggedIn: null },
             subscription: store.bsab_subscription || null,
             registrations: store.bsab_registrations || null,
-            client: store.bsab_client || null
+            client: store.bsab_client || null,
+            studioWindow: store[WINDOW_KEY] || null
           });
           break;
         }

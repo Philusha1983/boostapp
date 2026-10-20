@@ -7,7 +7,7 @@
 **Your BoostApp classes, booked the second registration opens.**
 
 A free, open-source Chrome extension that watches your favorite BoostApp group
-lessons and registers you automatically the instant the studio's 72-hour
+lessons and registers you automatically the instant your studio's registration
 window opens — no more refreshing the page at midnight.
 
 [![Latest release](https://img.shields.io/github/v/release/Philusha1983/boostapp?label=latest&color=00a87a)](https://github.com/Philusha1983/boostapp/releases/latest)
@@ -24,7 +24,7 @@ window opens — no more refreshing the page at midnight.
 
 ## ✨ What it does
 
-- 🎯 **Snipes registration** — fires the exact moment the 72-hour booking window opens, with fast retries until it succeeds
+- 🎯 **Snipes registration** — fires the exact moment your studio's booking window opens, with fast retries until it succeeds
 - 📅 **Weekly slots** — tick the classes you attend every week and they're booked for you again and again
 - 🗓️ **Three views** — list, week grid, or a full calendar of your subscription period (with a preview of the next one)
 - 💳 **Subscription at a glance** — entries left, daily cap, validity, all synced live
