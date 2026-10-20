@@ -6,6 +6,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+### Removed
+- **The standalone history bookmarklet** (`boost-autobook/standalone/`). It was
+  an experiment in offering the history dashboard to people who had not
+  installed the extension, and it had been broken for nine releases without
+  anyone noticing: both build scripts pointed at an absolute path from a machine
+  that no longer existed, so the shipped bookmarklet was frozen at whatever
+  `history.js` looked like when that path last worked. Nothing linked to it from
+  the site or the popup. Kept in the history rather than maintained —
+  `git log --diff-filter=D -- boost-autobook/standalone` finds it.
+
 ### Changed
 - **The repository now presents itself like a real project.** GPL-3.0 licence
   (`LICENSE`, plus a notice at the top of every source file) — the README

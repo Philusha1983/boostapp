@@ -19,7 +19,6 @@ rm -f "$OUT"
 cd "$SRC"
 zip -qr "$OUT" . \
   -x "*.DS_Store" \
-  -x "standalone/*" \
   -x "*.zip"
 
 echo "Built  : $OUT"

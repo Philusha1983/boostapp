@@ -119,9 +119,9 @@ distribute a modified version, it has to stay open under the same license.
 
 ## 🛠 For developers
 
-Repo layout: `boost-autobook/` is the extension (MV3), `boost-autobook/standalone/`
-is an extension-free history dashboard (bookmarklet), `docs/` is the GitHub Pages
-website, `scripts/build.sh` builds the versioned release zip into `dist/`.
+Repo layout: `boost-autobook/` is the extension (MV3), `docs/` is the GitHub
+Pages website, `scripts/build.sh` builds the versioned release zip into `dist/`,
+`scripts/screenshots/` renders the README and store images.
 
 **Versioning** — `boost-autobook/manifest.json` `version` is the single source
 of truth (SemVer): patch = fixes · minor = features · major = anything that
