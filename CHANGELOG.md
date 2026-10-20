@@ -6,6 +6,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+### Changed
+- **The extension is now called "Auto-Book for group fitness classes".** It was
+  "Boost Auto-Book (Training Harmony)", which names a studio this project has
+  nothing to do with and reads as official. The Chrome Web Store rejects a
+  listing whose *name* implies affiliation with another product, and a
+  trademark complaint can pull a published one without warning. Naming BoostApp
+  and the studio in the description is nominative use and stays. The repo, this
+  changelog and the site keep "Boost Auto-Book" as the project's own name.
+  In-product: the popup header, its title, the toolbar tooltip and
+  `app.webmanifest` (whose `short_name` was literally "Boost").
+
+### Fixed
+- **A missing translation could leave a raw key on screen.** `t()` returns the
+  key itself when a string is absent, and `applyLang()` wrote that straight into
+  the element — so `tour_replay`, which lives in `walkthrough.js`'s table rather
+  than the popup's, replaced the Tour link's label on every language switch and
+  stayed there until walkthrough re-localised. If walkthrough had failed to
+  load, it would have stayed forever. `applyLang()` now leaves the markup
+  default in place when it has no translation of its own.
+
 ### Removed
 - **The standalone history bookmarklet** (`boost-autobook/standalone/`). It was
   an experiment in offering the history dashboard to people who had not

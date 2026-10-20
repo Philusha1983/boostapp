@@ -36,7 +36,8 @@ headless browser:
 
 **The `chrome.*` APIs.** All 33 of the popup's commands go through a single
 `sendMessage` call (`popup.js`), so the shim in `render.js` is one switch
-statement. `chrome.storage.local` is a plain object.
+statement. `chrome.storage.local` is a plain object. This is the same trick
+`boost-autobook/standalone/build_bookmarklet.py` plays on `history.js`.
 
 **Rubik.** `popup.html` pulls it from Google Fonts. The harness inlines the
 same four weights from `fonts/` as data URIs and blocks the network request, so

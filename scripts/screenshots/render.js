@@ -95,7 +95,7 @@ ${fs.readFileSync(path.join(HERE, "fixtures.js"), "utf8")}
   window.chrome = {
     runtime: {
       sendMessage: (msg, cb) => cbOrPromise(RESP(msg), cb),
-      getManifest: () => ({ version: "1.9.1", name: "Boost Auto-Book" }),
+      getManifest: () => ({ version: "1.9.1", name: "Auto-Book for group fitness classes" }),
       getURL: (p) => p,
       lastError: null,
     },

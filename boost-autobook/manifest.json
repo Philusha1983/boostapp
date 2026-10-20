@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Boost Auto-Book (Training Harmony)",
+  "name": "Auto-Book for group fitness classes",
   "version": "1.9.1",
   "description": "Watchlist + automatic registration for BoostApp group lessons. Books the instant your studio's registration window opens.",
   "permissions": ["storage", "alarms", "notifications", "cookies", "scripting", "tabs", "identity"],
@@ -19,7 +19,7 @@
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_title": "Boost Auto-Book",
+    "default_title": "Auto-Book",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",

@@ -1,6 +1,6 @@
 {
-  "name": "Boost Auto-Book",
-  "short_name": "Boost",
+  "name": "Auto-Book for group fitness classes",
+  "short_name": "Auto-Book",
   "start_url": "popup.html",
   "scope": "./",
   "display": "standalone",

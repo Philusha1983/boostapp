@@ -564,8 +564,18 @@ function applyLang(lang) {
   LANG = I18N[lang] ? lang : "en";
   document.documentElement.lang = LANG;
   document.documentElement.dir = RTL_LANGS.includes(LANG) ? "rtl" : "ltr";
-  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.getAttribute("data-i18n")); });
-  document.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.getAttribute("data-i18n-title")); });
+  // t() returns the key itself when there is no translation. Some keys on this
+  // page belong to walkthrough.js's table, not ours (tour_replay), so writing
+  // t() blindly stamps a raw identifier over the markup default and leaves it
+  // there until walkthrough re-localises - or forever, if it failed to load.
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const k = el.getAttribute("data-i18n"), v = t(k);
+    if (v !== k) el.textContent = v;
+  });
+  document.querySelectorAll("[data-i18n-title]").forEach(el => {
+    const k = el.getAttribute("data-i18n-title"), v = t(k);
+    if (v !== k) el.title = v;
+  });
   if (self.MusclePanel) { MusclePanel.setLang(LANG); renderBodyPref(); }
   applyViewToggleUI("upcoming"); applyViewToggleUI("slots");
   if ($("checkNow")) $("checkNow").textContent = t("checkNow");
