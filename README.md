@@ -108,7 +108,8 @@ No servers, no analytics, no accounts. Everything the extension knows —
 including your class history, which is fetched from your own profile — lives
 **only in your browser's local storage on your computer**. It is never
 uploaded, shared, or sent anywhere. The code is open source, so anyone can
-verify this.
+verify this. The full policy is at
+[philusha1983.github.io/boostapp/privacy.html](https://philusha1983.github.io/boostapp/privacy.html).
 
 ## 📄 License
 

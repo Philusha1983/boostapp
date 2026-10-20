@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — Boost Auto-Book</title>
+<meta name="description" content="Boost Auto-Book stores everything it knows in your own browser. No servers, no analytics, no accounts.">
+<link rel="canonical" href="https://philusha1983.github.io/boostapp/privacy.html">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://philusha1983.github.io/boostapp/privacy.html">
+<meta property="og:title" content="Privacy Policy — Boost Auto-Book">
+<meta property="og:description" content="No servers, no analytics, no accounts. Everything stays in your browser.">
+<meta property="og:image" content="https://philusha1983.github.io/boostapp/assets/social-preview.png">
+<meta name="theme-color" content="#00e0a0">
+<link rel="icon" type="image/png" href="assets/logo128.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font:'Rubik',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+    --green:#00e0a0; --green-deep:#00a87a; --ink:#063a2b;
+    --bg:#f5f7f6; --card:#ffffff; --line:#e3e6e0; --text:#1f2a17; --muted:#66716c;
+    --ok-bg:#e9f9f2; --ok-bd:#bfead9; --warn-bg:#fff6e6; --warn-bd:#eeda9e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#0d1513; --card:#16211e; --line:#26332f; --text:#e7eeec; --muted:#93a19b;
+      --ok-bg:#10281f; --ok-bd:#1f5540; --warn-bg:#2c2410; --warn-bd:#5d4d1c;
+    }
+  }
+  * { box-sizing:border-box; margin:0; }
+  body { font-family:var(--font); background:var(--bg); color:var(--text); line-height:1.7; }
+  a { color:var(--green-deep); }
+  .wrap { max-width:760px; margin:0 auto; padding:0 22px; }
+  nav { border-bottom:1px solid var(--line); background:var(--card); }
+  .nav-in { display:flex; align-items:center; gap:10px; padding:12px 0; }
+  .brand { display:flex; align-items:center; gap:9px; font-weight:700; font-size:15px; color:var(--text); text-decoration:none; }
+  .brand img { width:26px; height:26px; border-radius:6px; display:block; }
+  .back { margin-inline-start:auto; font-size:13.5px; font-weight:500; }
+  header { padding:48px 0 8px; }
+  h1 { font-size:clamp(26px,4vw,36px); line-height:1.2; font-weight:800; letter-spacing:-.4px; }
+  .sub { color:var(--muted); font-size:15px; margin-top:10px; }
+  main { padding:12px 0 72px; }
+  h2 { font-size:19px; font-weight:700; margin:34px 0 10px; }
+  h3 { font-size:15.5px; font-weight:600; margin:22px 0 6px; }
+  p, li { font-size:15px; }
+  ul { margin:10px 0 10px 22px; }
+  li { margin:5px 0; }
+  .callout { background:var(--ok-bg); border:1px solid var(--ok-bd); border-radius:12px; padding:16px 18px; margin:22px 0; }
+  .callout strong { color:var(--green-deep); }
+  .note { background:var(--warn-bg); border:1px solid var(--warn-bd); border-radius:12px; padding:14px 16px; margin:20px 0; font-size:14px; }
+  table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+  th, td { text-align:start; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-weight:600; color:var(--muted); font-size:13px; text-transform:uppercase; letter-spacing:.03em; }
+  code { background:var(--card); border:1px solid var(--line); border-radius:5px; padding:1px 5px; font-size:13px; }
+  footer { border-top:1px solid var(--line); padding:22px 0 40px; color:var(--muted); font-size:13.5px; }
+</style>
+</head>
+<body>
+
+<nav><div class="wrap nav-in">
+  <a class="brand" href="./"><img src="assets/logo128.png" alt="">Boost Auto-Book</a>
+  <a class="back" href="./">← Back to the site</a>
+</div></nav>
+
+<div class="wrap">
+<header>
+  <h1>Privacy Policy</h1>
+  <div class="sub">Boost Auto-Book — a free, open-source Chrome extension.<br>
+  Effective 20 October 2026.</div>
+</header>
+
+<main>
+
+<div class="callout">
+  <strong>The short version.</strong> There is no server. Everything the extension
+  knows lives in your own browser, on your own computer. Nothing is sent to the
+  developer, nothing is sold, and there is no account to create. The extension
+  talks only to your studio's own website — as you, using the session you are
+  already signed in with — and, if you choose to connect one, to your own fitness
+  tracker account.
+</div>
+
+<h2>Who this is from</h2>
+<p>Boost Auto-Book is an independent, unofficial project by a single developer.
+It is not made by, affiliated with, or endorsed by Boost / BoostApp
+(Training Harmony) or any studio. The source code is public, so every claim on
+this page can be checked:
+<a href="https://github.com/Philusha1983/boostapp" target="_blank" rel="noopener">github.com/Philusha1983/boostapp</a>.</p>
+
+<h2>What the extension handles</h2>
+
+<table>
+  <tr><th>Data</th><th>Where it comes from</th><th>Where it goes</th></tr>
+  <tr>
+    <td>Your watchlist, weekly slots, language and theme</td>
+    <td>You, in the extension</td>
+    <td>Your browser's local storage only</td>
+  </tr>
+  <tr>
+    <td>Your class bookings, subscription balance and class history</td>
+    <td>Your studio's website, read with your own signed-in session</td>
+    <td>Your browser's local storage only</td>
+  </tr>
+  <tr>
+    <td>Whether you are currently signed in to the studio site</td>
+    <td>The session cookie for that site</td>
+    <td>Checked, never stored or transmitted</td>
+  </tr>
+  <tr>
+    <td>Health data — heart rate, heart-rate zones, calories and steps around a class</td>
+    <td>Your own tracker account, only if you connect one</td>
+    <td>Your browser's local storage, and back to your own health account</td>
+  </tr>
+</table>
+
+<h3>What is never collected</h3>
+<ul>
+  <li>No analytics, telemetry, crash reporting or usage statistics.</li>
+  <li>No account, sign-up, email address or profile with the developer.</li>
+  <li>No advertising identifiers, and no data sold or shared with anyone.</li>
+  <li>No passwords. The extension never sees or asks for your studio password —
+      it uses the session you created yourself by signing in on the studio's site.</li>
+</ul>
+
+<h2>Health data</h2>
+<p>If you connect a fitness tracker, the extension reads your heart rate, zones,
+calories and steps for the period around a class you attended, so it can show
+you that class's heart-rate curve and write the workout to your own health
+account. This is health information, and it is treated the same as everything
+else here: it is stored in your browser on your device, it is never sent to the
+developer, and it is never used for anything other than showing you your own
+classes.</p>
+<p>Connecting a tracker is entirely optional, and the extension's other
+features — including the muscle map — work without one. You can disconnect at
+any time in the extension's settings, which removes its access and clears the
+stored health data.</p>
+
+<h2>Who else is involved</h2>
+<p>When you use the extension, data moves between your browser and these parties
+only. Each is governed by its own privacy policy, not this one:</p>
+<ul>
+  <li><strong>Your studio's booking site</strong> (BoostApp / Training Harmony) —
+      the extension reads your schedule and submits your registrations there, as
+      you. This is the same traffic your browser would send if you clicked the
+      buttons yourself.</li>
+  <li><strong>Your fitness tracker provider</strong>, only if you connect one —
+      you authorise access yourself through that provider's own sign-in screen,
+      and the extension never sees your password for it.</li>
+  <li><strong>GitHub</strong>, which hosts this page and the extension's
+      downloads, and which receives a request when your browser checks for a new
+      version.</li>
+  <li><strong>Google Fonts</strong>, which serves the typeface this page and the
+      extension's interface use.</li>
+</ul>
+
+<h2>Permissions, and why each one exists</h2>
+<ul>
+  <li><code>storage</code> — keeps your slots, settings and cached history in your browser.</li>
+  <li><code>alarms</code> — wakes the extension at the exact moment a registration window opens.</li>
+  <li><code>notifications</code> — tells you a class was booked, a booking failed, or you have been signed out.</li>
+  <li><code>cookies</code> — checks only whether your existing session for the studio site is still valid, so auto-booking can pause instead of failing silently. Cookie values are never stored or transmitted.</li>
+  <li><code>scripting</code> and <code>tabs</code> — read the studio's own rendered pages for your bookings and balance, and open the history dashboard.</li>
+  <li><code>identity</code> — runs the sign-in flow for the tracker you choose to connect. Unused otherwise.</li>
+</ul>
+
+<h2>Your data, your control</h2>
+<ul>
+  <li><strong>See it:</strong> Settings → Export writes everything the extension stores to a file you can read.</li>
+  <li><strong>Delete it:</strong> uninstalling the extension removes all of it. Disconnecting a tracker clears the health data on its own.</li>
+  <li><strong>Move it:</strong> Settings → Import restores an exported file on another computer.</li>
+</ul>
+<p>Because nothing is stored on a server, there is no account for the developer
+to delete and no request to file — removing the extension is the deletion.</p>
+
+<div class="note">
+  <strong>One limitation worth stating plainly.</strong> Data in your browser's
+  local storage is as private as your computer and your browser profile. Anyone
+  with access to your unlocked computer, or to a browser profile you sync, can
+  read it. The extension cannot protect against that, and does not claim to.
+</div>
+
+<h2>Children</h2>
+<p>The extension is not directed at children and collects nothing that would
+identify anyone, of any age.</p>
+
+<h2>Changes to this policy</h2>
+<p>If this policy changes, the new version is published on this page with a new
+effective date, and the change appears in the project's
+<a href="https://github.com/Philusha1983/boostapp/blob/main/CHANGELOG.md" target="_blank" rel="noopener">changelog</a>
+like any other change.</p>
+
+<h2>Contact</h2>
+<p>Questions about this policy, or about anything the extension does, go to
+<a href="https://github.com/Philusha1983/boostapp/issues" target="_blank" rel="noopener">GitHub Issues</a>,
+which is also where the extension's Feedback link points.</p>
+
+</main>
+</div>
+
+<footer><div class="wrap">
+  Boost Auto-Book · free &amp; open source ·
+  <a href="./">Home</a> ·
+  <a href="https://github.com/Philusha1983/boostapp" target="_blank" rel="noopener">Source</a><br>
+  Not affiliated with BoostApp or Training Harmony.
+</div></footer>
+
+</body>
+</html>
