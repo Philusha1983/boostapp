@@ -25,3 +25,7 @@ notes/
 Claude outputs/
 zieArqzr
 CLAUDE.md
+
+# Bookmarklet trial builds and the generated href blob
+boost-autobook/standalone/_trial/
+boost-autobook/standalone/bookmarklet-href.txt

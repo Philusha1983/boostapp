@@ -16,12 +16,19 @@
 
 import json, html, pathlib
 
-OUT = pathlib.Path("/sessions/cool-determined-babbage/mnt/outputs/standalone")
+# Same convention as build_bookmarklet.py: everything lives beside this file.
+SRC_DIR = pathlib.Path(__file__).resolve().parent
+OUT = SRC_DIR
+# A trial build can be sent elsewhere without touching the committed artifacts.
+OUT = pathlib.Path(__import__("os").environ.get("BOOKMARKLET_OUT", OUT))
+OUT.mkdir(parents=True, exist_ok=True)
 
 engine_js = (OUT / "render-engine.js").read_text(encoding="utf-8")
 style_css = (OUT / "style.css").read_text(encoding="utf-8")
 body_html = (OUT / "body.html").read_text(encoding="utf-8")
-fetch_logic = (OUT / "fetch-logic.js").read_text(encoding="utf-8")
+# fetch-logic.js is hand-written source and always lives beside this script;
+# render-engine.js / style.css / body.html are build output and live in OUT.
+fetch_logic = (SRC_DIR / "fetch-logic.js").read_text(encoding="utf-8")
 
 # Splice the three big chunks in as JSON-encoded (= valid JS) string literals.
 full_js = fetch_logic

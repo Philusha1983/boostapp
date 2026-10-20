@@ -16,8 +16,14 @@
 
 import json, re, sys, pathlib
 
-SRC = pathlib.Path("/sessions/cool-determined-babbage/mnt/boostapp/boost-autobook")
-OUT = pathlib.Path("/sessions/cool-determined-babbage/mnt/outputs/standalone")
+# Paths are resolved from this file's own location so the build runs from any
+# checkout: SRC is the extension, OUT is this folder (where the generated
+# artifacts are committed).
+HERE = pathlib.Path(__file__).resolve().parent
+SRC = HERE.parent
+OUT = HERE
+# A trial build can be sent elsewhere without touching the committed artifacts.
+OUT = pathlib.Path(__import__("os").environ.get("BOOKMARKLET_OUT", OUT))
 OUT.mkdir(parents=True, exist_ok=True)
 
 history_js = (SRC / "history.js").read_text(encoding="utf-8")
@@ -49,14 +55,20 @@ replacements = [
         '}'
     ),
     (
+        # v1.8.1 added the studio-scoping call inside this try block. The
+        # chrome.runtime round-trip goes; the guarded ClassTypes call stays,
+        # since standalone mode injects companyNum on __BOOST_STANDALONE_CFG__.
         'async function boot() {\n'
         '  try {\n'
         '    const state = await send({ cmd: "getState" });\n'
         '    CFG = (state && state.config) || CFG;\n'
+        '    // Same table, same studio \u2014 see classtypes.js.\n'
+        '    if (self.ClassTypes) ClassTypes.setStudio(CFG.companyNum);\n'
         '    STATE = state || {};\n'
         '  } catch (e) {}\n'
         '  applyLang(CFG.lang || "en");',
         'async function boot() {\n'
+        '  if (self.ClassTypes) ClassTypes.setStudio(CFG.companyNum);\n'
         '  applyLang(CFG.lang || "en");'
     ),
     (
