@@ -27,17 +27,13 @@ window opens — no more refreshing the page at midnight.
   <em>Three weekly slots: one already booked, two waiting — each showing the exact moment its registration opens, and how long until then.</em>
 </p>
 
-<!-- docs/assets/popup.png is the "My weekly slots" tab — the one view that
-     shows the feature the tagline promises, rather than its aftermath.
-     Superseded, kept on purpose: popup-upcoming.png is the Upcoming tab this
-     replaced (a booked lesson + cancel). Unreferenced today; drop it in here as
-     a second image if the booked-and-cancellable state is worth showing too.
-     Identity is redrawn, not masked, in BOTH files: the header shows the
-     no-photo account state, and every coach name is a placeholder - the
-     instructor lines here and the "with <coach>" line on the Upcoming card.
-     Check any replacement for both, including other people's names.
-     The Chrome Web Store wants exactly 1280x800 — crop to it, don't rescale
-     until the countdowns stop being legible. -->
+<!-- The popup images are RENDERED, not screenshotted:
+       node scripts/screenshots/render.js all
+     Fixtures are invented, so no real member, coach or account can leak into
+     them - see scripts/screenshots/README.md. Output is byte-identical across
+     runs, so a regenerated image only shows in git diff when the UI changed.
+     Also available: popup-upcoming.png, popup-subscription.png,
+     popup-settings.png, and `... all store` for 1280x800 store assets. -->
 
 ---
 

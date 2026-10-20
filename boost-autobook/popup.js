@@ -1126,7 +1126,7 @@ let MUSCLE = null;
 const muscleCache = {};
 async function loadMuscle() { try { MUSCLE = await send({ cmd: "getMuscleLessons" }); } catch (e) { MUSCLE = null; } }
 function muscleLesson(e) {
-  if (!self.MusclePanel || !MUSCLE || !MUSCLE.ok || !e || e.startAt == null) return null;
+  if (!self.MusclePanel || !MUSCLE || !MUSCLE.ok || !Array.isArray(MUSCLE.lessons) || !e || e.startAt == null) return null;
   const l = MUSCLE.lessons.find(x => x.startAt === e.startAt && x.className === e.className);
   if (!l) return null;
   if (!(l.key in muscleCache)) muscleCache[l.key] = MusclePanel.parse(l.text, l.date);

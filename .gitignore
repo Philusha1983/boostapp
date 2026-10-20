@@ -29,3 +29,6 @@ CLAUDE.md
 # Bookmarklet trial builds and the generated href blob
 boost-autobook/standalone/_trial/
 boost-autobook/standalone/bookmarklet-href.txt
+
+# Store-listing renders (regenerate: node scripts/screenshots/render.js all store)
+docs/assets/*-store.png
