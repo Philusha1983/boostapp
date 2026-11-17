@@ -143,8 +143,12 @@ extension opens a hidden tab at the open moment, which costs a couple of seconds
 
 - **Login required.** If your session expires, booking will fail with a notice —
   just reopen BoostApp and sign in again.
-- **Waitlist.** If a class is already full at the open moment the extension
-  notifies you rather than guessing a waitlist call (that flow wasn't verified).
+- **Waitlist.** The extension never joins a waiting list on purpose: if a class
+  is full at the open moment it notifies you and stops. But if a spot looks free
+  while BoostApp is holding it for people already waiting (someone cancelled),
+  BoostApp may put you at the end of the waiting list instead. The extension
+  then says "⏳ Added to the waiting list" rather than "Booked", and stops
+  trying for that date.
 - **Cancellation policy.** Auto-booking respects the studio's policy (this studio
   allows cancellation up to ~22:00 the night before). You're responsible for
   cancelling lessons you can't attend to avoid penalties.
