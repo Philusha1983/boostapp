@@ -351,11 +351,11 @@
     <h2 class="sec-title rv" data-i18n="faq_title">Questions I get asked</h2>
     <p class="sec-sub rv" data-i18n="faq_sub">The short answers. Still stuck? Write to me in the box below — I read everything.</p>
     <div class="faq">
-      <details class="rv"><summary data-i18n="faq_q1">It didn&#39;t book my class — what happened?</summary><p data-i18n="faq_a1">Look at the notification it sent. &ldquo;Class full at open&rdquo; means the extension did fire on time and every spot was taken in the first second — nobody beat you by being faster, the class simply filled. &ldquo;Snipe skipped — signed out&rdquo; or &ldquo;Signed out of BoostApp&rdquo; means your BoostApp session had expired. No notification at all usually means Chrome wasn&#39;t running, or the computer was asleep, at the moment registration opened.</p></details>
+      <details class="rv"><summary data-i18n="faq_q1">It didn&#39;t book my class — what happened?</summary><p data-i18n="faq_a1">Look at the notification it sent. &ldquo;Class full at open&rdquo; means the extension did fire on time and every spot was taken in the first second — nobody beat you by being faster, the class simply filled. &ldquo;Snipe skipped — signed out&rdquo; or &ldquo;Signed out of BoostApp&rdquo; means your BoostApp session had expired. “⏳ Added to the waiting list” means BoostApp put you on the waiting list instead of booking you (see below). No notification at all usually means Chrome wasn&#39;t running, or the computer was asleep, at the moment registration opened.</p></details>
       <details class="rv"><summary data-i18n="faq_q2">Can I change the settings to improve my chances?</summary><p data-i18n="faq_a2">Not really — the defaults are already as fast as the extension goes: auto-book on, a check every minute, and a 5-minute lead before opening. It wakes up 3 seconds before the window opens and retries every 1.5 seconds for a minute and a half. Raising those numbers won&#39;t book you sooner; what actually matters is the next question.</p></details>
       <details class="rv"><summary data-i18n="faq_q3">Does my computer have to be awake?</summary><p data-i18n="faq_a3">Yes. Chrome has to be running and the computer awake at the exact moment registration opens — the extension lives in your browser, not on a server. Two things help: keep a BoostApp tab open, and exclude the site from Chrome&#39;s Memory Saver so the tab isn&#39;t put to sleep.</p></details>
       <details class="rv"><summary data-i18n="faq_q4">When exactly does registration open?</summary><p data-i18n="faq_a4">Your studio decides, per class — often 72 hours before the class starts, but it varies by studio and by class. The extension reads the real value from the schedule: every waiting slot shows its own opening time, and Settings shows your studio&#39;s usual window.</p></details>
-      <details class="rv"><summary data-i18n="faq_q5">Will it put me on the waiting list if the class is already full?</summary><p data-i18n="faq_a5">Not on purpose. It only tries when the class shows a free spot, and stops when the class is full. But if someone cancels and BoostApp holds that spot for people already waiting, BoostApp may put you at the end of the waiting list instead of giving you the spot. Check the BoostApp app to see which one you got. Joining the waiting list on purpose is planned.</p></details>
+      <details class="rv"><summary data-i18n="faq_q5">Will it put me on the waiting list if the class is already full?</summary><p data-i18n="faq_a5">Not on purpose. It only tries when the class shows a free spot, and stops when the class is full. But if someone cancels and BoostApp holds that spot for people already waiting, BoostApp may put you at the end of the waiting list instead of giving you the spot. Since version 1.9.3 the extension recognizes that reply: it notifies “⏳ Added to the waiting list” and doesn’t mark the date as booked. The BoostApp app is still the place to confirm your seat. Joining the waiting list on purpose is planned.</p></details>
       <details class="rv"><summary data-i18n="faq_q6">Why is a date marked as skipped?</summary><p data-i18n="faq_a6">Usually your subscription&#39;s daily limit — if the studio refuses the booking because you&#39;ve already used your entry for that day, the extension marks the date skipped instead of retrying all day. It also marks a date done when you&#39;re already registered, by hand or by the extension.</p></details>
     </div>
   </div>
@@ -365,7 +365,7 @@
   <div class="wrap two-col">
     <div class="callout warn rv">
       <h3>⚠️ <span data-i18n="disc_title">The honest fine print</span></h3>
-      <p data-i18n="disc_1">Auto-Book is an independent, unofficial project. It is not made by, affiliated with, or endorsed by Boost / BoostApp (Training Harmony) or your studio.</p>
+      <p data-i18n="disc_1">Auto-Book is an independent, unofficial project. It is not made by, affiliated with, or endorsed by BoostApp, Training Harmony or your studio.</p>
       <p data-i18n="disc_2">Nothing is hacked and nothing shady happens: the extension only uses the same data the BoostApp website itself shows you once you sign in, and every action it performs — registering, cancelling, viewing your history — is something you could do by hand on the website. It just does it faster, and while you sleep.</p>
       <p data-i18n="disc_3">Your class history is fetched from your own profile and stored only on your computer. It is never uploaded, shared, or sent anywhere.</p>
     </div>
@@ -455,7 +455,7 @@ en: {
   faq_title:"Questions I get asked",
   faq_sub:"The short answers. Still stuck? Write to me in the box below — I read everything.",
   faq_q1:"It didn’t book my class — what happened?",
-  faq_a1:"Look at the notification it sent. “Class full at open” means the extension did fire on time and every spot was taken in the first second — nobody beat you by being faster, the class simply filled. “Snipe skipped — signed out” or “Signed out of BoostApp” means your BoostApp session had expired. No notification at all usually means Chrome wasn’t running, or the computer was asleep, at the moment registration opened.",
+  faq_a1:"Look at the notification it sent. “Class full at open” means the extension did fire on time and every spot was taken in the first second — nobody beat you by being faster, the class simply filled. “Snipe skipped — signed out” or “Signed out of BoostApp” means your BoostApp session had expired. “⏳ Added to the waiting list” means BoostApp put you on the waiting list instead of booking you (see below). No notification at all usually means Chrome wasn’t running, or the computer was asleep, at the moment registration opened.",
   faq_q2:"Can I change the settings to improve my chances?",
   faq_a2:"Not really — the defaults are already as fast as the extension goes: auto-book on, a check every minute, and a 5-minute lead before opening. It wakes up 3 seconds before the window opens and retries every 1.5 seconds for a minute and a half. Raising those numbers won’t book you sooner; what actually matters is the next question.",
   faq_q3:"Does my computer have to be awake?",
@@ -463,11 +463,11 @@ en: {
   faq_q4:"When exactly does registration open?",
   faq_a4:"Your studio decides, per class — often 72 hours before the class starts, but it varies by studio and by class. The extension reads the real value from the schedule: every waiting slot shows its own opening time, and Settings shows your studio’s usual window.",
   faq_q5:"Will it put me on the waiting list if the class is already full?",
-  faq_a5:"Not on purpose. It only tries when the class shows a free spot, and stops when the class is full. But if someone cancels and BoostApp holds that spot for people already waiting, BoostApp may put you at the end of the waiting list instead of giving you the spot. Check the BoostApp app to see which one you got. Joining the waiting list on purpose is planned.",
+  faq_a5:"Not on purpose. It only tries when the class shows a free spot, and stops when the class is full. But if someone cancels and BoostApp holds that spot for people already waiting, BoostApp may put you at the end of the waiting list instead of giving you the spot. Since version 1.9.3 the extension recognizes that reply: it notifies “⏳ Added to the waiting list” and doesn’t mark the date as booked. The BoostApp app is still the place to confirm your seat. Joining the waiting list on purpose is planned.",
   faq_q6:"Why is a date marked as skipped?",
   faq_a6:"Usually your subscription’s daily limit — if the studio refuses the booking because you’ve already used your entry for that day, the extension marks the date skipped instead of retrying all day. It also marks a date done when you’re already registered, by hand or by the extension.",
   disc_title:"The honest fine print",
-  disc_1:"Auto-Book is an independent, unofficial project. It is not made by, affiliated with, or endorsed by Boost / BoostApp (Training Harmony) or your studio.",
+  disc_1:"Auto-Book is an independent, unofficial project. It is not made by, affiliated with, or endorsed by BoostApp, Training Harmony or your studio.",
   disc_2:"Nothing is hacked and nothing shady happens: the extension only uses the same data the BoostApp website itself shows you once you sign in, and every action it performs — registering, cancelling, viewing your history — is something you could do by hand on the website. It just does it faster, and while you sleep.",
   disc_3:"Your class history is fetched from your own profile and stored only on your computer. It is never uploaded, shared, or sent anywhere.",
   priv_title:"Your data stays yours",
@@ -526,7 +526,7 @@ he: {
   faq_title:"שאלות שחוזרות",
   faq_sub:"התשובות הקצרות. עדיין תקועים? כתבו לי בתיבה למטה — אני קורא הכול.",
   faq_q1:"השיעור לא נרשם — מה קרה?",
-  faq_a1:"תסתכלו בהתראה שהגיעה. «Class full at open» אומר שהתוסף פעל בזמן וכל המקומות נתפסו בשנייה הראשונה — אף אחד לא היה מהיר יותר, השיעור פשוט התמלא. «Snipe skipped — signed out» או «Signed out of BoostApp» אומר שההתחברות ל‑BoostApp פגה. אם לא הגיעה שום התראה, בדרך כלל כרום לא רץ או שהמחשב היה במצב שינה ברגע שההרשמה נפתחה.",
+  faq_a1:"תסתכלו בהתראה שהגיעה. «Class full at open» אומר שהתוסף פעל בזמן וכל המקומות נתפסו בשנייה הראשונה — אף אחד לא היה מהיר יותר, השיעור פשוט התמלא. «Snipe skipped — signed out» או «Signed out of BoostApp» אומר שההתחברות ל‑BoostApp פגה. «⏳ נרשמת לרשימת ההמתנה» אומר ש‑BoostApp רשם אותך לרשימת ההמתנה במקום לשיעור (ראו בהמשך). אם לא הגיעה שום התראה, בדרך כלל כרום לא רץ או שהמחשב היה במצב שינה ברגע שההרשמה נפתחה.",
   faq_q2:"אפשר לשנות הגדרות כדי להגדיל את הסיכוי?",
   faq_a2:"לא ממש — ברירות המחדל הן כבר המהירות המרבית של התוסף: הזמנה אוטומטית פעילה, בדיקה כל דקה, ומרווח של 5 דקות לפני הפתיחה. הוא מתעורר 3 שניות לפני שחלון ההרשמה נפתח ומנסה כל שנייה וחצי במשך דקה וחצי. להגדיל את המספרים לא יזמין מוקדם יותר — מה שבאמת משנה זו השאלה הבאה.",
   faq_q3:"המחשב חייב להיות ער?",
@@ -534,11 +534,11 @@ he: {
   faq_q4:"מתי בדיוק נפתחת ההרשמה?",
   faq_a4:"המועדון קובע, לכל שיעור בנפרד — לעיתים קרובות 72 שעות לפני תחילת השיעור, אבל זה משתנה ממועדון למועדון ומשיעור לשיעור. התוסף קורא את הערך האמיתי מלוח הזמנים: כל משבצת ממתינה מציגה את שעת הפתיחה שלה, ובהגדרות מופיע החלון הרגיל של המועדון שלכם.",
   faq_q5:"הוא ירשום אותי לרשימת המתנה אם השיעור כבר מלא?",
-  faq_a5:"לא בכוונה. הוא מנסה להירשם רק כשמופיע מקום פנוי בשיעור, ומפסיק כשהשיעור מלא. אבל אם מישהו מבטל ו-BoostApp שומר את המקום למי שכבר ממתין, ייתכן ש-BoostApp ירשום אותך לסוף רשימת ההמתנה במקום לתת לך את המקום. אפשר לבדוק באפליקציית BoostApp מה קיבלת. רישום מכוון לרשימת המתנה מתוכנן.",
+  faq_a5:"לא בכוונה. הוא מנסה להירשם רק כשמופיע מקום פנוי בשיעור, ומפסיק כשהשיעור מלא. אבל אם מישהו מבטל ו-BoostApp שומר את המקום למי שכבר ממתין, ייתכן ש-BoostApp ירשום אותך לסוף רשימת ההמתנה במקום לתת לך את המקום. מגרסה 1.9.3 התוסף מזהה תשובה כזו: הוא שולח התראה «⏳ נרשמת לרשימת ההמתנה» ולא מסמן את התאריך כרשום. את המקום עצמו עדיין כדאי לאשר באפליקציית BoostApp. רישום מכוון לרשימת המתנה מתוכנן.",
   faq_q6:"למה תאריך מסומן כמדולג?",
   faq_a6:"בדרך כלל בגלל המגבלה היומית של המנוי — אם המועדון דוחה את ההרשמה כי כבר נוצלה כניסה באותו יום, התוסף מסמן את התאריך כמדולג במקום לנסות שוב כל היום. הוא גם מסמן תאריך כמבוצע כשאתם כבר רשומים לשיעור, ידנית או דרך התוסף.",
   disc_title:"גילוי נאות — חשוב לקרוא",
-  disc_1:"Auto-Book הוא פרויקט עצמאי ולא־רשמי. הוא לא נוצר על ידי Boost / BoostApp (Training Harmony) או הסטודיו שלכם, לא קשור אליהם ולא מאושר על ידם.",
+  disc_1:"Auto-Book הוא פרויקט עצמאי ולא־רשמי. הוא לא נוצר על ידי BoostApp, Training Harmony או הסטודיו שלכם, לא קשור אליהם ולא מאושר על ידם.",
   disc_2:"שום דבר לא נפרץ ושום דבר חשוד לא קורה: התוסף משתמש רק באותם נתונים שאתר BoostApp עצמו מציג לכם אחרי התחברות, וכל פעולה שהוא מבצע — הרשמה, ביטול, צפייה בהיסטוריה — היא פעולה שיכולתם לעשות ידנית באתר. הוא פשוט עושה את זה מהר יותר, וגם כשאתם ישנים.",
   disc_3:"היסטוריית השיעורים נמשכת מהפרופיל האישי שלכם ונשמרת רק במחשב שלכם. היא לעולם לא מועלית, משותפת או נשלחת לשום מקום.",
   priv_title:"הנתונים שלך נשארים שלך",
@@ -597,7 +597,7 @@ uk: {
   faq_title:"Часті запитання",
   faq_sub:"Короткі відповіді. Щось не так? Напишіть мені у формі нижче — я читаю все.",
   faq_q1:"Розширення не записало мене — що сталося?",
-  faq_a1:"Подивіться на сповіщення. «Class full at open» означає, що розширення спрацювало вчасно, але всі місця розібрали за першу секунду — ніхто не був швидшим, заняття просто заповнилося. «Snipe skipped — signed out» або «Signed out of BoostApp» означає, що сесія BoostApp завершилася. Якщо сповіщення не було взагалі, зазвичай у момент відкриття запису Chrome не працював або комп’ютер спав.",
+  faq_a1:"Подивіться на сповіщення. «Class full at open» означає, що розширення спрацювало вчасно, але всі місця розібрали за першу секунду — ніхто не був швидшим, заняття просто заповнилося. «Snipe skipped — signed out» або «Signed out of BoostApp» означає, що сесія BoostApp завершилася. «⏳ Ви в списку очікування» означає, що BoostApp записав вас у список очікування замість заняття (див. нижче). Якщо сповіщення не було взагалі, зазвичай у момент відкриття запису Chrome не працював або комп’ютер спав.",
   faq_q2:"Чи можна змінити налаштування, щоб підвищити шанси?",
   faq_a2:"По суті ні — типові значення вже найшвидші: авто-запис увімкнено, перевірка щохвилини, запас 5 хвилин до відкриття. Розширення прокидається за 3 секунди до відкриття і повторює спробу кожні 1,5 секунди протягом півтори хвилини. Збільшення цих чисел не пришвидшить запис — важливіше наступне запитання.",
   faq_q3:"Чи має комп’ютер не спати?",
@@ -605,11 +605,11 @@ uk: {
   faq_q4:"Коли саме відкривається запис?",
   faq_a4:"Це вирішує студія, окремо для кожного заняття — часто за 72 години до початку, але це залежить від студії та заняття. Розширення бере справжнє значення з розкладу: кожен слот в очікуванні показує власний час відкриття, а в налаштуваннях — звичайне вікно вашої студії.",
   faq_q5:"Чи запише він мене до списку очікування, якщо місць уже немає?",
-  faq_a5:"Не навмисно. Він пробує записатися лише тоді, коли на занятті видно вільне місце, і зупиняється, коли заняття заповнене. Але якщо хтось скасовує запис, а BoostApp притримує це місце для тих, хто вже чекає, BoostApp може записати вас у кінець списку очікування замість того, щоб дати місце. Що саме ви отримали, видно в застосунку BoostApp. Навмисний запис до списку очікування в планах.",
+  faq_a5:"Не навмисно. Він пробує записатися лише тоді, коли на занятті видно вільне місце, і зупиняється, коли заняття заповнене. Але якщо хтось скасовує запис, а BoostApp притримує це місце для тих, хто вже чекає, BoostApp може записати вас у кінець списку очікування замість того, щоб дати місце. Починаючи з версії 1.9.3 розширення розпізнає таку відповідь: надсилає сповіщення «⏳ Ви в списку очікування» і не позначає дату як заброньовану. Підтвердити місце, як і раніше, варто в застосунку BoostApp. Навмисний запис до списку очікування в планах.",
   faq_q6:"Чому дата позначена як пропущена?",
   faq_a6:"Зазвичай через денний ліміт абонемента: якщо студія відхиляє запис, бо вхід на цей день уже використано, розширення позначає дату пропущеною, замість того щоб цілий день повторювати спроби. Дата також позначається як виконана, якщо ви вже записані — вручну або через розширення.",
   disc_title:"Чесно та відверто",
-  disc_1:"Auto-Book — незалежний, неофіційний проєкт. Він не створений Boost / BoostApp (Training Harmony) чи вашою студією, не пов'язаний із ними й не схвалений ними.",
+  disc_1:"Auto-Book — незалежний, неофіційний проєкт. Він не створений BoostApp, Training Harmony чи вашою студією, не пов'язаний із ними й не схвалений ними.",
   disc_2:"Нічого не зламано й нічого підозрілого не відбувається: розширення використовує лише ті дані, які сайт BoostApp сам показує вам після входу, а кожна його дія — реєстрація, скасування, перегляд історії — це те, що ви могли б зробити вручну на сайті. Просто швидше, і навіть коли ви спите.",
   disc_3:"Історія ваших занять береться з вашого власного профілю і зберігається лише на вашому комп'ютері. Вона ніколи нікуди не надсилається й не передається.",
   priv_title:"Ваші дані — ваші",
@@ -668,7 +668,7 @@ ar: {
   faq_title:"أسئلة متكرّرة",
   faq_sub:"إجابات قصيرة. ما زال هناك إشكال؟ اكتب لي في النموذج أدناه — أقرأ كل الرسائل.",
   faq_q1:"لم تسجّلني الإضافة في الحصة — ماذا حدث؟",
-  faq_a1:"انظر إلى الإشعار الذي وصلك. «Class full at open» يعني أنّ الإضافة عملت في وقتها لكن كل المقاعد حُجزت في الثانية الأولى — لم يسبقك أحد بالسرعة، الحصة امتلأت ببساطة. «Snipe skipped — signed out» أو «Signed out of BoostApp» يعني أنّ جلستك في BoostApp قد انتهت. وإن لم يصلك أي إشعار، فغالبًا لم يكن كروم يعمل أو كان الحاسوب نائمًا لحظة فتح التسجيل.",
+  faq_a1:"انظر إلى الإشعار الذي وصلك. «Class full at open» يعني أنّ الإضافة عملت في وقتها لكن كل المقاعد حُجزت في الثانية الأولى — لم يسبقك أحد بالسرعة، الحصة امتلأت ببساطة. «Snipe skipped — signed out» أو «Signed out of BoostApp» يعني أنّ جلستك في BoostApp قد انتهت. «⏳ أُضفت إلى قائمة الانتظار» يعني أنّ BoostApp أضافك إلى قائمة الانتظار بدلًا من حجز مقعد لك (انظر أدناه). وإن لم يصلك أي إشعار، فغالبًا لم يكن كروم يعمل أو كان الحاسوب نائمًا لحظة فتح التسجيل.",
   faq_q2:"هل يمكن تغيير الإعدادات لزيادة الفرص؟",
   faq_a2:"ليس فعليًا — القيم الافتراضية هي الأسرع أصلًا: الحجز التلقائي مُفعّل، تحقّق كل دقيقة، وفارق 5 دقائق قبل الفتح. تستيقظ الإضافة قبل 3 ثوانٍ من الفتح وتعيد المحاولة كل ثانية ونصف لمدة دقيقة ونصف. رفع هذه الأرقام لا يجعل الحجز أسرع — المهم هو السؤال التالي.",
   faq_q3:"هل يجب أن يكون الحاسوب مستيقظًا؟",
@@ -676,11 +676,11 @@ ar: {
   faq_q4:"متى يفتح التسجيل بالضبط؟",
   faq_a4:"الاستوديو يقرّر ذلك لكل حصة على حدة — كثيرًا قبل 72 ساعة من بدء الحصة، لكنه يختلف من استوديو لآخر ومن حصة لأخرى. تقرأ الإضافة القيمة الحقيقية من الجدول: كل موعد في الانتظار يعرض وقت فتحه الخاص، والإعدادات تعرض النافذة المعتادة لاستوديوك.",
   faq_q5:"هل تسجّلني في قائمة الانتظار إذا امتلأت الحصة؟",
-  faq_a5:"ليس عن قصد. تحاول التسجيل فقط عندما يظهر مقعد شاغر في الحصة، وتتوقف عندما تمتلئ. لكن إذا ألغى أحدهم حجزه واحتفظ BoostApp بذلك المقعد لمن ينتظرون بالفعل، فقد يضيفك BoostApp إلى آخر قائمة الانتظار بدلًا من منحك المقعد. تحقّق في تطبيق BoostApp مما حصلت عليه. التسجيل المقصود في قائمة الانتظار مُخطَّط له.",
+  faq_a5:"ليس عن قصد. تحاول التسجيل فقط عندما يظهر مقعد شاغر في الحصة، وتتوقف عندما تمتلئ. لكن إذا ألغى أحدهم حجزه واحتفظ BoostApp بذلك المقعد لمن ينتظرون بالفعل، فقد يضيفك BoostApp إلى آخر قائمة الانتظار بدلًا من منحك المقعد. منذ الإصدار 1.9.3 تتعرّف الإضافة على هذا الرد: ترسل إشعار «⏳ أُضفت إلى قائمة الانتظار» ولا تعلّم التاريخ كمحجوز. ويبقى تطبيق BoostApp المكان الذي تتأكد فيه من مقعدك. التسجيل المقصود في قائمة الانتظار مُخطَّط له.",
   faq_q6:"لماذا يظهر تاريخ على أنه مُتخطّى؟",
   faq_a6:"عادةً بسبب الحدّ اليومي في اشتراكك: إذا رفض الاستوديو الحجز لأنك استخدمت دخولك لذلك اليوم، تضع الإضافة علامة «متخطّى» على التاريخ بدل إعادة المحاولة طوال اليوم. كما تضع علامة «تمّ» إذا كنت مسجّلًا بالفعل، يدويًا أو عبر الإضافة.",
   disc_title:"الكلام الصريح",
-  disc_1:"Auto-Book مشروع مستقل وغير رسمي. لم تصنعه Boost / BoostApp (Training Harmony) ولا الاستوديو الخاص بك، ولا يرتبط بهما ولا يحظى بموافقتهما.",
+  disc_1:"Auto-Book مشروع مستقل وغير رسمي. لم تصنعه BoostApp ولا Training Harmony ولا الاستوديو الخاص بك، ولا يرتبط بأيٍّ منها ولا يحظى بموافقتها.",
   disc_2:"لا اختراق ولا شيء مريب: تستخدم الإضافة فقط البيانات نفسها التي يعرضها لك موقع BoostApp بعد تسجيل الدخول، وكل ما تفعله — التسجيل، الإلغاء، عرض السجل — يمكنك فعله يدويًا على الموقع. هي فقط أسرع، وتعمل حتى وأنت نائم.",
   disc_3:"يُجلب سجلّ حصصك من ملفك الشخصي أنت، ويُخزَّن على جهازك فقط. لا يُرفع ولا يُشارك ولا يُرسل إلى أي مكان أبدًا.",
   priv_title:"بياناتك تبقى لك",
@@ -739,7 +739,7 @@ ru: {
   faq_title:"Частые вопросы",
   faq_sub:"Короткие ответы. Что-то не так? Напишите мне в форме ниже — я читаю всё.",
   faq_q1:"Расширение не записало меня — что случилось?",
-  faq_a1:"Посмотрите на уведомление. «Class full at open» значит, что расширение сработало вовремя, но все места разобрали в первую же секунду — никто не оказался быстрее, занятие просто заполнилось. «Snipe skipped — signed out» или «Signed out of BoostApp» значит, что сессия BoostApp истекла. Если уведомления не было вовсе, обычно в момент открытия записи Chrome не был запущен или компьютер спал.",
+  faq_a1:"Посмотрите на уведомление. «Class full at open» значит, что расширение сработало вовремя, но все места разобрали в первую же секунду — никто не оказался быстрее, занятие просто заполнилось. «Snipe skipped — signed out» или «Signed out of BoostApp» значит, что сессия BoostApp истекла. «⏳ Вы в листе ожидания» значит, что BoostApp записал вас в лист ожидания вместо занятия (см. ниже). Если уведомления не было вовсе, обычно в момент открытия записи Chrome не был запущен или компьютер спал.",
   faq_q2:"Можно изменить настройки, чтобы повысить шансы?",
   faq_a2:"По сути нет — значения по умолчанию уже самые быстрые: авто-запись включена, проверка раз в минуту, запас 5 минут до открытия. Расширение просыпается за 3 секунды до открытия и повторяет попытку каждые 1,5 секунды в течение полутора минут. Увеличение этих чисел не ускорит запись — важнее следующий вопрос.",
   faq_q3:"Компьютер должен быть включён?",
@@ -747,11 +747,11 @@ ru: {
   faq_q4:"Когда именно открывается запись?",
   faq_a4:"Это решает студия, отдельно для каждого занятия — часто за 72 часа до начала, но это зависит от студии и занятия. Расширение берёт реальное значение из расписания: у каждого ожидающего слота показано своё время открытия, а в настройках — обычное окно вашей студии.",
   faq_q5:"Запишет ли он меня в лист ожидания, если мест уже нет?",
-  faq_a5:"Не намеренно. Он пытается записаться, только когда на занятии видно свободное место, и останавливается, когда занятие заполнено. Но если кто-то отменяет запись, а BoostApp придерживает это место для тех, кто уже ждёт, BoostApp может записать вас в конец листа ожидания вместо того, чтобы дать место. Что именно вы получили, видно в приложении BoostApp. Намеренная запись в лист ожидания в планах.",
+  faq_a5:"Не намеренно. Он пытается записаться, только когда на занятии видно свободное место, и останавливается, когда занятие заполнено. Но если кто-то отменяет запись, а BoostApp придерживает это место для тех, кто уже ждёт, BoostApp может записать вас в конец листа ожидания вместо того, чтобы дать место. Начиная с версии 1.9.3 расширение распознаёт такой ответ: присылает уведомление «⏳ Вы в листе ожидания» и не отмечает дату как забронированную. Подтвердить место, как и прежде, стоит в приложении BoostApp. Намеренная запись в лист ожидания в планах.",
   faq_q6:"Почему дата отмечена как пропущенная?",
   faq_a6:"Обычно из-за дневного лимита абонемента: если студия отклоняет запись, потому что вход на этот день уже использован, расширение помечает дату пропущенной, вместо того чтобы весь день повторять попытки. Дата также отмечается как выполненная, если вы уже записаны — вручную или через расширение.",
   disc_title:"Честно о главном",
-  disc_1:"Auto-Book — независимый, неофициальный проект. Он не создан Boost / BoostApp (Training Harmony) или вашей студией, не связан с ними и не одобрен ими.",
+  disc_1:"Auto-Book — независимый, неофициальный проект. Он не создан BoostApp, Training Harmony или вашей студией, не связан с ними и не одобрен ими.",
   disc_2:"Ничего не взломано и ничего подозрительного не происходит: расширение использует только те данные, которые сайт BoostApp сам показывает вам после входа, а каждое его действие — запись, отмена, просмотр истории — это то, что вы могли бы сделать вручную на сайте. Просто быстрее, и даже пока вы спите.",
   disc_3:"История ваших занятий берётся из вашего собственного профиля и хранится только на вашем компьютере. Она никогда никуда не отправляется и не передаётся.",
   priv_title:"Ваши данные — ваши",

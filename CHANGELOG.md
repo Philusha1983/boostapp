@@ -6,6 +6,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+### Changed
+- **Privacy policy: the feedback form is now listed.** The extension's Feedback
+  link opens the feedback form on the project site, which sends what you write
+  through Web3Forms, a form-to-email service. The policy said the link went to
+  GitHub Issues and did not name Web3Forms; it now lists it under *Who else is
+  involved*, with exactly what the form sends. Effective date 17 November 2026.
+- **Site FAQ: the waiting-list notification.** The answers on notifications and
+  on the waiting list now mention the "⏳ Added to the waiting list" notification
+  added in 1.9.3 (all 5 languages).
+- **Site disclaimer: Training Harmony is a studio**, not another name for
+  BoostApp; the wording no longer pairs them as one (all 5 languages).
+
 ## [1.9.3] — 2026-11-17 — Waiting list, not booked
 
 ### Fixed
