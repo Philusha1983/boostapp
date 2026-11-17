@@ -147,7 +147,7 @@ const I18N = {
     alreadyToast: "ℹ️ You're already registered for this class",
     limitToast: "⚠️ Subscription limit — you likely already have a lesson that day",
     openNeedAuto: "Open now — turn on Auto-book or use “Book now”", openBooking: "Open — booking now…",
-    fullToast: "⚠️ Class is full at open time", scheduledToast: "Scheduled — opens {clock}",
+    fullToast: "⚠️ Class is full at open time", waitlistToast: "⏳ No free seat: BoostApp put you on the waiting list", scheduledToast: "Scheduled — opens {clock}",
     addedToast: "Added to My slots", dayNote: "  ·  note: your plan allows {n}/day",
     signedIn: "✅ Signed in to BoostApp", checkingSignin: "Checking sign-in…",
     hdrSignedIn: "Signed in", hdrNotSignedIn: "Not signed in", hdrNotSynced: "Open Home to sync",
@@ -241,7 +241,7 @@ const I18N = {
     alreadyToast: "ℹ️ אתה כבר רשום לשיעור הזה",
     limitToast: "⚠️ מגבלת מנוי — כנראה כבר יש לך שיעור באותו יום",
     openNeedAuto: "פתוח עכשיו — הפעל הזמנה אוטומטית או \"הזמן עכשיו\"", openBooking: "פתוח — מזמין עכשיו…",
-    fullToast: "⚠️ השיעור מלא בזמן הפתיחה", scheduledToast: "מתוזמן — נפתח {clock}",
+    fullToast: "⚠️ השיעור מלא בזמן הפתיחה", waitlistToast: "⏳ לא היה מקום פנוי: BoostApp רשם אותך לרשימת ההמתנה", scheduledToast: "מתוזמן — נפתח {clock}",
     addedToast: "נוסף למשבצות שלי", dayNote: "  ·  הערה: המנוי שלך מאפשר {n} ביום",
     signedIn: "✅ מחובר ל-BoostApp", checkingSignin: "בודק התחברות…",
     hdrSignedIn: "מחובר", hdrNotSignedIn: "לא מחובר", hdrNotSynced: "פתח דף בית לסנכרון",
@@ -335,7 +335,7 @@ const I18N = {
     alreadyToast: "ℹ️ Вы уже записаны на это занятие",
     limitToast: "⚠️ Лимит абонемента — вероятно, у вас уже есть занятие в этот день",
     openNeedAuto: "Открыто — включите Авто-запись или нажмите «Записаться»", openBooking: "Открыто — выполняется запись…",
-    fullToast: "⚠️ Занятие заполнено при открытии", scheduledToast: "Запланировано — открытие {clock}",
+    fullToast: "⚠️ Занятие заполнено при открытии", waitlistToast: "⏳ Мест не было: BoostApp записал вас в лист ожидания", scheduledToast: "Запланировано — открытие {clock}",
     addedToast: "Добавлено в Мои занятия", dayNote: "  ·  примечание: ваш план разрешает {n}/день",
     signedIn: "✅ Вход в BoostApp выполнен", checkingSignin: "Проверка входа…",
     hdrSignedIn: "Вы вошли", hdrNotSignedIn: "Не вошли", hdrNotSynced: "Откройте Home",
@@ -429,7 +429,7 @@ const I18N = {
     alreadyToast: "ℹ️ Ви вже записані на це заняття",
     limitToast: "⚠️ Ліміт абонемента — ймовірно, у вас вже є заняття цього дня",
     openNeedAuto: "Відкрито — увімкніть Авто-запис або натисніть «Записатися»", openBooking: "Відкрито — виконується запис…",
-    fullToast: "⚠️ Заняття заповнене при відкритті", scheduledToast: "Заплановано — відкриття {clock}",
+    fullToast: "⚠️ Заняття заповнене при відкритті", waitlistToast: "⏳ Місць не було: BoostApp записав вас до списку очікування", scheduledToast: "Заплановано — відкриття {clock}",
     addedToast: "Додано до Моїх занять", dayNote: "  ·  примітка: ваш план дозволяє {n}/день",
     signedIn: "✅ Вхід у BoostApp виконано", checkingSignin: "Перевірка входу…",
     hdrSignedIn: "Ви увійшли", hdrNotSignedIn: "Не увійшли", hdrNotSynced: "Відкрийте Home",
@@ -523,7 +523,7 @@ const I18N = {
     alreadyToast: "ℹ️ أنت مسجّل بالفعل في هذه الحصة",
     limitToast: "⚠️ تجاوزت حد الاشتراك — غالبًا لديك حصة في اليوم نفسه",
     openNeedAuto: "مفتوح الآن — فعّل الحجز التلقائي أو اضغط «احجز الآن»", openBooking: "مفتوح — جارٍ الحجز…",
-    fullToast: "⚠️ الحصة ممتلئة عند الفتح", scheduledToast: "مجدول — يفتح {clock}",
+    fullToast: "⚠️ الحصة ممتلئة عند الفتح", waitlistToast: "⏳ لا مقعد شاغر: أضافك BoostApp إلى قائمة الانتظار", scheduledToast: "مجدول — يفتح {clock}",
     addedToast: "أُضيف إلى حصصي", dayNote: "  ·  ملاحظة: خطتك تسمح بـ {n}/يوم",
     signedIn: "✅ تم تسجيل الدخول إلى BoostApp", checkingSignin: "جارٍ التحقّق من تسجيل الدخول…",
     hdrSignedIn: "مسجّل الدخول", hdrNotSignedIn: "غير مسجّل", hdrNotSynced: "افتح الرئيسية للمزامنة",
@@ -627,6 +627,7 @@ function autoBookOff() { return $("autoBook") && !$("autoBook").checked; }
 function disableIfAutoOff(b) { if (autoBookOff()) { b.disabled = true; b.title = t("disabledHint"); } return b; }
 function flash(r) {
   if (!r) return;
+  if (r.kind === "waitlisted") { toast(t("waitlistToast")); return; }
   if (r.ok) toast(r.msg || t("done"));
   else toast("⚠️ " + (r.msg || r.error || t("failed")));
 }
@@ -787,6 +788,7 @@ function slotAddedToast(a, s) {
   if (a.booked) m = t("bookedToast", { cls: a.className || (s && s.className) || "", date: a.resolvedDate || "" });
   else if (a.kind === "already") m = t("alreadyToast");
   else if (a.kind === "limit") m = t("limitToast");
+  else if (a.kind === "waitlisted") m = t("waitlistToast");
   else if (a.status === "open" && a.needsAutoBook) m = t("openNeedAuto");
   else if (a.status === "open") m = t("openBooking");
   else if (a.status === "full") m = t("fullToast");
@@ -1448,6 +1450,7 @@ async function renderSchedule() {
             if (a.booked) m = t("bookedToast", { cls: a.className || s.className, date: a.resolvedDate || "" });
             else if (a.kind === "already") m = t("alreadyToast");
             else if (a.kind === "limit") m = t("limitToast");
+            else if (a.kind === "waitlisted") m = t("waitlistToast");
             else if (a.status === "open" && a.needsAutoBook) m = t("openNeedAuto");
             else if (a.status === "open") m = t("openBooking");
             else if (a.status === "full") m = t("fullToast");

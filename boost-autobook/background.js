@@ -269,19 +269,19 @@ async function verifyAuth(cfg) {
 }
 
 const TOOLTIP_I18N = {
-  en: { schedTitle: "The studio changed the timetable", schedMore: "+{n} more changes", movedTitle: "{cls} moved to a new time", movedBody: "Your rule books {from}, but on {day} this class runs at {to}. Open the extension to move the rule.", signin: "Sign in to BoostApp first", checking: "Checking BoostApp connection…",
+  en: { waitTitle: "⏳ Added to the waiting list", waitBody: "No seat was free for you, so BoostApp put you on the waiting list. Check the BoostApp app for your place.", schedTitle: "The studio changed the timetable", schedMore: "+{n} more changes", movedTitle: "{cls} moved to a new time", movedBody: "Your rule books {from}, but on {day} this class runs at {to}. Open the extension to move the rule.", signin: "Sign in to BoostApp first", checking: "Checking BoostApp connection…",
         today: "Today", at: "at", left: "{n} lessons left this month", none: "No upcoming lessons",
         wd: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] },
-  he: { schedTitle: "הסטודיו שינה את מערכת השעות", schedMore: "ועוד {n} שינויים", movedTitle: "{cls} עבר לשעה אחרת", movedBody: "הכלל שלך מזמין {from}, אבל ב-{day} האימון מתקיים ב-{to}. פתחו את התוסף כדי להעביר את הכלל.", signin: "התחבר תחילה ל-BoostApp", checking: "בודק חיבור ל-BoostApp…",
+  he: { waitTitle: "⏳ נרשמת לרשימת ההמתנה", waitBody: "לא היה מקום פנוי עבורך, ולכן BoostApp רשם אותך לרשימת ההמתנה. בדקו את המקום שלכם באפליקציית BoostApp.", schedTitle: "הסטודיו שינה את מערכת השעות", schedMore: "ועוד {n} שינויים", movedTitle: "{cls} עבר לשעה אחרת", movedBody: "הכלל שלך מזמין {from}, אבל ב-{day} האימון מתקיים ב-{to}. פתחו את התוסף כדי להעביר את הכלל.", signin: "התחבר תחילה ל-BoostApp", checking: "בודק חיבור ל-BoostApp…",
         today: "היום", at: "בשעה", left: "נותרו {n} שיעורים החודש", none: "אין שיעורים קרובים",
         wd: ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"] },
-  ru: { schedTitle: "Студия изменила расписание", schedMore: "ещё {n} изменений", movedTitle: "{cls} перенесён на другое время", movedBody: "Ваше правило бронирует {from}, но {day} занятие идёт в {to}. Откройте расширение, чтобы перенести правило.", signin: "Сначала войдите в BoostApp", checking: "Проверка подключения к BoostApp…",
+  ru: { waitTitle: "⏳ Вы в листе ожидания", waitBody: "Свободного места для вас не было, поэтому BoostApp записал вас в лист ожидания. Своё место в очереди смотрите в приложении BoostApp.", schedTitle: "Студия изменила расписание", schedMore: "ещё {n} изменений", movedTitle: "{cls} перенесён на другое время", movedBody: "Ваше правило бронирует {from}, но {day} занятие идёт в {to}. Откройте расширение, чтобы перенести правило.", signin: "Сначала войдите в BoostApp", checking: "Проверка подключения к BoostApp…",
         today: "Сегодня", at: "в", left: "осталось {n} занятий в этом месяце", none: "Нет ближайших занятий",
         wd: ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"] },
-  uk: { schedTitle: "Студія змінила розклад", schedMore: "ще {n} змін", movedTitle: "{cls} перенесено на інший час", movedBody: "Ваше правило бронює {from}, але {day} заняття відбувається о {to}. Відкрийте розширення, щоб перенести правило.", signin: "Спочатку увійдіть у BoostApp", checking: "Перевірка підключення до BoostApp…",
+  uk: { waitTitle: "⏳ Ви в списку очікування", waitBody: "Вільного місця для вас не було, тому BoostApp записав вас до списку очікування. Своє місце в черзі дивіться в застосунку BoostApp.", schedTitle: "Студія змінила розклад", schedMore: "ще {n} змін", movedTitle: "{cls} перенесено на інший час", movedBody: "Ваше правило бронює {from}, але {day} заняття відбувається о {to}. Відкрийте розширення, щоб перенести правило.", signin: "Спочатку увійдіть у BoostApp", checking: "Перевірка підключення до BoostApp…",
         today: "Сьогодні", at: "о", left: "залишилось {n} занять цього місяця", none: "Немає найближчих занять",
         wd: ["Неділя", "Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота"] },
-  ar: { schedTitle: "النادي غيّر جدول الحصص", schedMore: "و{n} تغييرات أخرى", movedTitle: "{cls} انتقل إلى وقت آخر", movedBody: "قاعدتك تحجز {from}، لكن في {day} يُقام الدرس في {to}. افتح الإضافة لنقل القاعدة.", signin: "سجّل الدخول إلى BoostApp أولًا", checking: "جارٍ التحقّق من الاتصال بـ BoostApp…",
+  ar: { waitTitle: "⏳ أُضفت إلى قائمة الانتظار", waitBody: "لم يكن هناك مقعد شاغر لك، فأضافك BoostApp إلى قائمة الانتظار. تحقّق من موقعك في تطبيق BoostApp.", schedTitle: "النادي غيّر جدول الحصص", schedMore: "و{n} تغييرات أخرى", movedTitle: "{cls} انتقل إلى وقت آخر", movedBody: "قاعدتك تحجز {from}، لكن في {day} يُقام الدرس في {to}. افتح الإضافة لنقل القاعدة.", signin: "سجّل الدخول إلى BoostApp أولًا", checking: "جارٍ التحقّق من الاتصال بـ BoostApp…",
         today: "اليوم", at: "الساعة", left: "متبقٍ {n} حصص هذا الشهر", none: "لا حصص قادمة",
         wd: ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"] }
 };
@@ -1514,7 +1514,19 @@ function bookInPage(companyNum, classId) {
     if (!active.length) return { ok: false, reason: "no active membership" };
     const reg = await post({ action: "registerToClassWithClientActivity", companyNum: String(companyNum), classStudioActId: Number(d.classStudioActId), clientActivityId: Number(active[0].id) });
     const ok = !!(reg && (reg.success || (reg.data && reg.data.success)));
-    return { ok, msg: (reg && reg.data && reg.data.text) || "", classStudioActId: d.classStudioActId };
+    // A "success" is not always a seat. When the counter shows a free spot but
+    // BoostApp is holding it for people already on the waiting list (someone
+    // cancelled), or the last spot goes between our check and this call, the
+    // same request can put us at the end of the waiting list instead. The
+    // reply's exact shape for that case was never captured, so look for the
+    // waiting-list wording and status names the app bundle uses, in the
+    // reply's text fields and in any truthy "wait"-named flag.
+    const data = (reg && reg.data) || {};
+    const texts = [data.text, data.message, data.title, data.status, reg && reg.message, reg && reg.status]
+      .filter(v => typeof v === "string").join(" ");
+    const flag = Object.keys(data).some(k => /wait/i.test(k) && data[k] === true);
+    const waitlisted = ok && (flag || /המתנה|waiting|wait ?list|BOOKED_AS_WAITING/i.test(texts));
+    return { ok, waitlisted, msg: data.text || data.message || "", classStudioActId: d.classStudioActId };
   })();
 }
 
@@ -1552,6 +1564,20 @@ async function attemptBook(cfg, target, info) {
     // instead of being classified as a transient "keep watching" failure.
     await updateTarget(target.id, { lastResult: { date: info.resolvedDate, kind: "auth", msg: "signed out of BoostApp", at: now } });
     return { ok: false, kind: "auth", msg: "Signed out of BoostApp — sign in again to resume auto-booking" };
+  }
+
+  if (res.ok && res.waitlisted) {
+    // On the waiting list, not booked. Don't record the date as booked (the
+    // popup would say "✅ booked") — skip it instead, so we stop retrying a
+    // date BoostApp already has us queued for, and say plainly what happened.
+    await updateTarget(target.id, {
+      skipDates: (target.skipDates || []).concat(info.resolvedDate),
+      lastResult: { date: info.resolvedDate, kind: "waitlisted", msg: res.msg || "", at: now }
+    });
+    const L = TOOLTIP_I18N[cfg.lang] || TOOLTIP_I18N.en;
+    notify(L.waitTitle, `${info.className} · ${target.time} · ${info.resolvedDate}\n${L.waitBody}${res.msg ? "\n" + res.msg : ""}`);
+    try { await syncHome(); } catch (e) {}
+    return { ok: false, kind: "waitlisted", msg: L.waitTitle };
   }
 
   if (res.ok) {
@@ -2298,7 +2324,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           if (!target) { sendResponse({ ok: false, msg: "target not found" }); break; }
           const info = await enrichTarget(cfg, target);
           const r = await attemptBook(cfg, target, info);
-          sendResponse({ ok: r.ok, msg: r.msg, targets: await getTargets() });
+          sendResponse({ ok: r.ok, kind: r.kind, msg: r.msg, targets: await getTargets() });
           break;
         }
         case "cancelBooking": {
