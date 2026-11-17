@@ -293,7 +293,14 @@ All calls are `POST` JSON with `credentials: "include"`.
 - `getClassesData` — schedule for a date (returns a rolling, capped window).
 - `getPurchaseOptions` — returns a **transient** `classStudioActId` quote plus
   your membership `clientActivityId`; used to detect that a window has opened.
-- `registerToClassWithClientActivity` — performs the booking.
+- `registerToClassWithClientActivity` — performs the booking. A success reply
+  is not always a seat: when BoostApp holds a freed spot for its waiting list,
+  the same call can queue you instead. Since v1.9.3 the extension scans the
+  reply's text fields for waiting-list wording (`המתנה`, `waiting`,
+  `BOOKED_AS_WAITING`) and any truthy `*wait*` flag; a match records the date in
+  `skipDates` with `lastResult.kind = "waitlisted"` instead of `bookedDates`.
+  The reply's real shape for this case has not been captured, so this is a
+  best guess.
 - `cancelBookingToClass` / `cancelBookingInfo` — cancellation.
 - `getClassInfo` — participants, capacity, waitlist, description.
 

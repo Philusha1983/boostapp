@@ -6,14 +6,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 
 ## [Unreleased]
 
+## [1.9.3] — 2026-11-17 — Waiting list, not booked
+
 ### Fixed
 - **A waiting-list place is no longer reported as a booking.** When a class
   shows a free spot but BoostApp is holding it for people already on the
   waiting list, the normal booking request can land you on the waiting list
   instead. The extension used to treat that as success: "✅ Booked!", the date
-  marked booked. It now recognises the waiting-list reply, notifies
+  marked booked. It now looks for a waiting-list reply, notifies
   "⏳ Added to the waiting list" in your language, and skips that date instead
   of marking it booked. Reported by a user.
+- **What this does not promise.** BoostApp's reply for this case has not been
+  seen yet, so the check looks for the waiting-list wording and flags the
+  BoostApp app itself uses. If the reply turns out to look different, the
+  extension may still say "Booked!" for a waiting-list place. After an
+  automatic booking, the BoostApp app remains the place to confirm a seat.
 
 ## [1.9.2] — 2026-10-20 — A mark of its own
 

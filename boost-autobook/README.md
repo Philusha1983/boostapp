@@ -146,9 +146,11 @@ extension opens a hidden tab at the open moment, which costs a couple of seconds
 - **Waitlist.** The extension never joins a waiting list on purpose: if a class
   is full at the open moment it notifies you and stops. But if a spot looks free
   while BoostApp is holding it for people already waiting (someone cancelled),
-  BoostApp may put you at the end of the waiting list instead. The extension
-  then says "⏳ Added to the waiting list" rather than "Booked", and stops
-  trying for that date.
+  BoostApp may put you at the end of the waiting list instead. Since v1.9.3
+  the extension looks for that reply and says "⏳ Added to the waiting list"
+  rather than "Booked", and stops trying for that date. BoostApp's exact reply
+  for this case hasn't been seen yet, so the check is a best guess: confirm
+  your seat in the BoostApp app.
 - **Cancellation policy.** Auto-booking respects the studio's policy (this studio
   allows cancellation up to ~22:00 the night before). You're responsible for
   cancelling lessons you can't attend to avoid penalties.
