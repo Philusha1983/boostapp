@@ -17,6 +17,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
   added in 1.9.3 (all 5 languages).
 - **Site disclaimer: Training Harmony is a studio**, not another name for
   BoostApp; the wording no longer pairs them as one (all 5 languages).
+- **Privacy policy in Hebrew** (`privacy-he.html`), a translation of the
+  English policy with the same content and date; the English text stays the
+  governing one. The site's Privacy link opens it when the site is in Hebrew,
+  and each page links to the other. The English policy's "Who this is from"
+  no longer pairs BoostApp with Training Harmony either.
+- **Chrome Web Store link.** The site (under the download button, all 5
+  languages) and both READMEs now link to the store listing as a second way
+  to install. The zip and *Load unpacked* stay the main path, and the install
+  section no longer says "No store".
 
 ## [1.9.3] — 2026-11-17 — Waiting list, not booked
 

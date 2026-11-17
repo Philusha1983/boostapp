@@ -258,6 +258,7 @@
           <small id="dlMeta" data-i18n="btn_loading">checking latest version…</small>
         </a>
         <a class="all-rel" href="https://github.com/Philusha1983/boostapp/releases" target="_blank" rel="noopener" data-i18n="all_releases">All versions &amp; release notes</a>
+        <a class="all-rel" id="storeLink" href="https://chromewebstore.google.com/detail/ogpmefjgodclpkjgplgkihfebgoehlph" target="_blank" rel="noopener" data-i18n="store_link">or install from the Chrome Web Store</a>
       </div>
       <div class="badges">
         <span class="badge" data-i18n="badge_free">🆓 Free &amp; open source</span>
@@ -335,7 +336,7 @@
 <section id="install" style="background:var(--card); border-block:1px solid var(--line);">
   <div class="wrap">
     <h2 class="sec-title rv" data-i18n="inst_title">Installed in 2 minutes</h2>
-    <p class="sec-sub rv" data-i18n="inst_sub">No store, no account — it's a simple folder you load into Chrome once.</p>
+    <p class="sec-sub rv" data-i18n="inst_sub">No account — it's a simple folder you load into Chrome once. Prefer the Chrome Web Store? Use the link under the download button.</p>
     <div class="steps">
       <div class="step rv"><h4 data-i18n="s1t">Download &amp; unzip</h4><p data-i18n="s1b">Hit the green button above, then unzip the file into a folder you'll keep (e.g. Documents).</p></div>
       <div class="step rv"><h4 data-i18n="s2t">Open the extensions page</h4><p data-i18n-html="s2b">In Chrome, copy <code>chrome://extensions</code> into the address bar and press Enter.</p></div>
@@ -403,7 +404,7 @@
       <a href="https://github.com/Philusha1983/boostapp/releases/latest" target="_blank" rel="noopener" data-i18n="foot_latest">Latest release</a>
       <a href="https://github.com/Philusha1983/boostapp/blob/main/CHANGELOG.md" target="_blank" rel="noopener" data-i18n="foot_changelog">Changelog</a>
       <a href="#feedback" data-i18n="foot_issue">Leave feedback</a>
-      <a href="privacy.html" data-i18n="foot_privacy">Privacy</a>
+      <a href="privacy.html" id="privLink" data-i18n="foot_privacy">Privacy</a>
       <a href="https://github.com/Philusha1983/boostapp/issues" target="_blank" rel="noopener" data-i18n="foot_ghdev">GitHub issues (developers)</a>
     </div>
     <div data-i18n="foot_unaff">Not affiliated with BoostApp or Training Harmony.</div>
@@ -422,7 +423,7 @@ en: {
   h1:"Your classes, booked <em>the second</em> registration opens",
   sub:"Auto-Book is a free Chrome extension that watches your favorite BoostApp group lessons and registers you automatically the instant your studio's registration window opens — no more midnight refreshing.",
   btn_download:"⬇ Download for Chrome", btn_loading:"checking latest version…", btn_meta:"v{v} · {s} · zip",
-  all_releases:"All versions & release notes",
+  all_releases:"All versions & release notes", store_link:"or install from the Chrome Web Store",
   badge_free:"🆓 Free & open source", badge_langs:"🌍 5 languages · RTL", badge_theme:"🌗 Light & dark", badge_local:"🔒 Data stays on your device",
   r_autobook:"Auto-book", r_signedin:"Signed in · synced just now", r_history:"History",
   r_tab_up:"Upcoming", r_tab_slots:"My weekly slots", r_tab_sub:"Subscription", r_tab_set:"Settings",
@@ -445,7 +446,7 @@ en: {
   f10t:"No tracker needed", f10b:"The Health tab works without a fitness tracker: every lesson you attended, with the muscles its workout plan worked — per class and lesson by lesson. Connect a tracker later and heart rate, zones and steps appear on top.",
   nt_cap:"The same tab with no tracker connected — lessons, muscles worked and the full workout plan, all from the studio's posted plan.",
   f11t:"Keeps up when the studio changes", f11b:"Classes get renamed, moved to another hour, added and dropped. The extension compares the weekly schedule to the last one it saw and tells you what changed — and if one of your weekly slots points at a class that moved, it offers to follow it.",
-  inst_title:"Installed in 2 minutes", inst_sub:"No store, no account — it's a simple folder you load into Chrome once.",
+  inst_title:"Installed in 2 minutes", inst_sub:"No account — it's a simple folder you load into Chrome once. Prefer the Chrome Web Store? Use the link under the download button.",
   s1t:"Download & unzip", s1b:"Hit the green button above, then unzip the file into a folder you'll keep (e.g. Documents).",
   s2t:"Open the extensions page", s2b:"In Chrome, copy <code>chrome://extensions</code> into the address bar and press Enter.",
   s3t:"Turn on Developer mode", s3b:"It's the small switch in the top corner of that page.",
@@ -493,7 +494,7 @@ he: {
   h1:"השיעור שלך מוזמן אוטומטית <em>ברגע</em> שההרשמה נפתחת",
   sub:"Auto-Book הוא תוסף כרום חינמי שעוקב אחרי השיעורים האהובים עליך ב‑BoostApp ורושם אותך אוטומטית ברגע שחלון ההרשמה של המועדון שלך נפתח — בלי לרענן את הדף בחצות.",
   btn_download:"⬇ הורדה לכרום", btn_loading:"בודק גרסה אחרונה…", btn_meta:"גרסה {v} · {s} · zip",
-  all_releases:"כל הגרסאות והעדכונים",
+  all_releases:"כל הגרסאות והעדכונים", store_link:"או התקינו מחנות האינטרנט של Chrome",
   badge_free:"🆓 חינמי וקוד פתוח", badge_langs:"🌍 5 שפות · RTL", badge_theme:"🌗 בהיר וכהה", badge_local:"🔒 הנתונים נשארים אצלך",
   r_autobook:"הזמנה אוטומטית", r_signedin:"מחובר · סונכרן הרגע", r_history:"היסטוריה",
   r_tab_up:"שיעורים קרובים", r_tab_slots:"המשבצות שלי", r_tab_sub:"המנוי", r_tab_set:"הגדרות",
@@ -516,7 +517,7 @@ he: {
   f10t:"בלי מד כושר", f10b:"לשונית הבריאות עובדת גם בלי מד כושר: כל שיעור שהייתם בו, עם השרירים שתוכנית האימון הפעילה — לפי סוג אימון ולפי שיעור. מחברים מד כושר בהמשך, ודופק, אזורים וצעדים מתווספים מעל.",
   nt_cap:"אותה לשונית בלי מד כושר מחובר — שיעורים, שרירים שהופעלו ותוכנית האימון המלאה, הכול מהתוכנית שהסטודיו מפרסם.",
   f11t:"מתעדכן כשהסטודיו משנה", f11b:"שיעורים משנים שם, עוברים שעה, נוספים ומתבטלים. התוסף משווה את לוח השיעורים לזה שראה קודם ומראה מה השתנה — ואם אחד מהשיעורים הקבועים שלכם מצביע על שיעור שעבר שעה, הוא מציע לעקוב אחריו.",
-  inst_title:"התקנה בשתי דקות", inst_sub:"בלי חנות, בלי חשבון — תיקייה פשוטה שטוענים לכרום פעם אחת.",
+  inst_title:"התקנה בשתי דקות", inst_sub:"בלי חשבון — תיקייה פשוטה שטוענים לכרום פעם אחת. מעדיפים את חנות האינטרנט של Chrome? הקישור נמצא מתחת לכפתור ההורדה.",
   s1t:"הורדה וחילוץ", s1b:"לחצו על הכפתור הירוק למעלה, ואז חלצו את הקובץ לתיקייה שתישאר אצלכם (למשל מסמכים).",
   s2t:"פתחו את דף התוספים", s2b:"בכרום, העתיקו <code>chrome://extensions</code> לשורת הכתובת ולחצו Enter.",
   s3t:"הפעילו מצב מפתחים", s3b:"זה המתג הקטן בפינת הדף.",
@@ -564,7 +565,7 @@ uk: {
   h1:"Ваші заняття бронюються <em>тієї ж миті</em>, коли відкривається запис",
   sub:"Auto-Book — безкоштовне розширення Chrome, яке стежить за вашими улюбленими груповими заняттями в BoostApp і реєструє вас автоматично, щойно відкривається вікно реєстрації вашої студії. Більше жодних опівнічних оновлень сторінки.",
   btn_download:"⬇ Завантажити для Chrome", btn_loading:"перевіряємо останню версію…", btn_meta:"v{v} · {s} · zip",
-  all_releases:"Усі версії та нотатки",
+  all_releases:"Усі версії та нотатки", store_link:"або встановіть із Chrome Web Store",
   badge_free:"🆓 Безкоштовно, відкритий код", badge_langs:"🌍 5 мов · RTL", badge_theme:"🌗 Світла і темна", badge_local:"🔒 Дані лишаються у вас",
   r_autobook:"Автозапис", r_signedin:"У системі · синхронізовано щойно", r_history:"Історія",
   r_tab_up:"Найближчі", r_tab_slots:"Мої слоти", r_tab_sub:"Абонемент", r_tab_set:"Налаштування",
@@ -587,7 +588,7 @@ uk: {
   f10t:"Трекер не потрібен", f10b:"Вкладка «Здоров'я» працює й без фітнес-трекера: усі відвідані заняття з м'язами, які навантажив план тренування — за типом і за кожним заняттям. Підключите трекер пізніше — пульс, зони та кроки додадуться зверху.",
   nt_cap:"Та сама вкладка без трекера — заняття, навантажені м'язи і повний план тренування, усе з плану, який публікує студія.",
   f11t:"Встигає за змінами студії", f11b:"Заняття перейменовують, переносять на іншу годину, додають і скасовують. Розширення порівнює розклад із попереднім і показує, що змінилося — а якщо ваш щотижневий слот указує на заняття, яке перенесли, воно запропонує перенести правило слідом.",
-  inst_title:"Встановлення за 2 хвилини", inst_sub:"Без магазину, без акаунта — це проста тека, яку один раз завантажуєте в Chrome.",
+  inst_title:"Встановлення за 2 хвилини", inst_sub:"Без акаунта — це проста тека, яку один раз завантажуєте в Chrome. Хочете через Chrome Web Store? Посилання під кнопкою завантаження.",
   s1t:"Завантажте й розпакуйте", s1b:"Натисніть зелену кнопку вгорі, потім розпакуйте файл у теку, яку збережете (наприклад, Документи).",
   s2t:"Відкрийте сторінку розширень", s2b:"У Chrome скопіюйте <code>chrome://extensions</code> в адресний рядок і натисніть Enter.",
   s3t:"Увімкніть режим розробника", s3b:"Це маленький перемикач у куті тієї сторінки.",
@@ -635,7 +636,7 @@ ar: {
   h1:"حصصك تُحجز <em>في اللحظة</em> التي يُفتح فيها التسجيل",
   sub:"Auto-Book إضافة كروم مجانية تراقب حصصك الجماعية المفضلة في BoostApp وتسجّلك تلقائيًا لحظة فتح نافذة التسجيل في الاستوديو الخاص بك — لا مزيد من تحديث الصفحة في منتصف الليل.",
   btn_download:"⬇ تنزيل لكروم", btn_loading:"جارٍ فحص أحدث إصدار…", btn_meta:"الإصدار {v} · {s} · zip",
-  all_releases:"كل الإصدارات وملاحظاتها",
+  all_releases:"كل الإصدارات وملاحظاتها", store_link:"أو ثبّتها من سوق Chrome الإلكتروني",
   badge_free:"🆓 مجاني ومفتوح المصدر", badge_langs:"🌍 5 لغات · RTL", badge_theme:"🌗 فاتح وداكن", badge_local:"🔒 بياناتك تبقى على جهازك",
   r_autobook:"الحجز التلقائي", r_signedin:"مسجّل الدخول · تمت المزامنة للتو", r_history:"السجلّ",
   r_tab_up:"القادمة", r_tab_slots:"مواعيدي", r_tab_sub:"الاشتراك", r_tab_set:"الإعدادات",
@@ -658,7 +659,7 @@ ar: {
   f10t:"بدون جهاز تتبع", f10b:"تبويب الصحة يعمل بدون جهاز تتبع: كل درس حضرته مع العضلات التي عملت عليها خطة التمرين — حسب نوع الدرس ودرسًا درسًا. اربط جهازًا لاحقًا ليضاف النبض والمناطق والخطوات فوق ذلك.",
   nt_cap:"التبويب نفسه دون جهاز تتبع — الدروس والعضلات التي عملت عليها وخطة التمرين كاملة، كلها من الخطة التي ينشرها النادي.",
   f11t:"يواكب تغييرات النادي", f11b:"الدروس تتغيّر أسماؤها وتنتقل إلى أوقات أخرى وتُضاف وتُلغى. تقارن الإضافة الجدول الأسبوعي بالذي رأته سابقًا وتخبرك بما تغيّر — وإذا كان أحد مواعيدك الأسبوعية يشير إلى درس انتقل، تعرض نقل القاعدة معه.",
-  inst_title:"التثبيت في دقيقتين", inst_sub:"بلا متجر وبلا حساب — مجرد مجلد بسيط تحمّله في كروم مرة واحدة.",
+  inst_title:"التثبيت في دقيقتين", inst_sub:"بلا حساب — مجرد مجلد بسيط تحمّله في كروم مرة واحدة. تفضّل سوق Chrome الإلكتروني؟ الرابط تحت زر التنزيل.",
   s1t:"نزّل وفكّ الضغط", s1b:"اضغط الزر الأخضر أعلاه، ثم فكّ ضغط الملف في مجلد ستحتفظ به (مثل «المستندات»).",
   s2t:"افتح صفحة الإضافات", s2b:"في كروم، انسخ <code>chrome://extensions</code> إلى شريط العناوين واضغط Enter.",
   s3t:"فعّل وضع المطوّر", s3b:"إنه المفتاح الصغير في زاوية تلك الصفحة.",
@@ -706,7 +707,7 @@ ru: {
   h1:"Ваши занятия бронируются <em>в ту же секунду</em>, когда открывается запись",
   sub:"Auto-Book — бесплатное расширение Chrome, которое следит за вашими любимыми групповыми занятиями в BoostApp и записывает вас автоматически в момент открытия окна регистрации вашей студии. Больше никаких полуночных обновлений страницы.",
   btn_download:"⬇ Скачать для Chrome", btn_loading:"проверяем последнюю версию…", btn_meta:"v{v} · {s} · zip",
-  all_releases:"Все версии и примечания",
+  all_releases:"Все версии и примечания", store_link:"или установите из Chrome Web Store",
   badge_free:"🆓 Бесплатно, открытый код", badge_langs:"🌍 5 языков · RTL", badge_theme:"🌗 Светлая и тёмная", badge_local:"🔒 Данные остаются у вас",
   r_autobook:"Автозапись", r_signedin:"В системе · синхронизировано только что", r_history:"История",
   r_tab_up:"Ближайшие", r_tab_slots:"Мои слоты", r_tab_sub:"Абонемент", r_tab_set:"Настройки",
@@ -729,7 +730,7 @@ ru: {
   f10t:"Трекер не нужен", f10b:"Вкладка «Здоровье» работает и без фитнес-трекера: все посещённые занятия с мышцами, которые нагрузил план тренировки — по типу и по каждому занятию. Подключите трекер позже — пульс, зоны и шаги добавятся сверху.",
   nt_cap:"Та же вкладка без трекера — занятия, нагруженные мышцы и полный план тренировки, всё из плана, который публикует студия.",
   f11t:"Успевает за изменениями студии", f11b:"Занятия переименовывают, переносят на другой час, добавляют и отменяют. Расширение сравнивает расписание с предыдущим и показывает, что изменилось — а если ваш недельный слот указывает на перенесённое занятие, оно предложит перенести правило следом.",
-  inst_title:"Установка за 2 минуты", inst_sub:"Без магазина и без аккаунта — это простая папка, которую вы один раз загружаете в Chrome.",
+  inst_title:"Установка за 2 минуты", inst_sub:"Без аккаунта — это простая папка, которую вы один раз загружаете в Chrome. Удобнее через Chrome Web Store? Ссылка под кнопкой загрузки.",
   s1t:"Скачайте и распакуйте", s1b:"Нажмите зелёную кнопку выше, затем распакуйте файл в папку, которую сохраните (например, «Документы»).",
   s2t:"Откройте страницу расширений", s2b:"В Chrome скопируйте <code>chrome://extensions</code> в адресную строку и нажмите Enter.",
   s3t:"Включите режим разработчика", s3b:"Это маленький переключатель в углу той страницы.",
@@ -789,6 +790,8 @@ function applyLang(lang) {
   document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.getAttribute("data-i18n-html")); });
   document.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.getAttribute("data-i18n-ph")); });
   document.querySelectorAll("#langs button").forEach(b => b.classList.toggle("on", b.dataset.lang === LANG));
+  const priv = document.getElementById("privLink");
+  if (priv) priv.href = LANG === "he" ? "privacy-he.html" : "privacy.html";
   try { localStorage.setItem("bsab_site_lang", LANG); } catch (e) {}
   if (releaseInfo) renderRelease();   // re-format the version chip in the new language
   else document.getElementById("dlMeta").textContent = t("btn_loading");

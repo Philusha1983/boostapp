@@ -60,6 +60,9 @@ BoostApp studio.
 
 ## Install (unpacked)
 
+Auto-Book is also on the [Chrome Web Store](https://chromewebstore.google.com/detail/ogpmefjgodclpkjgplgkihfebgoehlph); the store copy can be a
+version behind while Google reviews an update. To run from source:
+
 1. Open `chrome://extensions`.
 2. Toggle **Developer mode** (top-right) on.
 3. Click **Load unpacked** and select this `boost-autobook` folder.

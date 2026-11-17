@@ -87,6 +87,12 @@ The friendly step-by-step guide lives on the
 3. Turn on **Developer mode** (top corner)
 4. Click **Load unpacked**, choose the unzipped folder, pin the icon — done
 
+Prefer the store? Auto-Book is also on the
+**[Chrome Web Store](https://chromewebstore.google.com/detail/ogpmefjgodclpkjgplgkihfebgoehlph)**. A new version reaches the store only after
+Google reviews it, so the store copy can be a version behind the zip. The two
+installs are separate extensions to Chrome: moving from one to the other, use
+Settings → Export and then Import to bring your slots and settings along.
+
 Then open BoostApp, sign in once, and the extension takes it from there.
 It checks for updates daily and shows a banner in the popup when a new
 version is out.
